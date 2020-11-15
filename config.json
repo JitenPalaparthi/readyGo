@@ -1,0 +1,49 @@
+{
+  "root": "demo",
+  "dbType": "MongoDb",
+  "hasHandler": true,
+  "models": [
+    {
+      "name": "category",
+      "fields": [
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "id",
+          "type": "int"
+        },
+        {
+          "name": "status",
+          "type": "string"
+        },
+        {
+          "name": "last_Modified",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "product",
+      "fields": [
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "id",
+          "type": "int"
+        },
+        {
+          "name": "status",
+          "type": "string"
+        },
+        {
+          "name": "last_Modified",
+          "type": "string"
+        }
+      ]
+    }
+  ]
+}

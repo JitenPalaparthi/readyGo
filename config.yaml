@@ -1,0 +1,9 @@
+---
+root: demo
+models:
+- package: models
+  fields:
+  - name: sample
+    type: string
+  - name: id
+    type: int

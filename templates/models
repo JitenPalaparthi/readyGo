@@ -1,0 +1,4 @@
+`package models
+	{{ range .Fields }}
+	{{ .Name }} {{ .Type }}
+	{{end}}`
