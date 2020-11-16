@@ -5,14 +5,14 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-	"readyGo/generator"
+	"readyGo/generate"
 )
 
 func main() {
 
 	fmt.Println("Hello Muruga")
 
-	tg, err := generator.New("config.json")
+	tg, err := generate.New("config.json")
 	if err != nil {
 		fmt.Println("seems , things went wrong.. -->", err)
 		os.Exit(1)
@@ -40,7 +40,7 @@ func main() {
 
 	err = tg.CreateMain(templates["main"])
 
-	err = tg.GenerateAllModelFiles()
+	err = tg.GenerateAllModelFiles(templates["models"])
 	fmt.Println(err)
 
 }

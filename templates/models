@@ -1,4 +1,7 @@
-`package models
+package models
+	
+	type {{ .Name }} struct {
 	{{ range .Fields }}
 	{{ .Name }} {{ .Type }}
-	{{end}}`
+	{{end}}
+	}
