@@ -12,8 +12,11 @@ import (
 	"path/filepath"
 )
 
-// TemplateMap is used to store templates
-var TemplateMap map[string]string //Ussed to store templates
+// Generater interface is to provide generater methods
+type Generater interface {
+	TmplToString(tmpl string, data interface{}) (result string, err error)
+	TmplToFile(filePath string, tmpl string, data interface{}) (err error)
+}
 
 // Generate is a type
 type Generate struct {
@@ -21,7 +24,7 @@ type Generate struct {
 	DbType     string
 	HasHandler bool
 	Models     []Model
-	Templates  map[string]string
+	Gen        Generater
 }
 
 // Model is to create a model
@@ -59,40 +62,6 @@ func New(file string) (tg *Generate, err error) {
 	return tg, nil
 }
 
-// LoadTemplates is to load templates from template folder to the map
-func LoadTemplates(path string) (err error) {
-	files, err := ioutil.ReadDir(path)
-
-	if err != nil {
-		return err
-	}
-
-	for _, file := range files {
-
-		content, err := ioutil.ReadFile("templates/" + file.Name())
-
-		if err != nil {
-			return err
-		}
-
-		TemplateMap[file.Name()] = string(content)
-	}
-	return nil
-}
-
-// GenerateAllModelFiles is to create all model files
-func (tg *Generate) GenerateAllModelFiles(tmpl string) (err error) {
-	for _, v := range tg.Models {
-		modelsFile := path.Join(tg.Root, "models", v.Name+".go")
-		err = TmplToFile(modelsFile, tmpl, v)
-		if err != nil {
-			return err
-		}
-
-	}
-	return err
-}
-
 // MkDirs Create all required directories
 func (tg *Generate) MkDirs() (err error) {
 	if tg == nil || tg.Root == "" {
@@ -127,11 +96,38 @@ func (tg *Generate) CreateMain(tmpl string) (err error) {
 
 	data["project_name"] = tg.Root
 
-	err = TmplToFile(fileName, tmpl, data)
-	if err != nil {
-		return err
+	if tg.Gen != nil {
+		err = tg.Gen.TmplToFile(fileName, tmpl, data)
+		if err != nil {
+			return err
+		}
+	} else {
+		err = TmplToFile(fileName, tmpl, data)
+		if err != nil {
+			return err
+		}
 	}
 	return nil
+}
+
+// GenerateAllModelFiles is to create all model files
+func (tg *Generate) GenerateAllModelFiles(tmpl string) (err error) {
+	for _, v := range tg.Models {
+		modelsFile := path.Join(tg.Root, "models", v.Name+".go")
+		if tg.Gen != nil {
+			err = tg.Gen.TmplToFile(modelsFile, tmpl, v)
+			if err != nil {
+				return err
+			}
+		} else {
+			err = TmplToFile(modelsFile, tmpl, v)
+			if err != nil {
+				return err
+			}
+		}
+
+	}
+	return err
 }
 
 // TmplToString is to convert from tmpl to a string
@@ -163,10 +159,4 @@ func TmplToFile(filePath string, tmpl string, data interface{}) (err error) {
 	}
 
 	return nil
-}
-
-// Generater interface is to provide generater methods
-type Generater interface {
-	TmplToString(tmpl string, data interface{}) (result string, err error)
-	TmplToFile(filePath string, tmpl string, data interface{}) (err error)
 }

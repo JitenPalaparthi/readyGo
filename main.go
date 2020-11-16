@@ -2,45 +2,30 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"log"
-	"os"
 	"readyGo/generate"
+	"readyGo/generate/template"
 )
 
 func main() {
 
 	fmt.Println("Hello Muruga")
 
+	tm, err := template.New("templates")
+	if err != nil {
+		log.Fatal("error occured loading templates..---->", err)
+	}
+
 	tg, err := generate.New("config.json")
 	if err != nil {
-		fmt.Println("seems , things went wrong.. -->", err)
-		os.Exit(1)
+		log.Fatal("seems , things went wrong.. -->", err)
+
 	}
+	tg.Gen = tm
 
-	templates := make(map[string]string)
+	err = tg.CreateMain(tm["main"])
 
-	files, err := ioutil.ReadDir("templates")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	for _, file := range files {
-
-		content, err := ioutil.ReadFile("templates/" + file.Name())
-
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		templates[file.Name()] = string(content)
-	}
-
-	fmt.Println(templates)
-
-	err = tg.CreateMain(templates["main"])
-
-	err = tg.GenerateAllModelFiles(templates["models"])
+	err = tg.GenerateAllModelFiles(tm["models"])
 	fmt.Println(err)
 
 }
