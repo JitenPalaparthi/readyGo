@@ -40,13 +40,16 @@ type Field struct {
 }
 
 // New is to generate a new template
-func New(file string) (tg *Generate, err error) {
-	ext := filepath.Ext(file)
+func New(file *string) (tg *Generate, err error) {
+	if file == nil || *file == "" {
+		return nil, errors.New("no file provided")
+	}
+	ext := filepath.Ext(*file)
 	fmt.Println(ext)
 	if ext != ".json" {
 		return nil, errors.New("Only json files are allowed ")
 	}
-	cFile, err := ioutil.ReadFile(file)
+	cFile, err := ioutil.ReadFile(*file)
 	if err != nil {
 		return nil, err
 	}
