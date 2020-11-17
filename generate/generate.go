@@ -10,6 +10,9 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"strings"
+
+	"golang.org/x/lint"
 )
 
 // Generater interface is to provide generater methods
@@ -62,7 +65,28 @@ func New(file *string) (tg *Generate, err error) {
 		return nil, err
 	}
 
+	err = tg.ValidateAndChangeIdentifier()
+	if err != nil {
+		return nil, err
+	}
+
 	return tg, nil
+}
+
+func (tg *Generate) ValidateAndChangeIdentifier() (err error) {
+	for _, v := range tg.Models {
+		v.Name, err = checkName(v.Name)
+		if err != nil {
+			return err
+		}
+		for _, f := range v.Fields {
+			f.Name, err = checkName(v.Name)
+			if err != nil {
+				return err
+			}
+		}
+	}
+	return nil
 }
 
 // MkDirs Create all required directories
@@ -162,4 +186,21 @@ func TmplToFile(filePath string, tmpl string, data interface{}) (err error) {
 	}
 
 	return nil
+}
+
+func checkName(s string) (string, error) {
+	var buf bytes.Buffer
+	fmt.Fprintf(&buf, "// Package main is awesome\npackage main\n// %s is wonderful\nvar %s int\n", s, s)
+	var l lint.Linter
+	problems, err := l.Lint("", buf.Bytes())
+	if err != nil {
+		return "", err
+	}
+	if len(problems) >= 1 {
+		t := problems[0].Text
+		if i := strings.Index(t, " should be "); i >= 0 {
+			return t[i+len(" should be "):], nil
+		}
+	}
+	return "", nil
 }
