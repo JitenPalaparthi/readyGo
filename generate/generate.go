@@ -190,17 +190,27 @@ func (tg *Generate) CopyAllStaticFiles() (err error) {
 		if err != nil {
 			return err
 		}
+		src := filepath.Join("static", "databases", "mongo", "database.static")
+
+		dst := filepath.Join(*tg.Root, "database", "mongo", "database.go")
+
+		err = CopyStaticFile(src, dst)
+		if err != nil {
+			return err
+		}
 	}
 
-	src := filepath.Join("static", "databases", "mongo", "database.static")
+	if tg.Type != nil && *tg.Type == "http" {
 
-	//src = strings.TrimSuffix(src, filepath.Ext(src)) + ".go"
+		src := filepath.Join("static", "containers", "Dockerfile")
 
-	dst := filepath.Join(*tg.Root, "database", "mongo", "database.go")
+		dst := filepath.Join(*tg.Root, "Dockerfile")
 
-	err = CopyStaticFile(src, dst)
-	if err != nil {
-		return err
+		err = CopyStaticFile(src, dst)
+		if err != nil {
+			return err
+		}
+
 	}
 
 	return nil
