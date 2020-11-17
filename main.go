@@ -54,4 +54,10 @@ func main() {
 
 	}
 
+	err = tg.CopyAllStaticFiles()
+	if err != nil {
+		log.Fatal("seems , things went wrong.. -->", err)
+
+	}
+
 }

@@ -1,6 +1,6 @@
 {
   "type":"http", 
-  "root": "demo",
+  "root": "Demo",
   "dbType": "mongo",
   "hasHandler": true,
   "models": [

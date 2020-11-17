@@ -66,36 +66,16 @@ func New(file *string) (tg *Generate, err error) {
 		return nil, err
 	}
 
+	root := strings.ToLower(*tg.Root)
+	fmt.Println(root)
+	*tg.Root = root
+
 	err = tg.MkDirs() // Generate required directories
 	if err != nil {
 		return nil, err
 	}
 
 	return tg, nil
-}
-
-func (tg *Generate) ValidateAndChangeIdentifier() (err error) {
-	for i, m := range tg.Models {
-		tmpModel := m.Name
-		tg.Models[i].Name, err = checkName(m.Name)
-		if err != nil {
-			return errors.New("There is an error at the following model config name in json file:" + tmpModel)
-			fmt.Println("----1", err)
-			return err
-		}
-		tg.Models[i].Name = strings.ToUpper(string(tmpModel[0])) + string(tmpModel[1:])
-
-		for j, f := range m.Fields {
-			tmpField := f.Name
-
-			tg.Models[i].Fields[j].Name, err = checkName(f.Name)
-			if err != nil {
-				return errors.New("There is an error at the following field name in json file:" + tmpField)
-			}
-			tg.Models[i].Fields[j].Name = strings.ToUpper(string(tmpField[0])) + string(tmpField[1:])
-		}
-	}
-	return nil
 }
 
 // MkDirs Create all required directories
@@ -119,6 +99,38 @@ func (tg *Generate) MkDirs() (err error) {
 		err = os.Mkdir(handlers, 0777)
 		if err != nil {
 			return err
+		}
+	}
+
+	if tg.DBType != nil && *tg.DBType != "none" {
+		database := filepath.Join(*tg.Root, "database")
+		err = os.Mkdir(database, 0777)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (tg *Generate) ValidateAndChangeIdentifier() (err error) {
+	for i, m := range tg.Models {
+		tmpModel := m.Name
+		tg.Models[i].Name, err = checkName(m.Name)
+		if err != nil {
+			return errors.New("There is an error at the following model config name in json file:" + tmpModel)
+			fmt.Println("----1", err)
+			return err
+		}
+		tg.Models[i].Name = strings.ToUpper(string(tmpModel[0])) + string(tmpModel[1:])
+
+		for j, f := range m.Fields {
+			tmpField := f.Name
+
+			tg.Models[i].Fields[j].Name, err = checkName(f.Name)
+			if err != nil {
+				return errors.New("There is an error at the following field name in json file:" + tmpField)
+			}
+			tg.Models[i].Fields[j].Name = strings.ToUpper(string(tmpField[0])) + string(tmpField[1:])
 		}
 	}
 	return nil
@@ -164,6 +176,65 @@ func (tg *Generate) GenerateAllModelFiles(tmpl string) (err error) {
 
 	}
 	return err
+}
+
+// CopyAllStaticFiles is to copy static files
+func (tg *Generate) CopyAllStaticFiles() (err error) {
+	if tg == nil || tg.DBType == nil {
+		return errors.New("Generate object or DBType is nil")
+	}
+
+	if *tg.DBType == "mongo" {
+		database := filepath.Join(*tg.Root, "database", "mongo")
+		err = os.Mkdir(database, 0777)
+		if err != nil {
+			return err
+		}
+	}
+
+	src := filepath.Join("static", "databases", "mongo", "database.static")
+
+	//src = strings.TrimSuffix(src, filepath.Ext(src)) + ".go"
+
+	dst := filepath.Join(*tg.Root, "database", "mongo", "database.go")
+
+	err = CopyStaticFile(src, dst)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// CopyStaticFile is to copy static files
+func CopyStaticFile(src, dst string) (err error) {
+	sfi, err := os.Stat(src)
+	if err != nil {
+		return
+	}
+	if !sfi.Mode().IsRegular() {
+		// cannot copy non-regular files (e.g., directories,
+		// symlinks, devices, etc.)
+		return fmt.Errorf("CopyFile: non-regular source file %s (%q)", sfi.Name(), sfi.Mode().String())
+	}
+	dfi, err := os.Stat(dst)
+	if err != nil {
+		if !os.IsNotExist(err) {
+			return
+		}
+	} else {
+		if !(dfi.Mode().IsRegular()) {
+			return fmt.Errorf("CopyFile: non-regular destination file %s (%q)", dfi.Name(), dfi.Mode().String())
+		}
+		if os.SameFile(sfi, dfi) {
+			return
+		}
+	}
+	if err = os.Link(src, dst); err == nil {
+		return
+	}
+	//err = copyFileContents(src, dst)
+	return
 }
 
 // TmplToString is to convert from tmpl to a string
