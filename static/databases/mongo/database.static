@@ -1,0 +1,393 @@
+package database
+
+import (
+	"bufio"
+	"bytes"
+	"context"
+	"errors"
+	"fmt"
+	"io"
+	"mime/multipart"
+
+	"time"
+
+	"github.com/golang/glog"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/gridfs"
+	"go.mongodb.org/mongo-driver/mongo/options"
+)
+
+const (
+	Connection_Max_Retries        int8 = 10
+	Connection_Max_Retry_Duration      = time.Second * 5
+)
+
+type Database struct {
+	Client interface{}
+	Name   string
+}
+
+// GetConnection is to get the connection from the database
+func GetConnection(url, dbName string) (*Database, error) {
+	var retries int8 = 0
+try:
+	retries++
+	clientOptions := options.Client().ApplyURI(url)
+	// Connect to MongoDB
+	client, err := mongo.Connect(context.TODO(), clientOptions)
+	fmt.Println(err)
+	if err != nil {
+		if retries < Connection_Max_Retries {
+			time.Sleep(Connection_Max_Retry_Duration)
+			glog.Info("Trying to connect ---", retries)
+			goto try
+		}
+		return nil, err
+	}
+	//defer connection.Close()
+	return &Database{Client: client, Name: dbName}, nil
+}
+
+// InsertRecord is to insert a record
+func (d *Database) InsertRecord(col string, data interface{}) (interface{}, error) {
+	if d.Client == nil {
+		return nil, errors.New("Database client is null")
+	}
+	collection := d.Client.(*mongo.Client).Database(d.Name).Collection(col)
+
+	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
+	res, err := collection.InsertOne(ctx, data)
+	if err != nil {
+		return nil, err
+	}
+	id := res.InsertedID
+	return id, nil
+
+}
+
+// UpdteRecordByID is to update a record based on the id provided
+func (d *Database) UpdteRecordByID(col, id string, data interface{}) (int64, error) {
+	if d.Client == nil {
+		return -1, errors.New("Database client is null")
+	}
+	collection := d.Client.(*mongo.Client).Database(d.Name).Collection(col)
+	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
+
+	if id == "" {
+		return -1, errors.New("parameter id is empty")
+	}
+	objID, err := primitive.ObjectIDFromHex(id)
+
+	if err != nil {
+		return -1, err
+	}
+	filters := bson.M{
+		"_id": objID,
+	}
+
+	update := bson.M{
+		"$set": data,
+	}
+
+	res, err := collection.UpdateOne(ctx, filters, update)
+	if err != nil {
+		return -1, err
+	}
+	count := res.ModifiedCount
+	return count, nil
+}
+
+// UpdteRecord is to update a record based on the filters provided
+func (d *Database) UpdateRecord(col string, filter, data interface{}) (int64, error) {
+	if d.Client == nil {
+		return -1, errors.New("Database client is null")
+	}
+	collection := d.Client.(*mongo.Client).Database(d.Name).Collection(col)
+	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
+
+	update := bson.M{
+		"$set": data,
+	}
+
+	res, err := collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return -1, err
+	}
+	count := res.ModifiedCount
+	return count, nil
+}
+
+// DeleteRecordByID is to delete a record based on the id provided
+func (d *Database) DeleteRecordByID(col, id string) (int64, error) {
+	if d.Client == nil {
+		return -1, errors.New("Database client is null")
+	}
+	collection := d.Client.(*mongo.Client).Database(d.Name).Collection(col)
+	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
+
+	if id == "" {
+		return -1, errors.New("parameter id is empty")
+	}
+	objID, err := primitive.ObjectIDFromHex(id)
+
+	if err != nil {
+		return -1, err
+	}
+	filters := bson.M{
+		"_id": objID,
+	}
+
+	res, err := collection.DeleteOne(ctx, filters)
+	if err != nil {
+		return -1, err
+	}
+	count := res.DeletedCount
+	return count, nil
+}
+
+// DeleteRecord is to delete a record based on the filters provided
+func (d *Database) DeleteRecord(col string, filter interface{}) (int64, error) {
+	if d.Client == nil {
+		return -1, errors.New("Database client is null")
+	}
+	collection := d.Client.(*mongo.Client).Database(d.Name).Collection(col)
+	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
+
+	res, err := collection.DeleteOne(ctx, filter)
+	if err != nil {
+		return -1, err
+	}
+	count := res.DeletedCount
+	return count, nil
+}
+
+// DeleteRecords is to delete a records based on the filters provided
+func (d *Database) DeleteRecords(col string, filter interface{}) (int64, error) {
+	if d.Client == nil {
+		return -1, errors.New("Database client is null")
+	}
+	collection := d.Client.(*mongo.Client).Database(d.Name).Collection(col)
+	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
+
+	res, err := collection.DeleteMany(ctx, filter)
+	if err != nil {
+		return -1, err
+	}
+	count := res.DeletedCount
+	return count, nil
+}
+
+// FindRecord is to find a record based on the filters provided
+func (d *Database) FindRecord(col string, filter interface{}) (interface{}, error) {
+	if d.Client == nil {
+		return -1, errors.New("Database client is null")
+	}
+	collection := d.Client.(*mongo.Client).Database(d.Name).Collection(col)
+	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
+
+	result := make(map[string]interface{})
+	res := collection.FindOne(ctx, filter)
+
+	err := res.Decode(result)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
+// FindRecordByID is to find a record based on the id provided
+func (d *Database) FindRecordByID(col, id string) (interface{}, error) {
+	if d.Client == nil {
+		return -1, errors.New("Database client is null")
+	}
+	collection := d.Client.(*mongo.Client).Database(d.Name).Collection(col)
+	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
+
+	if id == "" {
+		return -1, errors.New("parameter id is empty")
+	}
+	objID, err := primitive.ObjectIDFromHex(id)
+
+	if err != nil {
+		return -1, err
+	}
+	filters := bson.M{
+		"_id": objID,
+	}
+
+	result := make(map[string]interface{})
+	res := collection.FindOne(ctx, filters)
+
+	err = res.Decode(result)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
+// FindRecords is to find a records based on the filters provided
+func (d *Database) FindRecords(col string, filter interface{}) (interface{}, error) {
+	if d.Client == nil {
+		return -1, errors.New("Database client is null")
+	}
+	collection := d.Client.(*mongo.Client).Database(d.Name).Collection(col)
+	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
+
+	cur, err := collection.Find(ctx, filter)
+
+	if err != nil {
+		return nil, err
+	}
+	result := make([]interface{}, 0)
+
+	defer cur.Close(ctx)
+	for cur.Next(ctx) {
+		iresult := make(map[string]interface{})
+		//var result bson.M
+		err := cur.Decode(&iresult)
+		if err != nil {
+			return nil, err
+		}
+		result = append(result, iresult)
+		// do something with result....
+	}
+	if err := cur.Err(); err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+// FindRecordsByPaging is to find a records based on the filters provided for paging as well
+func (d *Database) FindRecordsByPaging(col string, skip, limit int64, filter interface{}) (interface{}, error) {
+	if d.Client == nil {
+		return -1, errors.New("Database client is null")
+	}
+	collection := d.Client.(*mongo.Client).Database(d.Name).Collection(col)
+	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
+
+	findOptions := options.Find()
+	findOptions.SetLimit(limit).SetSkip(skip)
+
+	cur, err := collection.Find(ctx, filter, findOptions)
+
+	if err != nil {
+		return nil, err
+	}
+	result := make([]interface{}, 0)
+
+	defer cur.Close(ctx)
+	for cur.Next(ctx) {
+		iresult := make(map[string]interface{})
+		err := cur.Decode(&iresult)
+		if err != nil {
+			return nil, err
+		}
+		result = append(result, iresult)
+		// do something with result....
+	}
+	if err := cur.Err(); err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+// GetCount is to get the document count based on a filter
+func (d *Database) GetCount(col string, filter interface{}) (int64, error) {
+	if d.Client == nil {
+		return -1, errors.New("Database client is null")
+	}
+	collection := d.Client.(*mongo.Client).Database(d.Name).Collection(col)
+
+	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
+
+	return collection.CountDocuments(ctx, filter)
+
+}
+
+func (d *Database) CreateTextIndex(col string, field string) error {
+	view := d.Client.(*mongo.Client).Database(d.Name).Collection(col).Indexes()
+	cur, err := view.List(context.TODO())
+	defer cur.Close(context.TODO())
+	for cur.Next(context.TODO()) {
+		v := cur.Current.Lookup("key")
+		if string(v.Value) == "text" {
+			print("found------------------->")
+			return nil
+		}
+		fmt.Println(v)
+
+	}
+	mod := mongo.IndexModel{
+		Keys: bson.M{
+			field: "text",
+		}, Options: nil,
+	}
+	d.Client.(*mongo.Client).Database(d.Name).Collection(col).Indexes().CreateOne(context.TODO(), mod)
+	return err
+}
+
+func (d *Database) UploadFile(file multipart.File, filename string) error {
+	reader := bufio.NewReader(file)
+	defer func() { file.Close() }()
+	buf := make([]byte, 1024)
+
+	bucket, err := gridfs.NewBucket(
+		d.Client.(*mongo.Client).Database(d.Name),
+	)
+	if err != nil {
+		return err
+	}
+	uploadStream, err := bucket.OpenUploadStream(
+		filename,
+	)
+	if err != nil {
+		return err
+	}
+	defer uploadStream.Close()
+	for {
+		// read a chunk
+		n, err := reader.Read(buf)
+		if err != nil && err != io.EOF {
+			return errors.New("Could not read the input file")
+		}
+		if n == 0 {
+			break
+		}
+
+		if _, err := uploadStream.Write(buf[:n]); err != nil {
+			// write a chunk
+			return errors.New("Could not write to GridFs for " + filename)
+
+		}
+	}
+	return nil
+}
+
+func (d *Database) GetFile(fileName string) (buf bytes.Buffer, err error) {
+	db := d.Client.(*mongo.Client).Database(d.Name)
+	fsFiles := db.Collection("fs.files")
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	var results bson.M
+	err = fsFiles.FindOne(ctx, bson.M{}).Decode(&results)
+	if err != nil {
+		return buf, err
+	}
+	// you can print out the results
+	fmt.Println(results)
+
+	bucket, _ := gridfs.NewBucket(
+		db,
+	)
+	//var buf bytes.Buffer
+	dStream, err := bucket.DownloadToStreamByName(fileName, &buf)
+	if err != nil {
+		return buf, err
+	}
+	fmt.Printf("File size to download: %v\n", dStream)
+	return buf, err
+
+}

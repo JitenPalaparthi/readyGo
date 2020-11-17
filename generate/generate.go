@@ -23,9 +23,9 @@ type Generater interface {
 
 // Generate is a type
 type Generate struct {
-	Type       string // Type of the project http , grpc , CloudEvents , cli
-	Root       string // ideally project root directory .i.e project name
-	DbType     string
+	Type       *string // Type of the project http , grpc , CloudEvents , cli
+	Root       *string // ideally project root directory .i.e project name
+	DBType     *string // mongo , sql based postgres mariadb etc
 	HasHandler bool
 	Models     []Model
 	Gen        Generater
@@ -61,12 +61,12 @@ func New(file *string) (tg *Generate, err error) {
 	if err != nil {
 		return nil, err
 	}
-	err = tg.MkDirs() // Generate required directories
+	err = tg.ValidateAndChangeIdentifier()
 	if err != nil {
 		return nil, err
 	}
 
-	err = tg.ValidateAndChangeIdentifier()
+	err = tg.MkDirs() // Generate required directories
 	if err != nil {
 		return nil, err
 	}
@@ -75,16 +75,24 @@ func New(file *string) (tg *Generate, err error) {
 }
 
 func (tg *Generate) ValidateAndChangeIdentifier() (err error) {
-	for _, v := range tg.Models {
-		v.Name, err = checkName(v.Name)
+	for i, m := range tg.Models {
+		tmpModel := m.Name
+		tg.Models[i].Name, err = checkName(m.Name)
 		if err != nil {
+			return errors.New("There is an error at the following model config name in json file:" + tmpModel)
+			fmt.Println("----1", err)
 			return err
 		}
-		for _, f := range v.Fields {
-			f.Name, err = checkName(v.Name)
+		tg.Models[i].Name = strings.ToUpper(string(tmpModel[0])) + string(tmpModel[1:])
+
+		for j, f := range m.Fields {
+			tmpField := f.Name
+
+			tg.Models[i].Fields[j].Name, err = checkName(f.Name)
 			if err != nil {
-				return err
+				return errors.New("There is an error at the following field name in json file:" + tmpField)
 			}
+			tg.Models[i].Fields[j].Name = strings.ToUpper(string(tmpField[0])) + string(tmpField[1:])
 		}
 	}
 	return nil
@@ -92,22 +100,22 @@ func (tg *Generate) ValidateAndChangeIdentifier() (err error) {
 
 // MkDirs Create all required directories
 func (tg *Generate) MkDirs() (err error) {
-	if tg == nil || tg.Root == "" {
+	if tg == nil || tg.Root == nil {
 		return errors.New("project root directory or the generation has error")
 	}
-	err = os.Mkdir(tg.Root, 0777)
+	err = os.Mkdir(*tg.Root, 0777)
 	if err != nil {
 		return err
 	}
 
-	models := filepath.Join(tg.Root, "models")
+	models := filepath.Join(*tg.Root, "models")
 	err = os.Mkdir(models, 0777)
 	if err != nil {
 		return err
 	}
 
 	if tg.HasHandler {
-		handlers := filepath.Join(tg.Root, "handlers")
+		handlers := filepath.Join(*tg.Root, "handlers")
 		err = os.Mkdir(handlers, 0777)
 		if err != nil {
 			return err
@@ -118,11 +126,11 @@ func (tg *Generate) MkDirs() (err error) {
 
 // CreateMain main.go
 func (tg *Generate) CreateMain(tmpl string) (err error) {
-	fileName := path.Join(tg.Root, "main.go")
+	fileName := path.Join(*tg.Root, "main.go")
 
 	data := make(map[string]string)
 
-	data["project_name"] = tg.Root
+	data["project_name"] = *tg.Root
 
 	if tg.Gen != nil {
 		err = tg.Gen.TmplToFile(fileName, tmpl, data)
@@ -141,7 +149,7 @@ func (tg *Generate) CreateMain(tmpl string) (err error) {
 // GenerateAllModelFiles is to create all model files
 func (tg *Generate) GenerateAllModelFiles(tmpl string) (err error) {
 	for _, v := range tg.Models {
-		modelsFile := path.Join(tg.Root, "models", v.Name+".go")
+		modelsFile := path.Join(*tg.Root, "models", strings.ToLower(v.Name)+".go")
 		if tg.Gen != nil {
 			err = tg.Gen.TmplToFile(modelsFile, tmpl, v)
 			if err != nil {
