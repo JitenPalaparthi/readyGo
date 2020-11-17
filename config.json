@@ -1,4 +1,5 @@
 {
+  "type":"http", // http grpc cloud events cli 
   "root": "demo",
   "dbType": "MongoDb",
   "hasHandler": true,

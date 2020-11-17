@@ -23,6 +23,7 @@ type Generater interface {
 
 // Generate is a type
 type Generate struct {
+	Type       string // Type of the project http , grpc , CloudEvents , cli
 	Root       string // ideally project root directory .i.e project name
 	DbType     string
 	HasHandler bool
