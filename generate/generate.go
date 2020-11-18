@@ -178,6 +178,30 @@ func (tg *Generate) GenerateAllModelFiles(tmpl string) (err error) {
 	return err
 }
 
+// GenerateAllTemplateFiles is to create all handler files
+func (tg *Generate) GenerateAllHandlerFiles(tmpl string) (err error) {
+	for _, v := range tg.Models {
+		modelsFile := path.Join(*tg.Root, "handlers", strings.ToLower(v.Name)+".go")
+		if tg.Gen != nil {
+			mhandler := make(map[string]interface{})
+			mhandler["Root"] = tg.Root
+			mhandler["Model"] = v
+			mhandler["model_name"] = strings.ToLower(v.Name)
+			err = tg.Gen.TmplToFile(modelsFile, tmpl, mhandler)
+			if err != nil {
+				return err
+			}
+		} else {
+			err = TmplToFile(modelsFile, tmpl, v)
+			if err != nil {
+				return err
+			}
+		}
+
+	}
+	return err
+}
+
 // CopyAllStaticFiles is to copy static files
 func (tg *Generate) CopyAllStaticFiles() (err error) {
 	if tg == nil || tg.DBType == nil {

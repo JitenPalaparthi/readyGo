@@ -1,0 +1,50 @@
+package handlers
+
+import (
+	database "{{.Root}}/database/mongo"
+	"{{.Root}}/models"
+	"encoding/json"
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+)
+
+type {{.Model.Name}} struct {
+	DB *database.Database
+}
+
+func (t *{{.Model.Name}}) Create() func(c *gin.Context) {
+	var err error
+	return func(c *gin.Context) {
+		if c.Request.Method == "POST" {
+			var {{.model_name}} *models.{{.Model.Name}}
+			{{.model_name}} = &models.{{.Model.Name}}{}
+
+			err = json.NewDecoder(c.Request.Body).Decode(&{{.model_name}})
+			if err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{
+					"status":  "failed",
+					"message": err.Error(),
+				})
+				c.Abort()
+				return
+			}
+
+			result, err := t.DB.InsertRecord("{{.model_name}}", {{.model_name}})
+			if err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{
+					"status":  "failed",
+					"message": err.Error(),
+				})
+				c.Abort()
+				return
+			}
+			c.JSON(http.StatusOK, gin.H{
+				"status":  "success",
+				"message": result,
+			})
+			c.Abort()
+			return
+		}
+	}
+}

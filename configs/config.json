@@ -5,16 +5,17 @@
   "hasHandler": true,
   "models": [
     {
-      "name": "category",
+      "name": "training",
       "fields": [
-        {
-          "name": "name",
-          "type": "string"
-        },
         {
           "name": "id",
           "type": "int"
         },
+        {
+          "name": "name",
+          "type": "string"
+        },
+       
         {
           "name": "status",
           "type": "string"
