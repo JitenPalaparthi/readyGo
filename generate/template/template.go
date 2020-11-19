@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"io/ioutil"
 	"os"
+	"strings"
 	"text/template"
 )
 
@@ -37,7 +38,11 @@ func New(path string) (tm TmplMap, err error) {
 
 // TmplToString is to convert from tmpl to a string
 func (tm TmplMap) TmplToString(tmpl string, data interface{}) (result string, err error) {
-	t := template.Must(template.New("toString").Parse(tmpl))
+	t := template.Must(template.New("toString").Funcs(template.FuncMap{
+		"ToLower": func(str string) string {
+			return strings.ToLower(str)
+		},
+	}).Parse(tmpl))
 	buf := bytes.NewBufferString("")
 	err = t.Execute(buf, data)
 
@@ -55,7 +60,11 @@ func (tm TmplMap) TmplToFile(filePath string, tmpl string, data interface{}) (er
 		return err
 	}
 
-	t := template.Must(template.New("toFile").Parse(tmpl))
+	t := template.Must(template.New("toFile").Funcs(template.FuncMap{
+		"ToLower": func(str string) string {
+			return strings.ToLower(str)
+		},
+	}).Parse(tmpl))
 
 	err = t.Execute(file, data)
 

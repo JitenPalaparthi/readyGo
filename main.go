@@ -60,9 +60,16 @@ func main() {
 
 	}
 
+	err = tg.GenerateAllInterfaceFiles(tm["interfaces"])
+	if err != nil {
+		log.Fatal("seems , things went wrong.. -->", err)
+
+	}
+
 	err = tg.GenerateAllHandlerFiles(tm["http_mongo_handler"])
 	if err != nil {
 		log.Fatal("seems , things went wrong.. -->", err)
 
 	}
+
 }

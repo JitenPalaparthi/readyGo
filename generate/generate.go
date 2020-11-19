@@ -93,6 +93,11 @@ func (tg *Generate) MkDirs() (err error) {
 	if err != nil {
 		return err
 	}
+	interfaces := filepath.Join(*tg.Root, "interfaces")
+	err = os.Mkdir(interfaces, 0777)
+	if err != nil {
+		return err
+	}
 
 	if tg.HasHandler {
 		handlers := filepath.Join(*tg.Root, "handlers")
@@ -199,6 +204,25 @@ func (tg *Generate) GenerateAllHandlerFiles(tmpl string) (err error) {
 			}
 		}
 
+	}
+	return err
+}
+
+//GenerateAllInterfaceFiles generates all interface methods for each model
+func (tg *Generate) GenerateAllInterfaceFiles(tmpl string) (err error) {
+	interfacesFile := path.Join(*tg.Root, "interfaces", "interfaces.go")
+
+	mhandler := make(map[string]interface{})
+	mhandler["Root"] = tg.Root
+	mhandler["Models"] = tg.Models
+	mhandler["ToLower"] = func(str string) string {
+		return strings.ToLower(str)
+	}
+	//mhandler["model_name"] = strings.ToLower(v.Name)
+	//mhandler["model_first_letter"] = strings.ToLower(string(v.Name[0]))
+	err = tg.Gen.TmplToFile(interfacesFile, tmpl, mhandler)
+	if err != nil {
+		return err
 	}
 	return err
 }
