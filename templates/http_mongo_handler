@@ -3,26 +3,29 @@
 package handlers
 
 import (
-	database "{{.Root}}/database/mongo"
-	"{{.Root}}/models"
 	"encoding/json"
+	"fmt"
 	"net/http"
+	"strconv"
+	"{{.Root}}/interfaces"
+	"{{.Root}}/models"
 
 	"github.com/gin-gonic/gin"
 )
 
 type {{.Model.Name}} struct {
-	DB *database.Database
+	I{{.Model.Name}} interfaces.{{.Model.Name}}Interface
 }
 
 func ({{.model_first_letter}} *{{.Model.Name}}) Create{{.Model.Name}}() func(c *gin.Context) {
 	var err error
 	return func(c *gin.Context) {
 		if c.Request.Method == "POST" {
-			var {{.model_name}} *models.{{.Model.Name}}
-			{{.model_name}} = &models.{{.Model.Name}}{}
+			var {{.Model.Name | ToLower}} *models.{{.Model.Name}}
+			{{.Model.Name | ToLower}} = &models.{{.Model.Name}}{}
 
-			err = json.NewDecoder(c.Request.Body).Decode(&{{.model_name}})
+			err = json.NewDecoder(c.Request.Body).Decode(&{{.Model.Name | ToLower}})
+			fmt.Println({{.Model.Name | ToLower}})
 			if err != nil {
 				c.JSON(http.StatusBadRequest, gin.H{
 					"status":  "failed",
@@ -32,7 +35,7 @@ func ({{.model_first_letter}} *{{.Model.Name}}) Create{{.Model.Name}}() func(c *
 				return
 			}
 
-			result, err := {{.model_first_letter}}.DB.InsertRecord("{{.model_name}}s", {{.model_name}})
+			result, err := {{.model_first_letter}}.I{{.Model.Name}}.Create{{.Model.Name}}({{.Model.Name | ToLower}})
 			if err != nil {
 				c.JSON(http.StatusBadRequest, gin.H{
 					"status":  "failed",
@@ -47,6 +50,165 @@ func ({{.model_first_letter}} *{{.Model.Name}}) Create{{.Model.Name}}() func(c *
 			})
 			c.Abort()
 			return
+		}
+	}
+}
+
+func ({{.model_first_letter}} *{{.Model.Name}}) Get{{.Model.Name}}ByID() func(c *gin.Context) {
+	return func(c *gin.Context) {
+		if c.Request.Method == "GET" {
+			id := c.Param("id")
+			if id == "" {
+				c.JSON(http.StatusBadRequest, gin.H{
+					"status":  "failed",
+					"message": "id parameter has not been provided",
+				})
+				c.Abort()
+				return
+			}
+			{{.Model.Name | ToLower}}, err := {{.model_first_letter}}.I{{.Model.Name}}.Get{{.Model.Name}}ByID(id)
+			if err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{
+					"status":  "failed",
+					"message": err.Error(),
+				})
+				c.Abort()
+				return
+			}
+			c.JSON(http.StatusOK, {{.Model.Name | ToLower}})
+		}
+	}
+}
+
+func ({{.model_first_letter}} *{{.Model.Name}}) GetAll{{.Model.Name}}s() func(c *gin.Context) {
+	return func(c *gin.Context) {
+		if c.Request.Method == "GET" {
+			skip := c.Param("skip")
+			limit := c.Param("limit")
+
+			if skip == "" {
+				c.JSON(http.StatusBadRequest, gin.H{
+					"status":  "failed",
+					"message": "skip parameter has not been provided",
+				})
+				c.Abort()
+				return
+			}
+
+			if limit == "" {
+				c.JSON(http.StatusBadRequest, gin.H{
+					"status":  "failed",
+					"message": "limit parameter has not been provided",
+				})
+				c.Abort()
+				return
+			}
+
+			iskip, err := strconv.ParseInt(skip, 10, 64)
+			if err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{
+					"status":  "failed",
+					"message": err,
+				})
+				c.Abort()
+				return
+			}
+
+			ilimit, err := strconv.ParseInt(limit, 10, 64)
+			if err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{
+					"status":  "failed",
+					"message": err,
+				})
+				c.Abort()
+				return
+			}
+			selector := make(map[string]interface{})
+			jsonMap := c.Request.URL.Query()
+
+			for key, val := range jsonMap {
+				selector[key] = val[0]
+			}
+
+			{{.Model.Name | ToLower}}s, err := {{.model_first_letter}}.I{{.Model.Name}}.GetAll{{.Model.Name}}s(int64(iskip), int64(ilimit), selector)
+			if err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{
+					"status":  "failed",
+					"message": err.Error(),
+				})
+				c.Abort()
+				return
+			}
+			c.JSON(http.StatusOK, {{.Model.Name | ToLower}}s)
+		}
+	}
+}
+
+func ({{.model_first_letter}} *{{.Model.Name}}) GetAll{{.Model.Name}}sBy() func(c *gin.Context) {
+	return func(c *gin.Context) {
+		if c.Request.Method == "GET" {
+			skip := c.Param("skip")
+			limit := c.Param("limit")
+
+			if skip == "" {
+				c.JSON(http.StatusBadRequest, gin.H{
+					"status":  "failed",
+					"message": "skip parameter has not been provided",
+				})
+				c.Abort()
+				return
+			}
+
+			if limit == "" {
+				c.JSON(http.StatusBadRequest, gin.H{
+					"status":  "failed",
+					"message": "limit parameter has not been provided",
+				})
+				c.Abort()
+				return
+			}
+
+			iskip, err := strconv.ParseInt(skip, 10, 64)
+			if err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{
+					"status":  "failed",
+					"message": err,
+				})
+				c.Abort()
+				return
+			}
+
+			ilimit, err := strconv.ParseInt(limit, 10, 64)
+			if err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{
+					"status":  "failed",
+					"message": err,
+				})
+				c.Abort()
+				return
+			}
+
+			qstring := c.Request.URL.Query().Get("search")
+
+			selector := make(map[string]interface{})
+			jsonMap := c.Request.URL.Query()
+
+			for key, val := range jsonMap {
+				if key != "search" {
+					selector[key] = val[0]
+				}
+			}
+			{{.Model.Name | ToLower}}s, err := {{.model_first_letter}}.I{{.Model.Name}}.GetAll{{.Model.Name}}sBy(qstring, selector, int64(iskip), int64(ilimit))
+			if err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{
+					"status":  "failed",
+					"message": err.Error(),
+				})
+				c.Abort()
+				return
+			}
+			//c.BindJSON(&profiles)
+			c.JSON(http.StatusOK, {{.Model.Name | ToLower}}s)
 		}
 	}
 }
@@ -66,10 +228,11 @@ func ({{.model_first_letter}} *{{.Model.Name}}) Update{{.Model.Name}}ByID() func
 				return
 			}
 
-			var {{.model_name}} map[string]interface{}
-			 {{.model_name}} = make(map[string]interface{})
+			var {{.Model.Name | ToLower}} map[string]interface{}
+			{{.Model.Name | ToLower}} = make(map[string]interface{})
 
-			err = json.NewDecoder(c.Request.Body).Decode(&{{.model_name}})
+			err = json.NewDecoder(c.Request.Body).Decode(&{{.Model.Name | ToLower}})
+			
 			if err != nil {
 				c.JSON(http.StatusBadRequest, gin.H{
 					"status":  "failed",
@@ -79,7 +242,7 @@ func ({{.model_first_letter}} *{{.Model.Name}}) Update{{.Model.Name}}ByID() func
 				return
 			}
 
-			result, err := {{.model_first_letter}}.DB.UpdateRecordByID("{{.model_name}}s",&id,{{.model_name}})
+			result, err := {{.model_first_letter}}.I{{.Model.Name}}.Update{{.Model.Name}}ByID(id, {{.Model.Name | ToLower}})
 			if err != nil {
 				c.JSON(http.StatusBadRequest, gin.H{
 					"status":  "failed",
@@ -100,7 +263,6 @@ func ({{.model_first_letter}} *{{.Model.Name}}) Update{{.Model.Name}}ByID() func
 }
 
 func ({{.model_first_letter}} *{{.Model.Name}}) Delete{{.Model.Name}}ByID() func(c *gin.Context) {
-	var err error
 	return func(c *gin.Context) {
 		if c.Request.Method == "DELETE" {
 
@@ -113,7 +275,8 @@ func ({{.model_first_letter}} *{{.Model.Name}}) Delete{{.Model.Name}}ByID() func
 				c.Abort()
 				return
 			}
-			result, err := {{.model_first_letter}}.DB.DeleteRecordByID("{{.model_name}}s",&id)
+
+			result, err := {{.model_first_letter}}.I{{.Model.Name}}.Delete{{.Model.Name}}ByID(id)
 			if err != nil {
 				c.JSON(http.StatusBadRequest, gin.H{
 					"status":  "failed",
@@ -129,32 +292,6 @@ func ({{.model_first_letter}} *{{.Model.Name}}) Delete{{.Model.Name}}ByID() func
 			})
 			c.Abort()
 			return
-		}
-	}
-}
-
-func ({{.model_first_letter}} *{{.Model.Name}}) Get{{.Model.Name}}ByID() func(c *gin.Context) {
-	return func(c *gin.Context) {
-		if c.Request.Method == "GET" {
-			id := c.Param("id")
-			if id == "" {
-				c.JSON(http.StatusBadRequest, gin.H{
-					"status":  "failed",
-					"message": "id parameter has not been provided",
-				})
-				c.Abort()
-				return
-			}
-			{{.model_first_letter}}, err := {{.model_first_letter}}.DB.FindRecordByID("{{.model_name}}s",&id)
-			if err != nil {
-				c.JSON(http.StatusBadRequest, gin.H{
-					"status":  "failed",
-					"message": err.Error(),
-				})
-				c.Abort()
-				return
-			}
-			c.JSON(http.StatusOK, {{.model_name}})
 		}
 	}
 }

@@ -19,12 +19,12 @@ type {{.Model.Name}}DB struct {
 	DB *Database
 }
 
-func ({{.model_first_letter}} *{{.Model.Name}}DB) Create{{.Model.Name}}({{.model_name}} *models.{{.Model.Name}}) (result interface{}, err error) {
-		data, err := helper.ToMap({{.model_name}}, "bson", "_id,omitempty")
+func ({{.model_first_letter}} *{{.Model.Name}}DB) Create{{.Model.Name}}({{.Model.Name | ToLower}} *models.{{.Model.Name}}) (result interface{}, err error) {
+		data, err := helper.ToMap({{.Model.Name | ToLower}}, "bson", "_id,omitempty")
 		if err != nil {
 			return nil, err
 		}
-		result, err = {{.model_first_letter}}.DB.InsertRecord("{{.model_name}}s", data)
+		result, err = {{.model_first_letter}}.DB.InsertRecord("{{.Model.Name | ToLower}}s", data)
 		if err != nil {
 			return nil, err
 		}
@@ -32,7 +32,7 @@ func ({{.model_first_letter}} *{{.Model.Name}}DB) Create{{.Model.Name}}({{.model
 }
 
 func ({{.model_first_letter}} *{{.Model.Name}}DB) Update{{.Model.Name}}ByID(id string, data map[string]interface{}) (result interface{}, err error) {
-	result, err = {{.model_first_letter}}.DB.UpdateRecordByID("{{.model_name}}s", id, data)
+	result, err = {{.model_first_letter}}.DB.UpdateRecordByID("{{.Model.Name | ToLower}}s", id, data)
 	if err != nil {
 		return nil, err
 	}
@@ -40,7 +40,7 @@ func ({{.model_first_letter}} *{{.Model.Name}}DB) Update{{.Model.Name}}ByID(id s
 }
 
 func ({{.model_first_letter}} *{{.Model.Name}}DB) Delete{{.Model.Name}}ByID(id string) (result interface{}, err error) {
-	result, err = {{.model_first_letter}}.DB.DeleteRecordByID("{{.model_name}}s", id)
+	result, err = {{.model_first_letter}}.DB.DeleteRecordByID("{{.Model.Name | ToLower}}s", id)
 	if err != nil {
 		return nil, err
 	}
@@ -48,25 +48,25 @@ func ({{.model_first_letter}} *{{.Model.Name}}DB) Delete{{.Model.Name}}ByID(id s
 }
 
 func ({{.model_first_letter}} *{{.Model.Name}}DB) Get{{.Model.Name}}ByID(id string) (*models.{{.Model.Name}}, error) {
-	{{.model_name}} := &models.{{.Model.Name}}{}
-	mapData, err := {{.model_first_letter}}.DB.FindRecordByID("{{.model_name}}s",id)
+	{{.Model.Name | ToLower}} := &models.{{.Model.Name}}{}
+	mapData, err := {{.model_first_letter}}.DB.FindRecordByID("{{.Model.Name | ToLower}}s",id)
 	if err != nil {
 		return nil, err
 	}
-	if err := mapstructure.Decode(mapData, &{{.model_name}}); err != nil {
+	if err := mapstructure.Decode(mapData, &{{.Model.Name | ToLower}}); err != nil {
 		return nil, err
 	}
 	_id := mapData.(map[string]interface{})["_id"].(primitive.ObjectID).Hex()
-	{{.model_name}}.ID = &_id
-	return {{.model_name}}, nil
+	{{.Model.Name | ToLower}}.Id = _id
+	return {{.Model.Name | ToLower}}, nil
 }
 
 func ({{.model_first_letter}} *{{.Model.Name}}DB) GetAll{{.Model.Name}}s(skip int64, limit int64, selector interface{}) ([]models.{{.Model.Name}}, error) {
 	if _, ok := selector.(map[string]interface{}); !ok {
-		return nil, errors.New(ErrWrongInputType)
+		return nil, errors.New("wrong input type")
 	}
 	var result []models.{{.Model.Name}}
-	colleection := {{.model_first_letter}}.DB.Client.(*mongo.Client).Database({{.model_first_letter}}.DB.Name).Collection("{{.model_name}}s")
+	colleection := {{.model_first_letter}}.DB.Client.(*mongo.Client).Database({{.model_first_letter}}.DB.Name).Collection("{{.Model.Name | ToLower}}s")
 	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
 	findOptions := options.Find()
 	findOptions.SetLimit(limit).SetSkip(skip)
@@ -93,10 +93,10 @@ func ({{.model_first_letter}} *{{.Model.Name}}DB) GetAll{{.Model.Name}}s(skip in
 
 func ({{.model_first_letter}} *{{.Model.Name}}DB) GetAll{{.Model.Name}}sBy(search string, selector interface{}, skip int64, limit int64) ([]models.{{.Model.Name}}, error) {
 	if _, ok := selector.(map[string]interface{}); !ok {
-		return nil, errors.New(ErrWrongInputType)
+		return nil, errors.New("wrong input type")
 	}
 	var result []models.{{.Model.Name}}
-	colleection := {{.model_first_letter}}.DB.Client.(*mongo.Client).Database({{.model_first_letter}}.DB.Name).Collection("{{.model_name}}s")
+	colleection := {{.model_first_letter}}.DB.Client.(*mongo.Client).Database({{.model_first_letter}}.DB.Name).Collection("{{.Model.Name | ToLower}}s")
 	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
 	findOptions := options.Find()
 	findOptions.SetLimit(limit).SetSkip(skip)
