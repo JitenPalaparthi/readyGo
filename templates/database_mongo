@@ -1,0 +1,128 @@
+package mongo
+
+import (
+	"context"
+	"errors"
+	"{{.Root}}/helper"
+	"{{.Root}}/models"
+	"time"
+
+	"github.com/mitchellh/mapstructure"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
+)
+
+// {{.Model.Name}}DB is to maintain database related methods
+type {{.Model.Name}}DB struct {
+	DB *Database
+}
+
+func ({{.model_first_letter}} *{{.Model.Name}}DB) Create{{.Model.Name}}({{.model_name}} *models.{{.Model.Name}}) (result interface{}, err error) {
+		data, err := helper.ToMap({{.model_name}}, "bson", "_id,omitempty")
+		if err != nil {
+			return nil, err
+		}
+		result, err = {{.model_first_letter}}.DB.InsertRecord("{{.model_name}}s", data)
+		if err != nil {
+			return nil, err
+		}
+	return result, nil
+}
+
+func ({{.model_first_letter}} *{{.Model.Name}}DB) Update{{.Model.Name}}ByID(id string, data map[string]interface{}) (result interface{}, err error) {
+	result, err = {{.model_first_letter}}.DB.UpdateRecordByID("{{.model_name}}s", id, data)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
+func ({{.model_first_letter}} *{{.Model.Name}}DB) Delete{{.Model.Name}}ByID(id string) (result interface{}, err error) {
+	result, err = {{.model_first_letter}}.DB.DeleteRecordByID("{{.model_name}}s", id)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
+func ({{.model_first_letter}} *{{.Model.Name}}DB) Get{{.Model.Name}}ByID(id string) (*models.{{.Model.Name}}, error) {
+	{{.model_name}} := &models.{{.Model.Name}}{}
+	mapData, err := {{.model_first_letter}}.DB.FindRecordByID("{{.model_name}}s",id)
+	if err != nil {
+		return nil, err
+	}
+	if err := mapstructure.Decode(mapData, &{{.model_name}}); err != nil {
+		return nil, err
+	}
+	_id := mapData.(map[string]interface{})["_id"].(primitive.ObjectID).Hex()
+	{{.model_name}}.ID = &_id
+	return {{.model_name}}, nil
+}
+
+func ({{.model_first_letter}} *{{.Model.Name}}DB) GetAll{{.Model.Name}}s(skip int64, limit int64, selector interface{}) ([]models.{{.Model.Name}}, error) {
+	if _, ok := selector.(map[string]interface{}); !ok {
+		return nil, errors.New(ErrWrongInputType)
+	}
+	var result []models.{{.Model.Name}}
+	colleection := {{.model_first_letter}}.DB.Client.(*mongo.Client).Database({{.model_first_letter}}.DB.Name).Collection("{{.model_name}}s")
+	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
+	findOptions := options.Find()
+	findOptions.SetLimit(limit).SetSkip(skip)
+	cur, err := colleection.Find(ctx, selector, findOptions)
+	if err != nil {
+		return nil, err
+	}
+	result = make([]models.{{.Model.Name}}, 0)
+	defer cur.Close(ctx)
+	for cur.Next(ctx) {
+		iresult := models.{{.Model.Name}}{}
+		err := cur.Decode(&iresult)
+		if err != nil {
+			return nil, err
+		}
+		result = append(result, iresult)
+		// do something with result....
+	}
+	if err := cur.Err(); err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
+func ({{.model_first_letter}} *{{.Model.Name}}DB) GetAll{{.Model.Name}}sBy(search string, selector interface{}, skip int64, limit int64) ([]models.{{.Model.Name}}, error) {
+	if _, ok := selector.(map[string]interface{}); !ok {
+		return nil, errors.New(ErrWrongInputType)
+	}
+	var result []models.{{.Model.Name}}
+	colleection := {{.model_first_letter}}.DB.Client.(*mongo.Client).Database({{.model_first_letter}}.DB.Name).Collection("{{.model_name}}s")
+	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
+	findOptions := options.Find()
+	findOptions.SetLimit(limit).SetSkip(skip)
+
+	if search != "" {
+		selector.(map[string]interface{})["$text"] = bson.M{"$search": search}
+	}
+
+	cur, err := colleection.Find(ctx, selector, findOptions)
+	if err != nil {
+		return nil, err
+	}
+	result = make([]models.{{.Model.Name}}, 0)
+	defer cur.Close(ctx)
+	for cur.Next(ctx) {
+		iresult := models.{{.Model.Name}}{}
+		err := cur.Decode(&iresult)
+		if err != nil {
+			return nil, err
+		}
+		result = append(result, iresult)
+		// do something with result....
+	}
+	if err := cur.Err(); err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}

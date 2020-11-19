@@ -107,6 +107,14 @@ func (tg *Generate) MkDirs() (err error) {
 		}
 	}
 
+	if tg.Type != nil && *tg.Type == "http" {
+		database := filepath.Join(*tg.Root, "helper")
+		err = os.Mkdir(database, 0777)
+		if err != nil {
+			return err
+		}
+	}
+
 	if tg.DBType != nil && *tg.DBType != "none" {
 		database := filepath.Join(*tg.Root, "database")
 		err = os.Mkdir(database, 0777)
@@ -183,6 +191,30 @@ func (tg *Generate) GenerateAllModelFiles(tmpl string) (err error) {
 	return err
 }
 
+// GenerateAllDatabaseFiles is to generate database related files
+func (tg *Generate) GenerateAllDatabaseFiles(tmpl string) (err error) {
+	for _, v := range tg.Models {
+		modelsFile := path.Join(*tg.Root, "database", "mongo", strings.ToLower(v.Name)+"DB.go")
+		if tg.Gen != nil {
+			mhandler := make(map[string]interface{})
+			mhandler["Root"] = tg.Root
+			mhandler["Model"] = v
+			mhandler["model_name"] = strings.ToLower(v.Name)
+			mhandler["model_first_letter"] = strings.ToLower(string(v.Name[0]))
+			err = tg.Gen.TmplToFile(modelsFile, tmpl, mhandler)
+			if err != nil {
+				return err
+			}
+		} else {
+			err = TmplToFile(modelsFile, tmpl, v)
+			if err != nil {
+				return err
+			}
+		}
+	}
+	return err
+}
+
 // GenerateAllHandlerFiles is to create all handler files
 func (tg *Generate) GenerateAllHandlerFiles(tmpl string) (err error) {
 	for _, v := range tg.Models {
@@ -211,15 +243,9 @@ func (tg *Generate) GenerateAllHandlerFiles(tmpl string) (err error) {
 //GenerateAllInterfaceFiles generates all interface methods for each model
 func (tg *Generate) GenerateAllInterfaceFiles(tmpl string) (err error) {
 	interfacesFile := path.Join(*tg.Root, "interfaces", "interfaces.go")
-
 	mhandler := make(map[string]interface{})
 	mhandler["Root"] = tg.Root
 	mhandler["Models"] = tg.Models
-	mhandler["ToLower"] = func(str string) string {
-		return strings.ToLower(str)
-	}
-	//mhandler["model_name"] = strings.ToLower(v.Name)
-	//mhandler["model_first_letter"] = strings.ToLower(string(v.Name[0]))
 	err = tg.Gen.TmplToFile(interfacesFile, tmpl, mhandler)
 	if err != nil {
 		return err
@@ -254,6 +280,19 @@ func (tg *Generate) CopyAllStaticFiles() (err error) {
 		src := filepath.Join("static", "containers", "Dockerfile")
 
 		dst := filepath.Join(*tg.Root, "Dockerfile")
+
+		err = CopyStaticFile(src, dst)
+		if err != nil {
+			return err
+		}
+
+	}
+
+	if tg.Type != nil && *tg.Type == "http" {
+
+		src := filepath.Join("static", "helper", "helper.static")
+
+		dst := filepath.Join(*tg.Root, "helper", "helper.go")
 
 		err = CopyStaticFile(src, dst)
 		if err != nil {

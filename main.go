@@ -65,7 +65,11 @@ func main() {
 		log.Fatal("seems , things went wrong.. -->", err)
 
 	}
+	err = tg.GenerateAllDatabaseFiles(tm["database_mongo"])
+	if err != nil {
+		log.Fatal("seems , things went wrong.. -->", err)
 
+	}
 	err = tg.GenerateAllHandlerFiles(tm["http_mongo_handler"])
 	if err != nil {
 		log.Fatal("seems , things went wrong.. -->", err)
