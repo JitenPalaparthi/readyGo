@@ -67,8 +67,8 @@ func (d *Database) InsertRecord(col string, data interface{}) (interface{}, erro
 
 }
 
-// UpdteRecordByID is to update a record based on the id provided
-func (d *Database) UpdteRecordByID(col, id string, data interface{}) (int64, error) {
+// UpdateRecordByID is to update a record based on the id provided
+func (d *Database) UpdateRecordByID(col, id string, data interface{}) (int64, error) {
 	if d.Client == nil {
 		return -1, errors.New("Database client is null")
 	}

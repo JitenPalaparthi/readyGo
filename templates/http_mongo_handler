@@ -13,7 +13,7 @@ type {{.Model.Name}} struct {
 	DB *database.Database
 }
 
-func (t *{{.Model.Name}}) Create() func(c *gin.Context) {
+func ({{.model_first_letter}} *{{.Model.Name}}) Create() func(c *gin.Context) {
 	var err error
 	return func(c *gin.Context) {
 		if c.Request.Method == "POST" {
@@ -30,7 +30,7 @@ func (t *{{.Model.Name}}) Create() func(c *gin.Context) {
 				return
 			}
 
-			result, err := t.DB.InsertRecord("{{.model_name}}", {{.model_name}})
+			result, err := {{.model_first_letter}}.DB.InsertRecord("{{.model_name}}s", {{.model_name}})
 			if err != nil {
 				c.JSON(http.StatusBadRequest, gin.H{
 					"status":  "failed",
@@ -42,6 +42,88 @@ func (t *{{.Model.Name}}) Create() func(c *gin.Context) {
 			c.JSON(http.StatusOK, gin.H{
 				"status":  "success",
 				"message": result,
+			})
+			c.Abort()
+			return
+		}
+	}
+}
+
+func ({{.model_first_letter}} *{{.Model.Name}}) UpdateByID() func(c *gin.Context) {
+	var err error
+	return func(c *gin.Context) {
+		if c.Request.Method == "PUT" {
+
+			id := c.Param("id")
+			if id == "" {
+				c.JSON(http.StatusBadRequest, gin.H{
+					"status":  "failed",
+					"message": "id parameter has not been provided",
+				})
+				c.Abort()
+				return
+			}
+
+			var {{.model_name}} map[string]interface{}
+			 {{.model_name}} = make(map[string]interface{})
+
+			err = json.NewDecoder(c.Request.Body).Decode(&{{.model_name}})
+			if err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{
+					"status":  "failed",
+					"message": err.Error(),
+				})
+				c.Abort()
+				return
+			}
+
+			result, err := {{.model_first_letter}}.DB.UpdateRecordByID("{{.model_name}}s",&id,{{.model_name}})
+			if err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{
+					"status":  "failed",
+					"message": err.Error(),
+				})
+				c.Abort()
+				return
+			}
+
+			c.JSON(http.StatusOK, gin.H{
+				"status":  "success",
+				"message": string(result.(int64)),
+			})
+			c.Abort()
+			return
+		}
+	}
+}
+
+func ({{.model_first_letter}} *{{.Model.Name}}) DeleteByID() func(c *gin.Context) {
+	var err error
+	return func(c *gin.Context) {
+		if c.Request.Method == "DELETE" {
+
+			id := c.Param("id")
+			if id == "" {
+				c.JSON(http.StatusBadRequest, gin.H{
+					"status":  "failed",
+					"message": "id parameter has not been provided",
+				})
+				c.Abort()
+				return
+			}
+			result, err := {{.model_first_letter}}.DB.DeleteRecordByID("{{.model_name}}s",&id)
+			if err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{
+					"status":  "failed",
+					"message": err.Error(),
+				})
+				c.Abort()
+				return
+			}
+
+			c.JSON(http.StatusOK, gin.H{
+				"status":  "success",
+				"message": string(result.(int64)),
 			})
 			c.Abort()
 			return
