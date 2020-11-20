@@ -17,7 +17,7 @@ type {{.Model.Name}} struct {
 	I{{.Model.Name}} interfaces.{{.Model.Name}}Interface
 }
 
-func ({{.model_first_letter}} *{{.Model.Name}}) Create{{.Model.Name}}() func(c *gin.Context) {
+func ({{.Model.Name | Initial}} *{{.Model.Name}}) Create{{.Model.Name}}() func(c *gin.Context) {
 	var err error
 	return func(c *gin.Context) {
 		if c.Request.Method == "POST" {
@@ -35,7 +35,7 @@ func ({{.model_first_letter}} *{{.Model.Name}}) Create{{.Model.Name}}() func(c *
 				return
 			}
 
-			result, err := {{.model_first_letter}}.I{{.Model.Name}}.Create{{.Model.Name}}({{.Model.Name | ToLower}})
+			result, err := {{.Model.Name | Initial}}.I{{.Model.Name}}.Create{{.Model.Name}}({{.Model.Name | ToLower}})
 			if err != nil {
 				c.JSON(http.StatusBadRequest, gin.H{
 					"status":  "failed",
@@ -54,7 +54,7 @@ func ({{.model_first_letter}} *{{.Model.Name}}) Create{{.Model.Name}}() func(c *
 	}
 }
 
-func ({{.model_first_letter}} *{{.Model.Name}}) Get{{.Model.Name}}ByID() func(c *gin.Context) {
+func ({{.Model.Name | Initial}} *{{.Model.Name}}) Get{{.Model.Name}}ByID() func(c *gin.Context) {
 	return func(c *gin.Context) {
 		if c.Request.Method == "GET" {
 			id := c.Param("id")
@@ -66,7 +66,7 @@ func ({{.model_first_letter}} *{{.Model.Name}}) Get{{.Model.Name}}ByID() func(c 
 				c.Abort()
 				return
 			}
-			{{.Model.Name | ToLower}}, err := {{.model_first_letter}}.I{{.Model.Name}}.Get{{.Model.Name}}ByID(id)
+			{{.Model.Name | ToLower}}, err := {{.Model.Name | Initial}}.I{{.Model.Name}}.Get{{.Model.Name}}ByID(id)
 			if err != nil {
 				c.JSON(http.StatusBadRequest, gin.H{
 					"status":  "failed",
@@ -80,7 +80,7 @@ func ({{.model_first_letter}} *{{.Model.Name}}) Get{{.Model.Name}}ByID() func(c 
 	}
 }
 
-func ({{.model_first_letter}} *{{.Model.Name}}) GetAll{{.Model.Name}}s() func(c *gin.Context) {
+func ({{.Model.Name | Initial}} *{{.Model.Name}}) GetAll{{.Model.Name}}s() func(c *gin.Context) {
 	return func(c *gin.Context) {
 		if c.Request.Method == "GET" {
 			skip := c.Param("skip")
@@ -130,7 +130,7 @@ func ({{.model_first_letter}} *{{.Model.Name}}) GetAll{{.Model.Name}}s() func(c 
 				selector[key] = val[0]
 			}
 
-			{{.Model.Name | ToLower}}s, err := {{.model_first_letter}}.I{{.Model.Name}}.GetAll{{.Model.Name}}s(int64(iskip), int64(ilimit), selector)
+			{{.Model.Name | ToLower}}s, err := {{.Model.Name | Initial}}.I{{.Model.Name}}.GetAll{{.Model.Name}}s(int64(iskip), int64(ilimit), selector)
 			if err != nil {
 				c.JSON(http.StatusBadRequest, gin.H{
 					"status":  "failed",
@@ -144,7 +144,7 @@ func ({{.model_first_letter}} *{{.Model.Name}}) GetAll{{.Model.Name}}s() func(c 
 	}
 }
 
-func ({{.model_first_letter}} *{{.Model.Name}}) GetAll{{.Model.Name}}sBy() func(c *gin.Context) {
+func ({{.Model.Name | Initial}} *{{.Model.Name}}) GetAll{{.Model.Name}}sBy() func(c *gin.Context) {
 	return func(c *gin.Context) {
 		if c.Request.Method == "GET" {
 			skip := c.Param("skip")
@@ -198,7 +198,7 @@ func ({{.model_first_letter}} *{{.Model.Name}}) GetAll{{.Model.Name}}sBy() func(
 					selector[key] = val[0]
 				}
 			}
-			{{.Model.Name | ToLower}}s, err := {{.model_first_letter}}.I{{.Model.Name}}.GetAll{{.Model.Name}}sBy(qstring, selector, int64(iskip), int64(ilimit))
+			{{.Model.Name | ToLower}}s, err := {{.Model.Name | Initial}}.I{{.Model.Name}}.GetAll{{.Model.Name}}sBy(qstring, selector, int64(iskip), int64(ilimit))
 			if err != nil {
 				c.JSON(http.StatusBadRequest, gin.H{
 					"status":  "failed",
@@ -213,7 +213,7 @@ func ({{.model_first_letter}} *{{.Model.Name}}) GetAll{{.Model.Name}}sBy() func(
 	}
 }
 
-func ({{.model_first_letter}} *{{.Model.Name}}) Update{{.Model.Name}}ByID() func(c *gin.Context) {
+func ({{.Model.Name | Initial}} *{{.Model.Name}}) Update{{.Model.Name}}ByID() func(c *gin.Context) {
 	var err error
 	return func(c *gin.Context) {
 		if c.Request.Method == "PUT" {
@@ -242,7 +242,7 @@ func ({{.model_first_letter}} *{{.Model.Name}}) Update{{.Model.Name}}ByID() func
 				return
 			}
 
-			result, err := {{.model_first_letter}}.I{{.Model.Name}}.Update{{.Model.Name}}ByID(id, {{.Model.Name | ToLower}})
+			result, err := {{.Model.Name | Initial}}.I{{.Model.Name}}.Update{{.Model.Name}}ByID(id, {{.Model.Name | ToLower}})
 			if err != nil {
 				c.JSON(http.StatusBadRequest, gin.H{
 					"status":  "failed",
@@ -262,7 +262,7 @@ func ({{.model_first_letter}} *{{.Model.Name}}) Update{{.Model.Name}}ByID() func
 	}
 }
 
-func ({{.model_first_letter}} *{{.Model.Name}}) Delete{{.Model.Name}}ByID() func(c *gin.Context) {
+func ({{.Model.Name | Initial}} *{{.Model.Name}}) Delete{{.Model.Name}}ByID() func(c *gin.Context) {
 	return func(c *gin.Context) {
 		if c.Request.Method == "DELETE" {
 
@@ -276,7 +276,7 @@ func ({{.model_first_letter}} *{{.Model.Name}}) Delete{{.Model.Name}}ByID() func
 				return
 			}
 
-			result, err := {{.model_first_letter}}.I{{.Model.Name}}.Delete{{.Model.Name}}ByID(id)
+			result, err := {{.Model.Name | Initial}}.I{{.Model.Name}}.Delete{{.Model.Name}}ByID(id)
 			if err != nil {
 				c.JSON(http.StatusBadRequest, gin.H{
 					"status":  "failed",

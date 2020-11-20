@@ -3,24 +3,17 @@
 package interfaces
 
 import (
-database "{{.Root}}/database/mongo"
 	"{{.Root}}/models"
 )
 
-// Connection interface
-type Connection interface {
-	GetConnection(url, dbName string) (*database.Database, error)
-}
-{{ range .Models }}
-// {{.Name}} Interface is to define all {{.Name | ToLower}} related methods
-type {{.Name}}Interface interface {
-    Create{{.Name}}({{.Name | ToLower}} *models.{{.Name}})(interface{}, error)
-	Update{{.Name}}ByID(id string, data map[string]interface{}) (result interface{}, err error)
-	Delete{{.Name}}ByID(id string) (result interface{}, err error)
-	Get{{.Name}}ByID(id string) (*models.{{.Name}}, error)
-	GetAll{{.Name}}s(skip int64, limit int64, selector interface{}) ([]models.{{.Name}}, error)
-	GetAll{{.Name}}sBy(search string, selector interface{}, skip int64, limit int64) ([]models.{{.Name}}, error)
+
+// {{.Model.Name}} Interface is to define all {{.Model.Name | ToLower}} related methods
+type {{.Model.Name}}Interface interface {
+    Create{{.Model.Name}}({{.Model.Name | ToLower}} *models.{{.Model.Name}})(interface{}, error)
+	Update{{.Model.Name}}ByID(id string, data map[string]interface{}) (result interface{}, err error)
+	Delete{{.Model.Name}}ByID(id string) (result interface{}, err error)
+	Get{{.Model.Name}}ByID(id string) (*models.{{.Model.Name}}, error)
+	GetAll{{.Model.Name}}s(skip int64, limit int64, selector interface{}) ([]models.{{.Model.Name}}, error)
+	GetAll{{.Model.Name}}sBy(search string, selector interface{}, skip int64, limit int64) ([]models.{{.Model.Name}}, error)
     // Write any additional methods and implement them in database package
 }
-
-{{end}}

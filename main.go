@@ -39,41 +39,9 @@ func main() {
 	tg.Type = projectType // TODO define the flow based on project type
 	tg.DBType = dbType    // TODO define the flow based on database type
 
-	log.Println("Generating main.go file in the root directory")
-
-	err = tg.CreateMain(tm["main"]) // Generate main.go
+	err = tg.GenerateAll()
 	if err != nil {
 		log.Fatal("seems , things went wrong.. -->", err)
 
 	}
-	log.Println("Generating all model files in model directory")
-
-	err = tg.GenerateAllModelFiles(tm["models"])
-	if err != nil {
-		log.Fatal("seems , things went wrong.. -->", err)
-
-	}
-
-	err = tg.CopyAllStaticFiles()
-	if err != nil {
-		log.Fatal("seems , things went wrong.. -->", err)
-
-	}
-
-	err = tg.GenerateAllInterfaceFiles(tm["interfaces"])
-	if err != nil {
-		log.Fatal("seems , things went wrong.. -->", err)
-
-	}
-	err = tg.GenerateAllDatabaseFiles(tm["database_mongo"])
-	if err != nil {
-		log.Fatal("seems , things went wrong.. -->", err)
-
-	}
-	err = tg.GenerateAllHandlerFiles(tm["http_mongo_handler"])
-	if err != nil {
-		log.Fatal("seems , things went wrong.. -->", err)
-
-	}
-
 }

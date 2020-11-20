@@ -36,13 +36,21 @@ func New(path string) (tm TmplMap, err error) {
 	return tm, nil
 }
 
-// TmplToString is to convert from tmpl to a string
-func (tm TmplMap) TmplToString(tmpl string, data interface{}) (result string, err error) {
+// ToString is to convert from tmpl to a string
+func (tm TmplMap) ToString(tmpl string, data interface{}) (result string, err error) {
 	t := template.Must(template.New("toString").Funcs(template.FuncMap{
 		"ToLower": func(str string) string {
 			return strings.ToLower(str)
 		},
-	}).Parse(tmpl))
+	}).Funcs(
+		template.FuncMap{
+			"Initial": func(str string) string {
+				if len(str) > 0 {
+					return string(strings.ToLower(str)[0])
+				}
+				return "x"
+			},
+		}).Parse(tmpl))
 	buf := bytes.NewBufferString("")
 	err = t.Execute(buf, data)
 
@@ -53,8 +61,8 @@ func (tm TmplMap) TmplToString(tmpl string, data interface{}) (result string, er
 	return string(buf.Bytes()), nil
 }
 
-// TmplToFile is to convert from template to a file
-func (tm TmplMap) TmplToFile(filePath string, tmpl string, data interface{}) (err error) {
+// ToFile is to convert from template to a file
+func (tm TmplMap) ToFile(filePath string, tmpl string, data interface{}) (err error) {
 	file, err := os.Create(filePath)
 	if err != nil {
 		return err
@@ -64,7 +72,15 @@ func (tm TmplMap) TmplToFile(filePath string, tmpl string, data interface{}) (er
 		"ToLower": func(str string) string {
 			return strings.ToLower(str)
 		},
-	}).Parse(tmpl))
+	}).Funcs(
+		template.FuncMap{
+			"Initial": func(str string) string {
+				if len(str) > 0 {
+					return string(strings.ToLower(str)[0])
+				}
+				return "x"
+			},
+		}).Parse(tmpl))
 
 	err = t.Execute(file, data)
 
@@ -73,4 +89,9 @@ func (tm TmplMap) TmplToFile(filePath string, tmpl string, data interface{}) (er
 	}
 
 	return nil
+}
+
+// GetTmplMap is to fetch the loaded map
+func (tm TmplMap) Read(key string) interface{} {
+	return tm[key]
 }

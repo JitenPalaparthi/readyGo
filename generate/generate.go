@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"html/template"
 	"io/ioutil"
 	"os"
 	"path"
@@ -17,8 +16,9 @@ import (
 
 // Generater interface is to provide generater methods
 type Generater interface {
-	TmplToString(tmpl string, data interface{}) (result string, err error)
-	TmplToFile(filePath string, tmpl string, data interface{}) (err error)
+	ToString(tmpl string, data interface{}) (result string, err error)
+	ToFile(filePath string, tmpl string, data interface{}) (err error)
+	Read(key string) interface{}
 }
 
 // Generate is a type
@@ -149,6 +149,62 @@ func (tg *Generate) ValidateAndChangeIdentifier() (err error) {
 	return nil
 }
 
+func (tg *Generate) GenerateAll() (err error) {
+	if tg == nil {
+		return errors.New("temp	late generater is not a valid object.Try to instantiate it through generater.New function")
+	}
+	if tg.Root == nil || *tg.Root == "" {
+		return errors.New("invalid root directory")
+	}
+	// Todo write more conditions here
+
+	ConfsMap := make(map[string][]string)
+	ConfsMap["http_mongo"] = []string{"models", "interfaces", "database_mongo", "http_mongo_handler"}
+	ConfsMap["only_models"] = []string{"models", "interfaces"}
+	err = tg.CopyAllStaticFiles()
+	if err != nil {
+		return err
+	}
+
+	mhandler := make(map[string]interface{})
+	mhandler["Root"] = tg.Root
+
+	for _, v := range tg.Models {
+		mhandler["Model"] = v
+
+		modelsFile := path.Join(*tg.Root, "models", strings.ToLower(v.Name)+".go")
+		err = GenerateFile(tg.Gen, mhandler, "models", modelsFile)
+		if err != nil {
+			return err
+		}
+
+		interfaceFile := path.Join(*tg.Root, "interfaces", strings.ToLower(v.Name)+".go")
+		err = GenerateFile(tg.Gen, mhandler, "interfaces", interfaceFile)
+		if err != nil {
+			return err
+		}
+
+		daFile := path.Join(*tg.Root, "database", strings.ToLower(v.Name)+"DB.go")
+		err = GenerateFile(tg.Gen, mhandler, "database_mongo", daFile)
+		if err != nil {
+			return err
+		}
+		handlerFile := path.Join(*tg.Root, "handlers", strings.ToLower(v.Name)+".go")
+		err = GenerateFile(tg.Gen, mhandler, "http_mongo_handler", handlerFile)
+		if err != nil {
+			return err
+		}
+
+	}
+
+	err = tg.CreateMain(tg.Gen.Read("main").(string)) // Generate main.go
+	if err != nil {
+		return err
+	}
+	return nil
+
+}
+
 // CreateMain main.go
 func (tg *Generate) CreateMain(tmpl string) (err error) {
 	fileName := path.Join(*tg.Root, "main.go")
@@ -158,99 +214,28 @@ func (tg *Generate) CreateMain(tmpl string) (err error) {
 	data["project_name"] = *tg.Root
 
 	if tg.Gen != nil {
-		err = tg.Gen.TmplToFile(fileName, tmpl, data)
+		err = tg.Gen.ToFile(fileName, tmpl, data)
 		if err != nil {
 			return err
 		}
 	} else {
-		err = TmplToFile(fileName, tmpl, data)
-		if err != nil {
-			return err
-		}
+		errors.New("Gen interface is not assigned to Generate object")
 	}
 	return nil
 }
 
-// GenerateAllModelFiles is to create all model files
-func (tg *Generate) GenerateAllModelFiles(tmpl string) (err error) {
-	for _, v := range tg.Models {
-		modelsFile := path.Join(*tg.Root, "models", strings.ToLower(v.Name)+".go")
-		if tg.Gen != nil {
-			err = tg.Gen.TmplToFile(modelsFile, tmpl, v)
-			if err != nil {
-				return err
-			}
-		} else {
-			err = TmplToFile(modelsFile, tmpl, v)
-			if err != nil {
-				return err
-			}
-		}
-
+// GenerateFile is to create all model files
+func GenerateFile(gen Generater, model map[string]interface{}, key, filePath string) (err error) {
+	if key == "" {
+		return errors.New("empty template key provided")
 	}
-	return err
-}
-
-// GenerateAllDatabaseFiles is to generate database related files
-func (tg *Generate) GenerateAllDatabaseFiles(tmpl string) (err error) {
-	for _, v := range tg.Models {
-		modelsFile := path.Join(*tg.Root, "database", "mongo", strings.ToLower(v.Name)+"DB.go")
-		if tg.Gen != nil {
-			mhandler := make(map[string]interface{})
-			mhandler["Root"] = tg.Root
-			mhandler["Model"] = v
-			mhandler["model_name"] = strings.ToLower(v.Name)
-			mhandler["model_first_letter"] = strings.ToLower(string(v.Name[0]))
-			err = tg.Gen.TmplToFile(modelsFile, tmpl, mhandler)
-			if err != nil {
-				return err
-			}
-		} else {
-			err = TmplToFile(modelsFile, tmpl, v)
-			if err != nil {
-				return err
-			}
-		}
-	}
-	return err
-}
-
-// GenerateAllHandlerFiles is to create all handler files
-func (tg *Generate) GenerateAllHandlerFiles(tmpl string) (err error) {
-	for _, v := range tg.Models {
-		modelsFile := path.Join(*tg.Root, "handlers", strings.ToLower(v.Name)+".go")
-		if tg.Gen != nil {
-			mhandler := make(map[string]interface{})
-			mhandler["Root"] = tg.Root
-			mhandler["Model"] = v
-			mhandler["model_name"] = strings.ToLower(v.Name)
-			mhandler["model_first_letter"] = strings.ToLower(string(v.Name[0]))
-			err = tg.Gen.TmplToFile(modelsFile, tmpl, mhandler)
-			if err != nil {
-				return err
-			}
-		} else {
-			err = TmplToFile(modelsFile, tmpl, v)
-			if err != nil {
-				return err
-			}
-		}
-
-	}
-	return err
-}
-
-//GenerateAllInterfaceFiles generates all interface methods for each model
-func (tg *Generate) GenerateAllInterfaceFiles(tmpl string) (err error) {
-	interfacesFile := path.Join(*tg.Root, "interfaces", "interfaces.go")
-	mhandler := make(map[string]interface{})
-	mhandler["Root"] = tg.Root
-	mhandler["Models"] = tg.Models
-	err = tg.Gen.TmplToFile(interfacesFile, tmpl, mhandler)
+	tmpl := gen.Read(key)
+	err = gen.ToFile(filePath, tmpl.(string), model)
 	if err != nil {
 		return err
 	}
-	return err
+
+	return nil
 }
 
 // CopyAllStaticFiles is to copy static files
@@ -260,14 +245,10 @@ func (tg *Generate) CopyAllStaticFiles() (err error) {
 	}
 
 	if *tg.DBType == "mongo" {
-		database := filepath.Join(*tg.Root, "database", "mongo")
-		err = os.Mkdir(database, 0777)
-		if err != nil {
-			return err
-		}
+
 		src := filepath.Join("static", "databases", "mongo", "database.static")
 
-		dst := filepath.Join(*tg.Root, "database", "mongo", "database.go")
+		dst := filepath.Join(*tg.Root, "database", "database.go")
 
 		err = CopyStaticFile(src, dst)
 		if err != nil {
@@ -333,37 +314,6 @@ func CopyStaticFile(src, dst string) (err error) {
 	}
 	//err = copyFileContents(src, dst)
 	return
-}
-
-// TmplToString is to convert from tmpl to a string
-func TmplToString(tmpl string, data interface{}) (result string, err error) {
-	t := template.Must(template.New("toString").Parse(tmpl))
-	buf := bytes.NewBufferString("")
-	err = t.Execute(buf, data)
-
-	if err != nil {
-		return "", err
-	}
-
-	return string(buf.Bytes()), nil
-}
-
-// TmplToFile is to convert from template to a file
-func TmplToFile(filePath string, tmpl string, data interface{}) (err error) {
-	file, err := os.Create(filePath)
-	if err != nil {
-		return err
-	}
-
-	t := template.Must(template.New("toFile").Parse(tmpl))
-
-	err = t.Execute(file, data)
-
-	if err != nil {
-		return err
-	}
-
-	return nil
 }
 
 func checkName(s string) (string, error) {
