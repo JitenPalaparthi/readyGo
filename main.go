@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"readyGo/generate"
+	"readyGo/generate/configure"
 	"readyGo/generate/template"
 )
 
@@ -31,17 +32,21 @@ func main() {
 
 	log.Println("Generating files and dependencies based on config file.Here is the config file :", *configFile)
 
-	tg, err := generate.New(configFile)
+	templateConfig := "configs/template_config.json"
+	tc, err := configure.New(&templateConfig)
+	fmt.Println(tc, err)
+
+	tg, err := generate.New(configFile, tm, tc)
 	if err != nil {
 		log.Fatal("seems , things went wrong.. -->", err)
 	}
-	tg.Gen = tm           //Assign Template Map to the Template Generator
+	//tg.Gen = tm           //Assign Template Map to the Template Generator
 	tg.Type = projectType // TODO define the flow based on project type
 	tg.DBType = dbType    // TODO define the flow based on database type
 
-	err = tg.GenerateAll()
+	err = tg.GenerateAll("http_mongo")
 	if err != nil {
 		log.Fatal("seems , things went wrong.. -->", err)
-
 	}
+
 }

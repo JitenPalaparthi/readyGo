@@ -9,6 +9,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"readyGo/generate/configure"
 	"strings"
 
 	"golang.org/x/lint"
@@ -21,6 +22,13 @@ type Generater interface {
 	Read(key string) interface{}
 }
 
+// Configurator interface is to fetch configration related things
+type Configurator interface {
+	ReadFC(key string) []configure.StaticFileSet
+	ReadTC(key string) []string
+	ReadDC(key string) []string
+}
+
 // Generate is a type
 type Generate struct {
 	Type       *string // Type of the project http , grpc , CloudEvents , cli
@@ -29,6 +37,7 @@ type Generate struct {
 	HasHandler bool
 	Models     []Model
 	Gen        Generater
+	Con        Configurator
 }
 
 // Model is to create a model
@@ -44,9 +53,15 @@ type Field struct {
 }
 
 // New is to generate a new template
-func New(file *string) (tg *Generate, err error) {
+func New(file *string, gen Generater, con Configurator) (tg *Generate, err error) {
 	if file == nil || *file == "" {
 		return nil, errors.New("no file provided")
+	}
+	if gen == nil {
+		return nil, errors.New("template cannot be nil.Load template before creating Generater")
+	}
+	if con == nil {
+		return nil, errors.New("template Confirator cannot be nil.Load Configue before creating Configurator")
 	}
 	ext := filepath.Ext(*file)
 	fmt.Println(ext)
@@ -67,62 +82,14 @@ func New(file *string) (tg *Generate, err error) {
 	}
 
 	root := strings.ToLower(*tg.Root)
-	fmt.Println(root)
+
 	*tg.Root = root
 
-	err = tg.MkDirs() // Generate required directories
-	if err != nil {
-		return nil, err
-	}
+	tg.Gen = gen // Assign generater template loading engine interface
+
+	tg.Con = con // Assign generater configation loading enginer interface
 
 	return tg, nil
-}
-
-// MkDirs Create all required directories
-func (tg *Generate) MkDirs() (err error) {
-	if tg == nil || tg.Root == nil {
-		return errors.New("project root directory or the generation has error")
-	}
-	err = os.Mkdir(*tg.Root, 0777)
-	if err != nil {
-		return err
-	}
-
-	models := filepath.Join(*tg.Root, "models")
-	err = os.Mkdir(models, 0777)
-	if err != nil {
-		return err
-	}
-	interfaces := filepath.Join(*tg.Root, "interfaces")
-	err = os.Mkdir(interfaces, 0777)
-	if err != nil {
-		return err
-	}
-
-	if tg.HasHandler {
-		handlers := filepath.Join(*tg.Root, "handlers")
-		err = os.Mkdir(handlers, 0777)
-		if err != nil {
-			return err
-		}
-	}
-
-	if tg.Type != nil && *tg.Type == "http" {
-		database := filepath.Join(*tg.Root, "helper")
-		err = os.Mkdir(database, 0777)
-		if err != nil {
-			return err
-		}
-	}
-
-	if tg.DBType != nil && *tg.DBType != "none" {
-		database := filepath.Join(*tg.Root, "database")
-		err = os.Mkdir(database, 0777)
-		if err != nil {
-			return err
-		}
-	}
-	return nil
 }
 
 func (tg *Generate) ValidateAndChangeIdentifier() (err error) {
@@ -149,7 +116,7 @@ func (tg *Generate) ValidateAndChangeIdentifier() (err error) {
 	return nil
 }
 
-func (tg *Generate) GenerateAll() (err error) {
+func (tg *Generate) GenerateAll(key string) (err error) {
 	if tg == nil {
 		return errors.New("temp	late generater is not a valid object.Try to instantiate it through generater.New function")
 	}
@@ -158,43 +125,44 @@ func (tg *Generate) GenerateAll() (err error) {
 	}
 	// Todo write more conditions here
 
-	ConfsMap := make(map[string][]string)
-	ConfsMap["http_mongo"] = []string{"models", "interfaces", "database_mongo", "http_mongo_handler"}
-	ConfsMap["only_models"] = []string{"models", "interfaces"}
-	err = tg.CopyAllStaticFiles()
-	if err != nil {
-		return err
+	// Step-1 create all directories
+
+	dirs := tg.Con.ReadDC(key)
+
+	for _, dir := range dirs {
+		path := filepath.Join(*tg.Root, dir)
+		err = os.MkdirAll(path, os.ModePerm)
+		if err != nil {
+			return err
+		}
 	}
 
+	// Step-2 copy all static files
+
+	fcs := tg.Con.ReadFC(key)
+
+	for _, fc := range fcs {
+		dst := filepath.Join(*tg.Root, fc.Dst)
+		err = CopyStaticFile(fc.Src, dst)
+		if err != nil {
+			return err
+		}
+	}
+
+	// Step-3 generate all files based on templates
+
+	tcs := tg.Con.ReadTC(key)
 	mhandler := make(map[string]interface{})
 	mhandler["Root"] = tg.Root
-
 	for _, v := range tg.Models {
 		mhandler["Model"] = v
-
-		modelsFile := path.Join(*tg.Root, "models", strings.ToLower(v.Name)+".go")
-		err = GenerateFile(tg.Gen, mhandler, "models", modelsFile)
-		if err != nil {
-			return err
+		for _, tc := range tcs {
+			paths := path.Join(*tg.Root, tc, strings.ToLower(v.Name)+".go")
+			err = GenerateFile(tg.Gen, mhandler, tc, paths)
+			if err != nil {
+				return err
+			}
 		}
-
-		interfaceFile := path.Join(*tg.Root, "interfaces", strings.ToLower(v.Name)+".go")
-		err = GenerateFile(tg.Gen, mhandler, "interfaces", interfaceFile)
-		if err != nil {
-			return err
-		}
-
-		daFile := path.Join(*tg.Root, "database", strings.ToLower(v.Name)+"DB.go")
-		err = GenerateFile(tg.Gen, mhandler, "database_mongo", daFile)
-		if err != nil {
-			return err
-		}
-		handlerFile := path.Join(*tg.Root, "handlers", strings.ToLower(v.Name)+".go")
-		err = GenerateFile(tg.Gen, mhandler, "http_mongo_handler", handlerFile)
-		if err != nil {
-			return err
-		}
-
 	}
 
 	err = tg.CreateMain(tg.Gen.Read("main").(string)) // Generate main.go
@@ -233,53 +201,6 @@ func GenerateFile(gen Generater, model map[string]interface{}, key, filePath str
 	err = gen.ToFile(filePath, tmpl.(string), model)
 	if err != nil {
 		return err
-	}
-
-	return nil
-}
-
-// CopyAllStaticFiles is to copy static files
-func (tg *Generate) CopyAllStaticFiles() (err error) {
-	if tg == nil || tg.DBType == nil {
-		return errors.New("Generate object or DBType is nil")
-	}
-
-	if *tg.DBType == "mongo" {
-
-		src := filepath.Join("static", "databases", "mongo", "database.static")
-
-		dst := filepath.Join(*tg.Root, "database", "database.go")
-
-		err = CopyStaticFile(src, dst)
-		if err != nil {
-			return err
-		}
-	}
-
-	if tg.Type != nil && *tg.Type == "http" {
-
-		src := filepath.Join("static", "containers", "Dockerfile")
-
-		dst := filepath.Join(*tg.Root, "Dockerfile")
-
-		err = CopyStaticFile(src, dst)
-		if err != nil {
-			return err
-		}
-
-	}
-
-	if tg.Type != nil && *tg.Type == "http" {
-
-		src := filepath.Join("static", "helper", "helper.static")
-
-		dst := filepath.Join(*tg.Root, "helper", "helper.go")
-
-		err = CopyStaticFile(src, dst)
-		if err != nil {
-			return err
-		}
-
 	}
 
 	return nil

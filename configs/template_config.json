@@ -1,0 +1,20 @@
+{
+	"FC": {
+		"http_mongo": [{
+			"src": "static/databases/mongo/database.static",
+			"dst": "database/database.go"
+		}, {
+			"src": "static/containers/Dockerfile",
+			"dst": "Dockerfile"
+		}, {
+			"src": "static/helper/helper.static",
+			"dst": "helper/helper.go"
+		}]
+	},
+	"TC": {
+		"http_mongo": ["models", "interfaces","database", "handlers"]
+	},
+	"DC": {
+		"http_mongo": ["models", "interfaces","database", "handlers","helper"]
+	}
+}
