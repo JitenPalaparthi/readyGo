@@ -6,9 +6,19 @@
 
 1. [Done] Model file names must be lower case 
 
-1. Add Handler files
+1. [Done] Add Handler files
 
-1. Add database files, currently MongoDb to be supported
+1. [Done] Add database files, currently MongoDb to be supported
 
-1. Add interfaces . Crud operations for all Model files ..
+1. [Done] Add interfaces . Crud operations for all Model files ..
+
+1. [Done] Implement roleback of directory on any error
+
+1. [In-Progress] modular design
+
+1. Documentation
+
+1. FAQ Section
+
+1. Modular main.go implementation 
 

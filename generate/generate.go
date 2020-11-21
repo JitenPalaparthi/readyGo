@@ -92,6 +92,14 @@ func New(file *string, gen Generater, con Configurator) (tg *Generate, err error
 	return tg, nil
 }
 
+func (tg *Generate) RmDir() (err error) {
+	err = os.RemoveAll(*tg.Root)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (tg *Generate) ValidateAndChangeIdentifier() (err error) {
 	for i, m := range tg.Models {
 		tmpModel := m.Name
