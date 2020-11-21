@@ -3,6 +3,6 @@
 package models
 	type {{ .Model.Name }} struct {
 	{{ range .Model.Fields }}
-	{{ .Name }} {{ .Type }}
+	{{ .Name }} {{ .Type }} `json:"{{.Name | ToLower}}" bson:"{{.Name | ToLower}}"`
 	{{end}}
 	}

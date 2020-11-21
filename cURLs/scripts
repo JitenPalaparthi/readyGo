@@ -1,0 +1,10 @@
+# to create
+curl -X POST -H "Content-Type:application/json" -d '{"name":"abc kids","status":"created","last_modified":"12-12-2019"}' http://localhost:50054/v1/product/create
+
+# to delete
+
+curl -X DELETE http://localhost:50054/v1/product/delete/5fb93a96c5c71ebe4094731a
+
+curl -X PUT -d '{"name":"abc","status":"modified"}' http://localhost:50054/v1/product/update/5fb940dbdc3e73dd801c36c5
+
+curl -X GET -H "Content-Type:application/json" http://localhost:50054/v1/product/get/5fb93a96c5c71ebe4094731a

@@ -1,5 +1,6 @@
 {
   "type":"http", 
+  "port":"50054",
   "root": "Demo",
   "dbType": "mongo",
   "hasHandler": true,

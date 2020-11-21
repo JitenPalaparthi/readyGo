@@ -32,6 +32,7 @@ type Configurator interface {
 // Generate is a type
 type Generate struct {
 	Type       *string // Type of the project http , grpc , CloudEvents , cli
+	Port       *string // Port that is used to communicate http project
 	Root       *string // ideally project root directory .i.e project name
 	DBType     *string // mongo , sql based postgres mariadb etc
 	HasHandler bool
@@ -187,10 +188,10 @@ func (tg *Generate) CreateMain(tmpl string) (err error) {
 
 	data := make(map[string]string)
 
-	data["project_name"] = *tg.Root
+	data["project_name"] = "demo" //tg.Models
 
 	if tg.Gen != nil {
-		err = tg.Gen.ToFile(fileName, tmpl, data)
+		err = tg.Gen.ToFile(fileName, tmpl, *tg)
 		if err != nil {
 			return err
 		}

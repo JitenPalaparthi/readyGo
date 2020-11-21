@@ -3,10 +3,43 @@
 package main
 
 import (
-    "log"
+	"{{.Root}}/database"
+	"{{.Root}}/handlers"
+	"log"
+
+	"github.com/gin-gonic/gin"
+)
+
+const (
+	DBConnection = "mongodb://localhost:27017"
+	DBName       = "demoDb"
 )
 
 func main() {
-		log.Println("Application -->{{.project_name}} has started")
+log.Println("Application {{.Root}} has started")
+
+session, err := database.GetConnection(DBConnection, DBName)
+
+	if err != nil {
+		log.Fatal("mongodb database is not connected", err)
+	}
+	log.Println(session)
+
+	gin.ForceConsoleColor()
+
+	router := gin.Default()
+
+     {{ range .Models }}
+     {{.Name | ToLower}} := new(handlers.{{.Name}})
+	 {{.Name | ToLower}}.I{{.Name}} = &database.{{.Name}}DB{DB: session}
+     {{.Name | ToLower}}Group := router.Group("/v1/{{.Name | ToLower}}")
+    {
+     {{.Name | ToLower}}Group.POST("/create", {{.Name | ToLower}}.Create{{.Name}}())
+	 {{.Name | ToLower}}Group.DELETE("/delete/:id", {{.Name | ToLower}}.Delete{{.Name}}ByID())
+	 {{.Name | ToLower}}Group.PUT("/update/:id", {{.Name | ToLower}}.Update{{.Name}}ByID())
+	 {{.Name | ToLower}}Group.GET("/get/:id", {{.Name | ToLower}}.Get{{.Name}}ByID())
+    }
+     {{end}}
+    router.Run(":{{.Port}}")
 
 }
