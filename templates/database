@@ -3,8 +3,8 @@ package database
 import (
 	"context"
 	"errors"
-	"{{.Root}}/helper"
-	"{{.Root}}/models"
+	"{{.Project}}/helper"
+	"{{.Project}}/models"
 	"time"
 
 	"github.com/mitchellh/mapstructure"

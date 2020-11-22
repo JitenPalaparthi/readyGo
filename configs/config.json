@@ -1,12 +1,11 @@
 {
+  "project": "example",
   "type":"http", 
   "port":"50054",
-  "root": "Demo",
   "dbType": "mongo",
-  "hasHandler": true,
   "models": [
     {
-      "name": "training",
+      "name": "person",
       "fields": [
         {
           "name": "id",
@@ -17,6 +16,18 @@
           "type": "string"
         },
        
+        {
+          "name": "email",
+          "type": "string",
+          "validateExp":"[a-zA-Z0-9]"
+        },
+       
+        {
+          "name": "mobile",
+          "type": "string"
+        },
+       
+
         {
           "name": "status",
           "type": "string"

@@ -31,14 +31,13 @@ type Configurator interface {
 
 // Generate is a type
 type Generate struct {
-	Type       *string // Type of the project http , grpc , CloudEvents , cli
-	Port       *string // Port that is used to communicate http project
-	Root       *string // ideally project root directory .i.e project name
-	DBType     *string // mongo , sql based postgres mariadb etc
-	HasHandler bool
-	Models     []Model
-	Gen        Generater
-	Con        Configurator
+	Project *string // ideally project root directory .i.e project name
+	Type    *string // Type of the project http , grpc , CloudEvents , cli
+	Port    *string // Port that is used to communicate http project
+	DBType  *string // mongo , sql based postgres mariadb etc
+	Models  []Model
+	Gen     Generater
+	Con     Configurator
 }
 
 // Model is to create a model
@@ -49,8 +48,10 @@ type Model struct {
 
 // Field is to create a field
 type Field struct {
-	Name string
-	Type string
+	Name        string
+	Type        string
+	IsKey       bool
+	ValidateExp string // Regular expression
 }
 
 // New is to generate a new template
@@ -82,9 +83,9 @@ func New(file *string, gen Generater, con Configurator) (tg *Generate, err error
 		return nil, err
 	}
 
-	root := strings.ToLower(*tg.Root)
+	root := strings.ToLower(*tg.Project)
 
-	*tg.Root = root
+	*tg.Project = root
 
 	tg.Gen = gen // Assign generater template loading engine interface
 
@@ -93,8 +94,9 @@ func New(file *string, gen Generater, con Configurator) (tg *Generate, err error
 	return tg, nil
 }
 
+// RmDir is to remove dirs
 func (tg *Generate) RmDir() (err error) {
-	err = os.RemoveAll(*tg.Root)
+	err = os.RemoveAll(*tg.Project)
 	if err != nil {
 		return err
 	}
@@ -129,7 +131,7 @@ func (tg *Generate) GenerateAll(key string) (err error) {
 	if tg == nil {
 		return errors.New("temp	late generater is not a valid object.Try to instantiate it through generater.New function")
 	}
-	if tg.Root == nil || *tg.Root == "" {
+	if tg.Project == nil || *tg.Project == "" {
 		return errors.New("invalid root directory")
 	}
 	// Todo write more conditions here
@@ -139,7 +141,7 @@ func (tg *Generate) GenerateAll(key string) (err error) {
 	dirs := tg.Con.ReadDC(key)
 
 	for _, dir := range dirs {
-		path := filepath.Join(*tg.Root, dir)
+		path := filepath.Join(*tg.Project, dir)
 		err = os.MkdirAll(path, os.ModePerm)
 		if err != nil {
 			return err
@@ -151,7 +153,7 @@ func (tg *Generate) GenerateAll(key string) (err error) {
 	fcs := tg.Con.ReadFC(key)
 
 	for _, fc := range fcs {
-		dst := filepath.Join(*tg.Root, fc.Dst)
+		dst := filepath.Join(*tg.Project, fc.Dst)
 		err = CopyStaticFile(fc.Src, dst)
 		if err != nil {
 			return err
@@ -162,11 +164,11 @@ func (tg *Generate) GenerateAll(key string) (err error) {
 
 	tcs := tg.Con.ReadTC(key)
 	mhandler := make(map[string]interface{})
-	mhandler["Root"] = tg.Root
+	mhandler["Project"] = tg.Project
 	for _, v := range tg.Models {
 		mhandler["Model"] = v
 		for _, tc := range tcs {
-			paths := path.Join(*tg.Root, tc, strings.ToLower(v.Name)+".go")
+			paths := path.Join(*tg.Project, tc, strings.ToLower(v.Name)+".go")
 			err = GenerateFile(tg.Gen, mhandler, tc, paths)
 			if err != nil {
 				return err
@@ -184,7 +186,7 @@ func (tg *Generate) GenerateAll(key string) (err error) {
 
 // CreateMain main.go
 func (tg *Generate) CreateMain(tmpl string) (err error) {
-	fileName := path.Join(*tg.Root, "main.go")
+	fileName := path.Join(*tg.Project, "main.go")
 
 	data := make(map[string]string)
 

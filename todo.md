@@ -4,6 +4,14 @@
 
 1. [Done] In Model type ModelName should start with caps letter..
 
+1. Model validation
+
+1. There should not be two models with the same name.
+
+1. There should not be same field in the same model.
+
+1. Model type should be go language specific
+
 1. [Done] Model file names must be lower case 
 
 1. [Done] Add Handler files

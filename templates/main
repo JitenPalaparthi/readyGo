@@ -3,8 +3,8 @@
 package main
 
 import (
-	"{{.Root}}/database"
-	"{{.Root}}/handlers"
+	"{{.Project}}/database"
+	"{{.Project}}/handlers"
 	"log"
 
 	"github.com/gin-gonic/gin"
@@ -16,7 +16,7 @@ const (
 )
 
 func main() {
-log.Println("Application {{.Root}} has started")
+log.Println("Application {{.Project}} has started")
 
 session, err := database.GetConnection(DBConnection, DBName)
 

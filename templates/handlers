@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
-	"{{.Root}}/interfaces"
-	"{{.Root}}/models"
+	"{{.Project}}/interfaces"
+	"{{.Project}}/models"
 
 	"github.com/gin-gonic/gin"
 )
@@ -34,7 +34,16 @@ func ({{.Model.Name | Initial}} *{{.Model.Name}}) Create{{.Model.Name}}() func(c
 				c.Abort()
 				return
 			}
-
+			// Validate model
+			err = models.Validate{{.Model.Name}}({{.Model.Name | ToLower}})
+			if err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{
+					"status":  "failed",
+					"message": err.Error(),
+				})
+				c.Abort()
+				return
+			}
 			result, err := {{.Model.Name | Initial}}.I{{.Model.Name}}.Create{{.Model.Name}}({{.Model.Name | ToLower}})
 			if err != nil {
 				c.JSON(http.StatusBadRequest, gin.H{
