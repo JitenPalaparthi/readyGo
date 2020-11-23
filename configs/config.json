@@ -1,7 +1,7 @@
 {
   "project": "example",
-  "type":"http", 
-  "port":"50054",
+  "type": "http",
+  "port": "50054",
   "dbType": "mongo",
   "models": [
     {
@@ -13,21 +13,19 @@
         },
         {
           "name": "name",
-          "type": "string"
+          "type": "string",
+          "isKey": true
         },
-       
         {
           "name": "email",
           "type": "string",
-          "validateExp":"[a-zA-Z0-9]"
+          "validateExp": "[a-zA-Z0-9]",
+          "isKey": true
         },
-       
         {
           "name": "mobile",
           "type": "string"
         },
-       
-
         {
           "name": "status",
           "type": "string"
@@ -43,6 +41,31 @@
       "fields": [
         {
           "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "id",
+          "type": "string"
+        },
+        {
+          "name": "status",
+          "type": "string"
+        },
+        {
+          "name": "last_Modified",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "order",
+      "fields": [
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "description",
           "type": "string"
         },
         {

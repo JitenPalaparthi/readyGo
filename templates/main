@@ -38,6 +38,8 @@ session, err := database.GetConnection(DBConnection, DBName)
 	 {{.Name | ToLower}}Group.DELETE("/delete/:id", {{.Name | ToLower}}.Delete{{.Name}}ByID())
 	 {{.Name | ToLower}}Group.PUT("/update/:id", {{.Name | ToLower}}.Update{{.Name}}ByID())
 	 {{.Name | ToLower}}Group.GET("/get/:id", {{.Name | ToLower}}.Get{{.Name}}ByID())
+	 {{.Name | ToLower}}Group.GET("/getAll/:skip/:limit", {{.Name | ToLower}}.GetAll{{.Name}}s())
+	 {{.Name | ToLower}}Group.GET("/getAllBy/:skip/:limit", {{.Name | ToLower}}.GetAll{{.Name}}sBy())
     }
      {{end}}
     router.Run(":{{.Port}}")

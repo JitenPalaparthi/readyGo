@@ -15,7 +15,7 @@ import (
 )
 	type {{ .Model.Name }} struct {
 	{{- range .Model.Fields }}
-	{{ .Name }} {{ .Type }} `json:"{{.Name | ToLower}}" bson:"{{.Name | ToLower}}"`
+	{{ .Name }} {{ .Type }} `json:"{{.Name | ToLower}}"  {{ if eq $.config.DBType "mongo" }}bson:"{{.Name | ToLower}}"{{- end}}`
 	{{- end}}
 	}
 {{ $ModelName := .Model.Name }}
@@ -23,7 +23,7 @@ func Validate{{.Model.Name}}({{.Model.Name | Initial}} *{{.Model.Name}})(err err
 {{- range .Model.Fields}}
 {{- if .ValidateExp }}
 var rx{{.Name}}=regexp.MustCompile("{{.ValidateExp}}")
-if !!rx{{.Name}}.MatchString({{$ModelName | Initial}}.{{.Name}}) {
+if !rx{{.Name}}.MatchString({{$ModelName | Initial}}.{{.Name}}) {
 	return errors.New({{$ModelName | Initial}}.{{.Name}} + " is not a valid value for given field {{.Name}}")
 }	
 {{- end}}
