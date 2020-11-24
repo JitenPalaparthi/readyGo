@@ -10,6 +10,7 @@ import (
 	"path"
 	"path/filepath"
 	"readyGo/generate/configure"
+	"sort"
 	"strings"
 
 	"golang.org/x/lint"
@@ -223,6 +224,9 @@ func (tg *Generate) Validate() (err error) {
 	if tg.DBType == "" || (tg.DBType != "mongo" && tg.DBType != "sql") {
 		return errors.New(" Databas type (DBType) must be mongo | sql ")
 	}
+	// The following are supported types
+	basicSupportedTypes := []string{"bool", "string", "int", "int8", "int16", "int32", "int64", "uint", "uint8", "uint16", "uint32", "uint64", "float32", "float64"}
+
 	// checking duplicate models and fields
 	modelMap := make(map[string]string)
 	for i, m := range tg.Models {
@@ -238,6 +242,11 @@ func (tg *Generate) Validate() (err error) {
 				return errors.New(" Duplicate field names:" + f.Name)
 			}
 			fieldMap[strings.ToLower(f.Name)] = "noted"
+
+			// Validate field types
+			if !strings.Contains(strings.Join(basicSupportedTypes, ","), strings.ToLower(f.Type)) {
+				return errors.New("Not supported field type:" + f.Type)
+			}
 		}
 		if tg.DBType == "mongo" {
 			_, ok := fieldMap["id"]
@@ -249,6 +258,11 @@ func (tg *Generate) Validate() (err error) {
 	}
 
 	return err
+}
+
+func contains(s []string, searchterm string) bool {
+	i := sort.SearchStrings(s, searchterm)
+	return i < len(s) && s[i] == searchterm
 }
 
 // GenerateFile is to create all model files
