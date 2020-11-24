@@ -225,7 +225,7 @@ func (tg *Generate) Validate() (err error) {
 	}
 	// checking duplicate models and fields
 	modelMap := make(map[string]string)
-	for _, m := range tg.Models {
+	for i, m := range tg.Models {
 		_, ok := modelMap[strings.ToLower(m.Name)]
 		if ok {
 			return errors.New(" Duplicate model names:" + m.Name)
@@ -238,6 +238,13 @@ func (tg *Generate) Validate() (err error) {
 				return errors.New(" Duplicate field names:" + f.Name)
 			}
 			fieldMap[strings.ToLower(f.Name)] = "noted"
+		}
+		if tg.DBType == "mongo" {
+			_, ok := fieldMap["id"]
+			if !ok {
+				id := Field{Name: "Id", Type: "string"}
+				tg.Models[i].Fields = append(tg.Models[i].Fields, id)
+			}
 		}
 	}
 
