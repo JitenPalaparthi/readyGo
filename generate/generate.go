@@ -91,6 +91,12 @@ func New(file *string, gen Generater, con Configurator) (tg *Generate, err error
 
 	tg.Con = con // Assign generater configation loading enginer interface
 
+	err = tg.Validate()
+
+	if err != nil {
+		return nil, err
+	}
+
 	return tg, nil
 }
 
@@ -203,6 +209,39 @@ func (tg *Generate) CreateMain(tmpl string) (err error) {
 		errors.New("Gen interface is not assigned to Generate object")
 	}
 	return nil
+}
+
+// Validate is to validate the object
+func (tg *Generate) Validate() (err error) {
+	if tg.Project == "" {
+		return errors.New("Project name is missing")
+	}
+
+	if tg.Type == "" || (tg.Type != "http" && tg.Type != "grpc" && tg.Type != "cloudEvent" && tg.Type != "cli") {
+		return errors.New(" Project type must be http | grpc | cloudEvent | cli")
+	}
+	if tg.DBType == "" || (tg.DBType != "mongo" && tg.DBType != "sql") {
+		return errors.New(" Databas type (DBType) must be mongo | sql ")
+	}
+	// checking duplicate models and fields
+	modelMap := make(map[string]string)
+	for _, m := range tg.Models {
+		_, ok := modelMap[strings.ToLower(m.Name)]
+		if ok {
+			return errors.New(" Duplicate model names:" + m.Name)
+		}
+		modelMap[strings.ToLower(m.Name)] = "noted"
+		fieldMap := make(map[string]string)
+		for _, f := range m.Fields {
+			_, ok := fieldMap[strings.ToLower(f.Name)]
+			if ok {
+				return errors.New(" Duplicate field names:" + f.Name)
+			}
+			fieldMap[strings.ToLower(f.Name)] = "noted"
+		}
+	}
+
+	return err
 }
 
 // GenerateFile is to create all model files
