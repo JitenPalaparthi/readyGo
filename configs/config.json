@@ -7,11 +7,7 @@
     {
       "name": "person",
       "fields": [
-        {
-          "name": "id",
-          "type": "string"
-        },
-        {
+         {
           "name": "name",
           "type": "string",
           "isKey": true
@@ -41,10 +37,6 @@
       "fields": [
         {
           "name": "name",
-          "type": "string"
-        },
-        {
-          "name": "id",
           "type": "string"
         },
         {

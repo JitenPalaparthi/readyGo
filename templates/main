@@ -3,8 +3,8 @@
 package main
 
 import (
-	"{{.Project}}/database"
-	"{{.Project}}/handlers"
+	"{{$.config.Project}}/database"
+	"{{$.config.Project}}/handlers"
 	"log"
 
 	"github.com/gin-gonic/gin"
@@ -29,7 +29,7 @@ session, err := database.GetConnection(DBConnection, DBName)
 
 	router := gin.Default()
 
-     {{ range .Models }}
+     {{ range $.config.Models }}
      {{.Name | ToLower}} := new(handlers.{{.Name}})
 	 {{.Name | ToLower}}.I{{.Name}} = &database.{{.Name}}DB{DB: session}
      {{.Name | ToLower}}Group := router.Group("/v1/{{.Name | ToLower}}")
@@ -42,6 +42,6 @@ session, err := database.GetConnection(DBConnection, DBName)
 	 {{.Name | ToLower}}Group.GET("/getAllBy/:skip/:limit", {{.Name | ToLower}}.GetAll{{.Name}}sBy())
     }
      {{end}}
-    router.Run(":{{.Port}}")
+    router.Run(":{{$.config.Port}}")
 
 }

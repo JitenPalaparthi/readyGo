@@ -25,8 +25,9 @@ type Generater interface {
 
 // Configurator interface is to fetch configration related things
 type Configurator interface {
-	ReadFC(key string) []configure.StaticFileSet
-	ReadTC(key string) []string
+	ReadFC(key string) []configure.CopyLoc
+	ReadTC(key string) []configure.CopyLoc
+	ReadSF(key string) []configure.CopyLoc
 	ReadDC(key string) []string
 }
 
@@ -172,23 +173,33 @@ func (tg *Generate) GenerateAll(key string) (err error) {
 	tcs := tg.Con.ReadTC(key)
 	mhandler := make(map[string]interface{})
 	mhandler["Project"] = tg.Project
-	//mhandler["dbType"] = tg.DBType
 	mhandler["config"] = tg
 	for _, v := range tg.Models {
 		mhandler["Model"] = v
 		for _, tc := range tcs {
-			paths := path.Join(tg.Project, tc, strings.ToLower(v.Name)+".go")
-			err = GenerateFile(tg.Gen, mhandler, tc, paths)
+			paths := path.Join(tg.Project, tc.Dst, strings.ToLower(v.Name)+".go")
+			err = GenerateFile(tg.Gen, mhandler, tc.Src, paths)
 			if err != nil {
 				return err
 			}
 		}
 	}
 
-	err = tg.CreateMain(tg.Gen.Read("main").(string)) // Generate main.go
+	// Step-4 generate one and only files based on templates
+	sf := tg.Con.ReadSF(key)
+	mhandler["config"] = tg
+	for _, f := range sf {
+		paths := path.Join(tg.Project, f.Dst)
+		err = GenerateFile(tg.Gen, mhandler, f.Src, paths)
+		if err != nil {
+			return err
+		}
+	}
+
+	/*err = tg.CreateMain(tg.Gen.Read("main").(string)) // Generate main.go
 	if err != nil {
 		return err
-	}
+	}*/
 	return nil
 
 }

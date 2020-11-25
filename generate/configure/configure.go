@@ -10,13 +10,14 @@ import (
 
 // Configure is to configure file copy sets
 type Configure struct {
-	FC map[string][]StaticFileSet
-	TC map[string][]string
+	FC map[string][]CopyLoc
+	TC map[string][]CopyLoc
+	SF map[string][]CopyLoc
 	DC map[string][]string // Directory configurations
 }
 
-// StaticFileSet is to get static file sets
-type StaticFileSet struct {
+// CopyLoc is to get static file from src to des locations
+type CopyLoc struct {
 	Src, Dst string
 }
 
@@ -42,7 +43,7 @@ func New(file *string) (c *Configure, err error) {
 }
 
 // ReadFC is to read file configurations
-func (c *Configure) ReadFC(key string) []StaticFileSet {
+func (c *Configure) ReadFC(key string) []CopyLoc {
 	v, ok := c.FC[key]
 	if ok {
 		return v
@@ -50,9 +51,18 @@ func (c *Configure) ReadFC(key string) []StaticFileSet {
 	return nil
 }
 
-// ReadTC is to read Template Configrations
-func (c *Configure) ReadTC(key string) []string {
+// ReadTC is to read file configurations
+func (c *Configure) ReadTC(key string) []CopyLoc {
 	v, ok := c.TC[key]
+	if ok {
+		return v
+	}
+	return nil
+}
+
+// ReadSF is to read file configurations
+func (c *Configure) ReadSF(key string) []CopyLoc {
+	v, ok := c.SF[key]
 	if ok {
 		return v
 	}

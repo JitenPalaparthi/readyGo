@@ -11,8 +11,30 @@
 			"dst": "helper/helper.go"
 		}]
 	},
+	
 	"TC": {
-		"http_mongo": ["models", "interfaces","database", "handlers"]
+		"http_mongo": [{
+			"src": "models",
+			"dst": "models"
+		}, {
+			"src": "interfaces",
+			"dst": "interfaces"
+		}, {
+			"src": "database",
+			"dst": "database"
+		}, {
+			"src": "handlers",
+			"dst": "handlers"
+		}]
+	},
+	"SF": {
+		"http_mongo": [{
+			"src": "config",
+			"dst": "application.json"
+		},{
+			"src": "main",
+			"dst": "main.go"
+		}]
 	},
 	"DC": {
 		"http_mongo": ["models", "interfaces","database", "handlers","helper"]
