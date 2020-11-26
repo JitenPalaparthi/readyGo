@@ -14,6 +14,7 @@ import (
 	"strings"
 
 	"golang.org/x/lint"
+	"gopkg.in/yaml.v2"
 )
 
 // Generater interface is to provide generater methods
@@ -33,27 +34,28 @@ type Configurator interface {
 
 // Generate is a type
 type Generate struct {
-	Project string // ideally project root directory .i.e project name
-	Type    string // Type of the project http , grpc , CloudEvents , cli
-	Port    string // Port that is used to communicate http project
-	DBType  string // mongo , sql based postgres mariadb etc
-	Models  []Model
+	Version string  `json:"version" yaml:"version"`
+	Project string  `json:"project" yaml:"project"` // ideally project root directory .i.e project name
+	Type    string  `json:"type" yaml:"type"`       // Type of the project http , grpc , CloudEvents , cli
+	Port    string  `json:"port" yaml:"port"`       // Port that is used to communicate http project
+	DB      string  `json:"db" yaml:"db"`           // mongo , sql based postgres mariadb etc
+	Models  []Model `json:"models" yaml:"models"`
 	Gen     Generater
 	Con     Configurator
 }
 
 // Model is to create a model
 type Model struct {
-	Name   string
-	Fields []Field
+	Name   string  `json:"name" yaml:"name"`
+	Fields []Field `json:"fields" yaml:"fields"`
 }
 
 // Field is to create a field
 type Field struct {
-	Name        string
-	Type        string
-	IsKey       bool
-	ValidateExp string // Regular expression
+	Name        string `json:"name" yaml:"name"`               // Name of the field. Should be valid Go identifier
+	Type        string `json:"type" yaml:"type"`               // Go basic types are only allowed
+	IsKey       bool   `json:"isKey" yaml:"isKey"`             // If it is a key field . Key fields generates different methods to check the data in the database is unique or not
+	ValidateExp string `json:"validateExp" yaml:"validateExp"` // Regular expression that would be used for field level validations in the models
 }
 
 // New is to generate a new template
@@ -68,18 +70,27 @@ func New(file *string, gen Generater, con Configurator) (tg *Generate, err error
 		return nil, errors.New("template Confirator cannot be nil.Load Configue before creating Configurator")
 	}
 	ext := filepath.Ext(*file)
-	fmt.Println(ext)
-	if ext != ".json" {
-		return nil, errors.New("Only json files are allowed ")
+	if ext != ".json" && ext != ".yaml" && ext != ".yml" {
+		return nil, errors.New("Only json | yaml | yml files are allowed ")
 	}
 	cFile, err := ioutil.ReadFile(*file)
 	if err != nil {
 		return nil, err
 	}
-	err = json.Unmarshal([]byte(cFile), &tg)
-	if err != nil {
-		return nil, err
+	if ext == ".json" {
+		err = json.Unmarshal([]byte(cFile), &tg)
+		if err != nil {
+			return nil, err
+		}
 	}
+
+	if ext == ".yaml" || ext == ".yml" {
+		err = yaml.Unmarshal([]byte(cFile), &tg)
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	err = tg.ValidateAndChangeIdentifier()
 	if err != nil {
 		return nil, err
@@ -228,12 +239,12 @@ func (tg *Generate) Validate() (err error) {
 	if tg.Project == "" {
 		return errors.New("Project name is missing")
 	}
-
+	fmt.Println(tg.Project, tg.Port)
 	if tg.Type == "" || (tg.Type != "http" && tg.Type != "grpc" && tg.Type != "cloudEvent" && tg.Type != "cli") {
 		return errors.New(" Project type must be http | grpc | cloudEvent | cli")
 	}
-	if tg.DBType == "" || (tg.DBType != "mongo" && tg.DBType != "sql") {
-		return errors.New(" Databas type (DBType) must be mongo | sql ")
+	if tg.DB == "" || (tg.DB != "mongo" && tg.DB != "sql") {
+		return errors.New(" Databas type (DB) must be mongo | sql ")
 	}
 	// The following are supported types
 	basicSupportedTypes := []string{"bool", "string", "int", "int8", "int16", "int32", "int64", "uint", "uint8", "uint16", "uint32", "uint64", "float32", "float64"}
@@ -259,7 +270,7 @@ func (tg *Generate) Validate() (err error) {
 				return errors.New("Not supported field type:" + f.Type)
 			}
 		}
-		if tg.DBType == "mongo" {
+		if tg.DB == "mongo" {
 			_, ok := fieldMap["id"]
 			if !ok {
 				id := Field{Name: "Id", Type: "string"}

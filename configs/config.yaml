@@ -1,9 +1,22 @@
 ---
-root: demo
+version: '0.1'
+project: example
+type: http
+port: '50054'
+db: mongo
 models:
-- package: models
+- name: person
   fields:
-  - name: sample
+  - name: name
     type: string
-  - name: id
-    type: int
+    isKey: true
+  - name: email
+    type: string
+    validateExp: "[a-zA-Z0-9]"
+    isKey: true
+  - name: mobile
+    type: string
+  - name: status
+    type: string
+  - name: last_Modified
+    type: string

@@ -1,8 +1,9 @@
 {
+  "version":"0.1",
   "project": "example",
   "type": "http",
   "port": "50054",
-  "dbType": "mongo",
+  "db": "mongo",
   "models": [
     {
       "name": "person",
@@ -20,48 +21,6 @@
         },
         {
           "name": "mobile",
-          "type": "string"
-        },
-        {
-          "name": "status",
-          "type": "string"
-        },
-        {
-          "name": "last_Modified",
-          "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "product",
-      "fields": [
-        {
-          "name": "name",
-          "type": "string"
-        },
-        {
-          "name": "status",
-          "type": "string"
-        },
-        {
-          "name": "last_Modified",
-          "type": "string"
-        }
-      ]
-    },
-    {
-      "name": "order",
-      "fields": [
-        {
-          "name": "name",
-          "type": "string"
-        },
-        {
-          "name": "description",
-          "type": "string"
-        },
-        {
-          "name": "id",
           "type": "string"
         },
         {

@@ -14,7 +14,7 @@ func main() {
 
 	log.Println("Loading all templates into in-memory")
 
-	configFile := "configs/config.json"
+	configFile := "configs/config.yaml"
 
 	tm, err := template.New("templates")
 
