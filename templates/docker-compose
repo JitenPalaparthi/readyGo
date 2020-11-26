@@ -1,0 +1,26 @@
+version: "3"
+services:
+  app:
+    container_name: {{$.config.Project}}_service
+    restart: always
+    build: ./
+    ports:
+     - "{{$.config.Port}}:{{$.config.Port}}"
+    links:
+       - mongo
+    networks: 
+      - backend
+  
+  mongo:
+    container_name: mongo_db
+    image: mongo
+    ports:
+     - "27017:27017"
+    volumes:
+     - "./data/db:/data/db"
+    networks: 
+      - backend
+
+networks:
+  backend:
+    driver: bridge

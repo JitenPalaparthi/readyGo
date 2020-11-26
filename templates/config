@@ -1,0 +1,4 @@
+{
+    "connection":"mongodb://local:27017",
+    "db":"{{.Project}}"
+}

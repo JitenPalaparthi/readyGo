@@ -28,7 +28,7 @@
 
 1. [Done] Create new single file copy implementation
 
-1. Create Docker-Compose file
+1. [Done] Create Docker-Compose file
 
 1. Documentation
 

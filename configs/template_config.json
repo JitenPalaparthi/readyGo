@@ -34,6 +34,9 @@
 		},{
 			"src": "main",
 			"dst": "main.go"
+		},{
+			"src": "docker-compose",
+			"dst": "docker-compose.yaml"
 		}]
 	},
 	"DC": {
