@@ -7,7 +7,7 @@ A Simple configuration gives you a working project.
 - readyGo is a command line interface( probably the name of readyGo CLI would be rgo) application, it is designed to scaffold creation of different types of go based projects.readyGo is designed for developers in mind. Ideally readyGo should provide ready to use application code. The code is generated based on configurations provided by the end user i.e "The great developer :)".
 - By version 1 release, it will support http, grpc, CloudEvents template engines with various databases (sql/no sql), pub-sub and CloudEvents plugins and probably even more.
 
-**readGo cooks for you.As your business logic varies , you have to add the required spices according your taste but one thing .. readyGo is not a template engine, it gives you a working project.**
+*readGo cooks for you.As your business logic varies , you have to add the required spices according your taste but one thing .. readyGo is not a template engine, it gives you a working project.*
 
 ## What made me to start this project?
 
