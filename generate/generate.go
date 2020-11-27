@@ -128,8 +128,6 @@ func (tg *Generate) ValidateAndChangeIdentifier() (err error) {
 		tg.Models[i].Name, err = checkName(m.Name)
 		if err != nil {
 			return errors.New("There is an error at the following model config name in json file:" + tmpModel)
-			fmt.Println("----1", err)
-			return err
 		}
 		tg.Models[i].Name = strings.ToUpper(string(tmpModel[0])) + string(tmpModel[1:])
 
@@ -239,7 +237,6 @@ func (tg *Generate) Validate() (err error) {
 	if tg.Project == "" {
 		return errors.New("Project name is missing")
 	}
-	fmt.Println(tg.Project, tg.Port)
 	if tg.Type == "" || (tg.Type != "http" && tg.Type != "grpc" && tg.Type != "cloudEvent" && tg.Type != "cli") {
 		return errors.New(" Project type must be http | grpc | cloudEvent | cli")
 	}

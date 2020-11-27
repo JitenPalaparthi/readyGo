@@ -2,17 +2,16 @@ package main
 
 import (
 	"fmt"
-	"log"
-	"readyGo/generate"
-	"readyGo/generate/configure"
-	"readyGo/generate/template"
+	"readyGo/cmd"
 )
 
 func main() {
 
 	fmt.Println("Hello Muruga")
 
-	log.Println("Loading all templates into in-memory")
+	cmd.Execute()
+
+	/*log.Println("Loading all templates into in-memory")
 
 	configFile := "configs/config.yaml"
 
@@ -43,6 +42,6 @@ func main() {
 		if err != nil {
 			log.Println("Unable to remove files. Please remove created directory manually", err)
 		}
-	}
+	}*/
 
 }
