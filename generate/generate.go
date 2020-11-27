@@ -113,6 +113,39 @@ func New(file *string, gen Generater, con Configurator) (tg *Generate, err error
 	return tg, nil
 }
 
+// NewFromStr is to generate a new template from a string provided
+func NewFromStr(config string, gen Generater, con Configurator) (tg *Generate, err error) {
+	if config == "" {
+		return nil, errors.New("no config data provided")
+	}
+	err = json.Unmarshal([]byte(config), &tg)
+	if err != nil {
+		fmt.Println(err)
+		return nil, err
+	}
+
+	err = tg.ValidateAndChangeIdentifier()
+	if err != nil {
+		return nil, err
+	}
+
+	root := strings.ToLower(tg.Project)
+
+	tg.Project = root
+
+	tg.Gen = gen // Assign generater template loading engine interface
+
+	tg.Con = con // Assign generater configation loading enginer interface
+
+	err = tg.Validate()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return tg, nil
+}
+
 // RmDir is to remove dirs
 func (tg *Generate) RmDir() (err error) {
 	err = os.RemoveAll(tg.Project)
