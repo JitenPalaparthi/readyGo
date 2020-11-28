@@ -9,30 +9,16 @@ import (
 	"os"
 	"path"
 	"path/filepath"
-	"readyGo/generate/configure"
+	"readyGo/mapping"
 	"sort"
 	"strings"
+	"text/template"
 
 	"golang.org/x/lint"
 	"gopkg.in/yaml.v2"
 )
 
-// Generater interface is to provide generater methods
-type Generater interface {
-	ToString(tmpl string, data interface{}) (result string, err error)
-	ToFile(filePath string, tmpl string, data interface{}) (err error)
-	Read(key string) interface{}
-}
-
-// Configurator interface is to fetch configration related things
-type Configurator interface {
-	ReadFC(key string) []configure.CopyLoc
-	ReadTC(key string) []configure.CopyLoc
-	ReadSF(key string) []configure.CopyLoc
-	ReadDC(key string) []string
-}
-
-// Generate is a type
+// Generate is a type that holds configuration data
 type Generate struct {
 	Version string  `json:"version" yaml:"version"`
 	Project string  `json:"project" yaml:"project"` // ideally project root directory .i.e project name
@@ -40,17 +26,16 @@ type Generate struct {
 	Port    string  `json:"port" yaml:"port"`       // Port that is used to communicate http project
 	DB      string  `json:"db" yaml:"db"`           // mongo , sql based postgres mariadb etc
 	Models  []Model `json:"models" yaml:"models"`
-	Gen     Generater
-	Con     Configurator
+	Mapping *mapping.Mapping
 }
 
-// Model is to create a model
+// Model is to hold model data from configuration file
 type Model struct {
 	Name   string  `json:"name" yaml:"name"`
 	Fields []Field `json:"fields" yaml:"fields"`
 }
 
-// Field is to create a field
+// Field is to hold fields in a model that comes from configuration file
 type Field struct {
 	Name        string `json:"name" yaml:"name"`               // Name of the field. Should be valid Go identifier
 	Type        string `json:"type" yaml:"type"`               // Go basic types are only allowed
@@ -58,17 +43,16 @@ type Field struct {
 	ValidateExp string `json:"validateExp" yaml:"validateExp"` // Regular expression that would be used for field level validations in the models
 }
 
-// New is to generate a new template
-func New(file *string, gen Generater, con Configurator) (tg *Generate, err error) {
+// New is to generate a new generater.
+func New(file *string, mapping *mapping.Mapping) (tg *Generate, err error) {
+
 	if file == nil || *file == "" {
 		return nil, errors.New("no file provided")
 	}
-	if gen == nil {
-		return nil, errors.New("template cannot be nil.Load template before creating Generater")
+	if mapping == nil {
+		return nil, errors.New("mapping cannot be empty")
 	}
-	if con == nil {
-		return nil, errors.New("template Confirator cannot be nil.Load Configue before creating Configurator")
-	}
+
 	ext := filepath.Ext(*file)
 	if ext != ".json" && ext != ".yaml" && ext != ".yml" {
 		return nil, errors.New("Only json | yaml | yml files are allowed ")
@@ -100,9 +84,7 @@ func New(file *string, gen Generater, con Configurator) (tg *Generate, err error
 
 	tg.Project = root
 
-	tg.Gen = gen // Assign generater template loading engine interface
-
-	tg.Con = con // Assign generater configation loading enginer interface
+	tg.Mapping = mapping
 
 	err = tg.Validate()
 
@@ -113,37 +95,135 @@ func New(file *string, gen Generater, con Configurator) (tg *Generate, err error
 	return tg, nil
 }
 
-// NewFromStr is to generate a new template from a string provided
-func NewFromStr(config string, gen Generater, con Configurator) (tg *Generate, err error) {
-	if config == "" {
-		return nil, errors.New("no config data provided")
+// CreateAll creates all kinds of files based on the provided mappings
+func (tg *Generate) CreateAll() (err error) {
+	if tg == nil {
+		return errors.New("temp	late generater is not a valid object.Try to instantiate it through generater.New function")
 	}
-	err = json.Unmarshal([]byte(config), &tg)
-	if err != nil {
-		fmt.Println(err)
-		return nil, err
+	if tg.Project == "" {
+		return errors.New("invalid root directory")
+	}
+	// Todo write more conditions here
+
+	for _, opsData := range tg.Mapping.OpsData {
+		//fmt.Println(opsData)
+		switch opsData.OpType {
+		case "directories":
+			path := filepath.Join(tg.Project, opsData.Src)
+			err = os.MkdirAll(path, os.ModePerm)
+			if err != nil {
+				errRm := tg.RmDir()
+				if errRm != nil {
+					return errors.New("1." + err.Error() + ".2." + errRm.Error())
+				}
+				return err
+			}
+		case "static-files":
+			dst := filepath.Join(tg.Project, opsData.Dst)
+			content, err := tg.Mapping.Reader.Read(opsData.Src)
+			if err != nil {
+				errRm := tg.RmDir()
+				if errRm != nil {
+					return errors.New("1." + err.Error() + ".2." + errRm.Error())
+				}
+				return err
+			}
+			if content != "" {
+				li := strings.LastIndex(dst, "/")
+				dirs := dst[0:li]
+				err = os.MkdirAll(dirs, 0755)
+				if err != nil {
+					errRm := tg.RmDir()
+					if errRm != nil {
+						return errors.New("1." + err.Error() + ".2." + errRm.Error())
+					}
+					return err
+				}
+
+				err = ioutil.WriteFile(dst, []byte(content), 0644)
+				if err != nil {
+					errRm := tg.RmDir()
+					if errRm != nil {
+						return errors.New("1." + err.Error() + ".2." + errRm.Error())
+					}
+					return err
+				}
+			}
+		case "multiple-file-templates":
+			mhandler := make(map[string]interface{})
+			mhandler["Project"] = tg.Project
+			mhandler["config"] = tg
+			for _, v := range tg.Models {
+				mhandler["Model"] = v
+				dst := filepath.Join(tg.Project, opsData.Dst)
+				err = os.MkdirAll(dst, 0755)
+				if err != nil {
+					errRm := tg.RmDir()
+					if errRm != nil {
+						return errors.New("1." + err.Error() + ".2." + errRm.Error())
+					}
+					return err
+				}
+
+				dst = path.Join(tg.Project, opsData.Dst, strings.ToLower(v.Name)+".go")
+				content, err := tg.Mapping.Reader.Read(opsData.Src)
+				if err != nil {
+					errRm := tg.RmDir()
+					if errRm != nil {
+						return errors.New("1." + err.Error() + ".2." + errRm.Error())
+					}
+					return err
+				}
+				if content != "" {
+					err := WriteTmplToFile(dst, content, mhandler)
+					if err != nil {
+						errRm := tg.RmDir()
+						if errRm != nil {
+							return errors.New("1." + err.Error() + ".2." + errRm.Error())
+						}
+						return err
+					}
+				}
+			}
+
+		case "single-file-templates":
+			mhandler := make(map[string]interface{})
+			mhandler["config"] = tg
+			dst := path.Join(tg.Project, opsData.Dst)
+			li := strings.LastIndex(dst, "/")
+			dirs := dst[0:li]
+			err = os.MkdirAll(dirs, 0755)
+			if err != nil {
+				errRm := tg.RmDir()
+				if errRm != nil {
+					return errors.New("1." + err.Error() + ".2." + errRm.Error())
+				}
+				return err
+			}
+			content, err := tg.Mapping.Reader.Read(opsData.Src)
+			if err != nil {
+				errRm := tg.RmDir()
+				if errRm != nil {
+					return errors.New("1." + err.Error() + ".2." + errRm.Error())
+				}
+				return err
+			}
+			if content != "" {
+				err := WriteTmplToFile(dst, content, mhandler)
+				if err != nil {
+					errRm := tg.RmDir()
+					if errRm != nil {
+						return errors.New("1." + err.Error() + ".2." + errRm.Error())
+					}
+					return err
+				}
+			}
+		default:
+			return errors.New(opsData.OpType + ":this type has no implementation")
+		}
 	}
 
-	err = tg.ValidateAndChangeIdentifier()
-	if err != nil {
-		return nil, err
-	}
-
-	root := strings.ToLower(tg.Project)
-
-	tg.Project = root
-
-	tg.Gen = gen // Assign generater template loading engine interface
-
-	tg.Con = con // Assign generater configation loading enginer interface
-
-	err = tg.Validate()
-
-	if err != nil {
-		return nil, err
-	}
-
-	return tg, nil
+	return nil
 }
 
 // RmDir is to remove dirs
@@ -155,6 +235,7 @@ func (tg *Generate) RmDir() (err error) {
 	return nil
 }
 
+// ValidateAndChangeIdentifier is to validate and Change as and where required
 func (tg *Generate) ValidateAndChangeIdentifier() (err error) {
 	for i, m := range tg.Models {
 		tmpModel := m.Name
@@ -173,94 +254,6 @@ func (tg *Generate) ValidateAndChangeIdentifier() (err error) {
 			}
 			tg.Models[i].Fields[j].Name = strings.ToUpper(string(tmpField[0])) + string(tmpField[1:])
 		}
-	}
-	return nil
-}
-
-func (tg *Generate) GenerateAll(key string) (err error) {
-	if tg == nil {
-		return errors.New("temp	late generater is not a valid object.Try to instantiate it through generater.New function")
-	}
-	if tg.Project == "" {
-		return errors.New("invalid root directory")
-	}
-	// Todo write more conditions here
-
-	// Step-1 create all directories
-
-	dirs := tg.Con.ReadDC(key)
-
-	for _, dir := range dirs {
-		path := filepath.Join(tg.Project, dir)
-		err = os.MkdirAll(path, os.ModePerm)
-		if err != nil {
-			return err
-		}
-	}
-
-	// Step-2 copy all static files
-
-	fcs := tg.Con.ReadFC(key)
-
-	for _, fc := range fcs {
-		dst := filepath.Join(tg.Project, fc.Dst)
-		err = CopyStaticFile(fc.Src, dst)
-		if err != nil {
-			return err
-		}
-	}
-
-	// Step-3 generate all files based on templates
-
-	tcs := tg.Con.ReadTC(key)
-	mhandler := make(map[string]interface{})
-	mhandler["Project"] = tg.Project
-	mhandler["config"] = tg
-	for _, v := range tg.Models {
-		mhandler["Model"] = v
-		for _, tc := range tcs {
-			paths := path.Join(tg.Project, tc.Dst, strings.ToLower(v.Name)+".go")
-			err = GenerateFile(tg.Gen, mhandler, tc.Src, paths)
-			if err != nil {
-				return err
-			}
-		}
-	}
-
-	// Step-4 generate one and only files based on templates
-	sf := tg.Con.ReadSF(key)
-	mhandler["config"] = tg
-	for _, f := range sf {
-		paths := path.Join(tg.Project, f.Dst)
-		err = GenerateFile(tg.Gen, mhandler, f.Src, paths)
-		if err != nil {
-			return err
-		}
-	}
-
-	/*err = tg.CreateMain(tg.Gen.Read("main").(string)) // Generate main.go
-	if err != nil {
-		return err
-	}*/
-	return nil
-
-}
-
-// CreateMain main.go
-func (tg *Generate) CreateMain(tmpl string) (err error) {
-	fileName := path.Join(tg.Project, "main.go")
-
-	data := make(map[string]string)
-
-	data["project_name"] = "demo" //tg.Models
-
-	if tg.Gen != nil {
-		err = tg.Gen.ToFile(fileName, tmpl, *tg)
-		if err != nil {
-			return err
-		}
-	} else {
-		errors.New("Gen interface is not assigned to Generate object")
 	}
 	return nil
 }
@@ -317,51 +310,6 @@ func contains(s []string, searchterm string) bool {
 	return i < len(s) && s[i] == searchterm
 }
 
-// GenerateFile is to create all model files
-func GenerateFile(gen Generater, model map[string]interface{}, key, filePath string) (err error) {
-	if key == "" {
-		return errors.New("empty template key provided")
-	}
-	tmpl := gen.Read(key)
-	err = gen.ToFile(filePath, tmpl.(string), model)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// CopyStaticFile is to copy static files
-func CopyStaticFile(src, dst string) (err error) {
-	sfi, err := os.Stat(src)
-	if err != nil {
-		return
-	}
-	if !sfi.Mode().IsRegular() {
-		// cannot copy non-regular files (e.g., directories,
-		// symlinks, devices, etc.)
-		return fmt.Errorf("CopyFile: non-regular source file %s (%q)", sfi.Name(), sfi.Mode().String())
-	}
-	dfi, err := os.Stat(dst)
-	if err != nil {
-		if !os.IsNotExist(err) {
-			return
-		}
-	} else {
-		if !(dfi.Mode().IsRegular()) {
-			return fmt.Errorf("CopyFile: non-regular destination file %s (%q)", dfi.Name(), dfi.Mode().String())
-		}
-		if os.SameFile(sfi, dfi) {
-			return
-		}
-	}
-	if err = os.Link(src, dst); err == nil {
-		return
-	}
-	//err = copyFileContents(src, dst)
-	return
-}
-
 func checkName(s string) (string, error) {
 	var buf bytes.Buffer
 	fmt.Fprintf(&buf, "// Package main is awesome\npackage main\n// %s is wonderful\nvar %s int\n", s, s)
@@ -377,4 +325,34 @@ func checkName(s string) (string, error) {
 		}
 	}
 	return "", nil
+}
+
+// WriteTmplToFile is to convert from template to a file
+func WriteTmplToFile(filePath string, tmpl string, data interface{}) (err error) {
+	file, err := os.Create(filePath)
+	if err != nil {
+		return err
+	}
+
+	t := template.Must(template.New("toFile").Funcs(template.FuncMap{
+		"ToLower": func(str string) string {
+			return strings.ToLower(str)
+		},
+	}).Funcs(
+		template.FuncMap{
+			"Initial": func(str string) string {
+				if len(str) > 0 {
+					return string(strings.ToLower(str)[0])
+				}
+				return "x"
+			},
+		}).Parse(tmpl))
+
+	err = t.Execute(file, data)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
