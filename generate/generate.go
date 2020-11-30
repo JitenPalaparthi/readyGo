@@ -10,6 +10,7 @@ import (
 	"path"
 	"path/filepath"
 	"readyGo/mapping"
+	"runtime"
 	"sort"
 	"strings"
 	"text/template"
@@ -129,7 +130,16 @@ func (tg *Generate) CreateAll() (err error) {
 				return err
 			}
 			if content != "" {
-				li := strings.LastIndex(dst, "/")
+				var li int
+
+				cos := runtime.GOOS
+				switch cos {
+				case "windows":
+					li = strings.LastIndex(dst, "\\")
+				default:
+					li = strings.LastIndex(dst, "/")
+				}
+
 				dirs := dst[0:li]
 				err = os.MkdirAll(dirs, 0755)
 				if err != nil {
