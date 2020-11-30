@@ -1,6 +1,6 @@
 # readyGo 
 
-## What is readyGo?
+# Overview
 
 A Simple configuration gives you a working project.
 
@@ -9,7 +9,7 @@ A Simple configuration gives you a working project.
 
 *readGo cooks for you.As your business logic varies , you have to add the required spices according your taste but one thing .. readyGo is not a template engine, it gives you a working project.*
 
-## What made me to start this project?
+## Reason behind this project
 
 - A brief history of my work in general: I get ideas like anyone else. Start developing that idea, create a workspace, working on the project , by the time I am done with structure ,CRUD operations and even more repetitive logic/code, I loose most my time and then park the project aside. This made me understand that we should not loose time for repetitive tasks.So readyGo.
 
@@ -43,7 +43,7 @@ models:
     type: string
 
 ```
- ### From the above config, it says to rgo engine that,
+ ### From the above config, it says to readyGo engine that,
 
 - Create a http restapi that runs on port 50054.
 - Use the mongodb as database.
@@ -59,16 +59,4 @@ models:
 - A Dockerfile and docker-compose files are created.
 - An application.json configuration file is created.
 - The restful service is ready to be started without making a single change to the project.
-
-# Architecture
-
-There are mainly three components for any template engine in this project.
-
-Static Files : Static files are configurable for each type of the project like http, grpc etc. What static files to be copied .Example : helper.go , database.go are copied for mongo db project.
-
-Directories : The list of the directories for each type of the project. Example: database, handler ,interfaces are some of the directories for http-mongo project type.
-
-Templates : Based on the type of the project output , templates to be created. Example: main.go,handlers.go, interfaces.go, models.go are all are created based on the templates.
-
-You only need to define in the template_config.json file which directories, static files and templates to be created for particular type of the project, the rest readyGo does and it gives you a working project.
 
