@@ -1,7 +1,7 @@
 {
   "version":"0.1",
+  "kind": "http",
   "project": "example",
-  "type": "http",
   "port": "50054",
   "db": "mongo",
   "models": [

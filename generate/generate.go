@@ -23,7 +23,7 @@ import (
 type Generate struct {
 	Version string  `json:"version" yaml:"version"`
 	Project string  `json:"project" yaml:"project"` // ideally project root directory .i.e project name
-	Type    string  `json:"type" yaml:"type"`       // Type of the project http , grpc , CloudEvents , cli
+	Kind    string  `json:"kind" yaml:"kind"`       // Kind of the project http , grpc , CloudEvents , cli
 	Port    string  `json:"port" yaml:"port"`       // Port that is used to communicate http project
 	DB      string  `json:"db" yaml:"db"`           // mongo , sql based postgres mariadb etc
 	Models  []Model `json:"models" yaml:"models"`
@@ -273,7 +273,7 @@ func (tg *Generate) Validate() (err error) {
 	if tg.Project == "" {
 		return errors.New("Project name is missing")
 	}
-	if tg.Type == "" || (tg.Type != "http" && tg.Type != "grpc" && tg.Type != "cloudEvent" && tg.Type != "cli") {
+	if tg.Kind == "" || (tg.Kind != "http" && tg.Kind != "grpc" && tg.Kind != "cloudEvent" && tg.Kind != "cli") {
 		return errors.New(" Project type must be http | grpc | cloudEvent | cli")
 	}
 	if tg.DB == "" || (tg.DB != "mongo" && tg.DB != "sql") {
