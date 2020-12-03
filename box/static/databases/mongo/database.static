@@ -3,13 +3,12 @@ package database
 import (
 	"bufio"
 	"bytes"
-	"context"
 	"errors"
 	"fmt"
 	"io"
 	"log"
 	"mime/multipart"
-
+	"context"
 	"time"
 
 	"github.com/golang/glog"
@@ -61,6 +60,14 @@ try:
 	//defer connection.Close()
 	return &Database{Client: client, Name: dbName}, nil
 }
+
+// Disconnect is to dicsonnect database connections and all
+func (d *Database) Disconnect(ctx context.Context) {
+	if d != nil {
+		d.Client.(*mongo.Client).Disconnect(ctx)
+	}
+}
+
 
 // InsertRecord is to insert a record
 func (d *Database) InsertRecord(col string, data interface{}) (interface{}, error) {

@@ -2,7 +2,7 @@
   "version":"0.1",
   "kind": "http",
   "project": "example",
-  "port": "50054",
+  "port": "8080",
   "db": "mongo",
   "models": [
     {

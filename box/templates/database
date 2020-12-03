@@ -22,7 +22,7 @@ type {{.Model.Name}}DB struct {
 {{- $modelName:=.Model.Name}}
 {{- range .Model.Fields}}
 {{- if eq .IsKey true }}
-func ({{$modelName | Initial}} *{{$modelName}}DB) Is{{$modelName}}ExistsBy{{.Name}}({{.Name | ToLower}} {{.Kind}}) bool {
+func ({{$modelName | Initial}} *{{$modelName}}DB) Is{{$modelName}}ExistsBy{{.Name}}({{.Name | ToLower}} {{.Type}}) bool {
 	if {{.Name | ToLower}} == "" {
 		return false
 	}

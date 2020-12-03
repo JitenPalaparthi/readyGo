@@ -6,7 +6,7 @@ import (
 	"{{$.config.Project}}/database"
 	"{{$.config.Project}}/handlers"
 	"log"
-
+	"context"
 	"github.com/gin-gonic/gin"
 )
 
@@ -19,6 +19,7 @@ func main() {
 log.Println("Application {{.Project}} has started")
 
 session, err := database.GetConnection(DBConnection, DBName)
+	defer session.Disconnect(context.TODO())
 
 	if err != nil {
 		log.Fatal("mongodb database is not connected", err)
