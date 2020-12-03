@@ -18,6 +18,8 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/gridfs"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/mongo/readpref"
+
 )
 
 const (
@@ -35,14 +37,23 @@ func GetConnection(url, dbName string) (*Database, error) {
 	var retries int8 = 0
 try:
 	retries++
-	clientOptions := options.Client().ApplyURI(url)
-	// Connect to MongoDB
-	client, err := mongo.Connect(context.TODO(), clientOptions)
-	fmt.Println(err)
+	client, err := mongo.NewClient(options.Client().ApplyURI(url))
+	if err != nil {
+		time.Sleep(Connection_Max_Retry_Duration)
+		goto try
+	}
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	err = client.Connect(ctx)
+	if err != nil {
+		time.Sleep(Connection_Max_Retry_Duration)
+		goto try
+	}
+	defer client.Disconnect(ctx)
+	err = client.Ping(ctx, readpref.Primary())
 	if err != nil {
 		if retries < Connection_Max_Retries {
 			time.Sleep(Connection_Max_Retry_Duration)
-			glog.Info("Trying to connect ---", retries)
+			glog.Info("Trying to connect to mongodb.trying for the ", retries, " time")
 			goto try
 		}
 		return nil, err
