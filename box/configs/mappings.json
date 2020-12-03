@@ -47,12 +47,84 @@
         },
         {
             "opType": "multiple-file-templates",
-            "src": "templates/database",
+            "src": "templates/database/mongo/db",
             "dst": "database"
         },
         {
             "opType": "multiple-file-templates",
-            "src": "templates/handlers",
+            "src": "templates/http/handlers",
+            "dst": "handlers"
+        },
+        {
+            "opType": "single-file-templates",
+            "src": "templates/config",
+            "dst": "application.json"
+        },
+        {
+            "opType": "single-file-templates",
+            "src": "templates/main",
+            "dst": "main.go"
+        },
+        {
+            "opType": "single-file-templates",
+            "src": "templates/docker-compose",
+            "dst": "docker-compose.yaml"
+        }
+    ],
+    "http_sql_pg": [
+        {
+            "opType": "directories",
+            "src": "models",
+            "dst": ""
+        },
+        {
+            "opType": "directories",
+            "src": "interfaces",
+            "dst": ""
+        },
+        {
+            "opType": "directories", 
+            "src": "database",
+            "dst": ""
+        },
+        {
+            "opType": "directories",
+            "src": "handlers",
+            "dst": ""
+        },
+        {
+            "opType": "static-files",
+            "src": "static/databases/sql/postgres/database.static",
+            "dst": "database/database.go"
+        },
+        {
+            "opType": "static-files",
+            "src": "static/containers/Dockerfile",
+            "dst": "Dockerfile"
+        },
+        {
+            "opType": "static-files",
+            "src": "static/helper/helper.static",
+            "dst": "helper/helper.go"
+        },
+        {
+            "opType": "multiple-file-templates",
+            "src": "templates/models",
+            "dst": "models"
+        },
+        {
+            "opType": "multiple-file-templates",
+            "src": "templates/interfaces",
+            "dst": "interfaces"
+        },
+        {
+            "opType": "multiple-file-templates",
+            "src": "templates/database/sql/db",
+            "dst": "database"
+        },
+        {
+            "opType": "multiple-file-templates",
+            "src": "templates/http/handlers",
             "dst": "handlers"
         },
         {

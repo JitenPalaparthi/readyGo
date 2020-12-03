@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"fmt"
 	"log"
 	"readyGo/boxops"
 	"readyGo/generate"
@@ -14,7 +15,7 @@ var applyFile, projectType string
 func init() {
 
 	applyCmd.Flags().StringVarP(&applyFile, "filename", "f", "default", "config file to generate the project")
-	applyCmd.Flags().StringVarP(&projectType, "type", "t", "http_mongo", "type of the project http_mongo | http_sql | grpc_mogo | grpc_sql | cloudevent")
+	applyCmd.Flags().StringVarP(&projectType, "type", "t", "http_mongo", "type of the project http_mongo | http_sql_pg | grpc_mogo | grpc_sql | cloudevent")
 
 	rootCmd.AddCommand(applyCmd)
 }
@@ -27,6 +28,7 @@ var applyCmd = &cobra.Command{
 
 		ops := boxops.New("../box")
 		mapping, err := mapping.New(ops, "configs/mappings.json", projectType)
+		fmt.Println(*mapping)
 		if err != nil {
 			log.Fatal(err)
 		}

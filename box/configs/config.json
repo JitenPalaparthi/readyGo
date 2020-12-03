@@ -1,9 +1,9 @@
 {
   "version":"0.1",
   "kind": "http",
-  "project": "example",
+  "project": "sample_project",
   "port": "8080",
-  "db": "mongo",
+  "db": "sql",
   "models": [
     {
       "name": "person",

@@ -1,0 +1,20 @@
+package database
+
+import (
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
+)
+
+type Database struct {
+	Client interface{}
+	DBName string
+}
+
+func GetConnection(url, dbName string) (*Database, error) {
+	db, err := gorm.Open(postgres.Open(url), &gorm.Config{})
+	if err != nil {
+		return nil, err
+	}
+	//defer connection.Close()
+	return &Database{Client: db, DBName: dbName}, nil
+}
