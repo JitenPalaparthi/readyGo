@@ -3,12 +3,13 @@ package database
 import (
 	"bufio"
 	"bytes"
+	"context"
 	"errors"
 	"fmt"
 	"io"
 	"log"
 	"mime/multipart"
-	"context"
+	"strconv"
 	"time"
 
 	"github.com/golang/glog"
@@ -18,7 +19,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/gridfs"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
-
 )
 
 const (
@@ -47,7 +47,7 @@ try:
 		time.Sleep(Connection_Max_Retry_Duration)
 		goto try
 	}
-	defer client.Disconnect(ctx)
+	//defer client.Disconnect(ctx)
 	err = client.Ping(ctx, readpref.Primary())
 	if err != nil {
 		if retries < Connection_Max_Retries {
@@ -68,39 +68,39 @@ func (d *Database) Disconnect(ctx context.Context) {
 	}
 }
 
-
 // InsertRecord is to insert a record
-func (d *Database) InsertRecord(col string, data interface{}) (interface{}, error) {
+func (d *Database) InsertRecord(col string, data interface{}) (string, error) {
 	if d.Client == nil {
-		return nil, errors.New("Database client is null")
+		return "", errors.New("Database client is null")
 	}
 	collection := d.Client.(*mongo.Client).Database(d.Name).Collection(col)
 
 	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
 	res, err := collection.InsertOne(ctx, data)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
-	id := res.InsertedID
+
+	id := res.InsertedID.(primitive.ObjectID).Hex()
 	return id, nil
 
 }
 
 // UpdateRecordByID is to update a record based on the id provided
-func (d *Database) UpdateRecordByID(col, id string, data interface{}) (int64, error) {
+func (d *Database) UpdateRecordByID(col, id string, data interface{}) (string, error) {
 	if d.Client == nil {
-		return -1, errors.New("Database client is null")
+		return "", errors.New("Database client is null")
 	}
 	collection := d.Client.(*mongo.Client).Database(d.Name).Collection(col)
 	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
 
 	if id == "" {
-		return -1, errors.New("parameter id is empty")
+		return "", errors.New("parameter id is empty")
 	}
 	objID, err := primitive.ObjectIDFromHex(id)
 
 	if err != nil {
-		return -1, err
+		return "", err
 	}
 	filters := bson.M{
 		"_id": objID,
@@ -112,16 +112,16 @@ func (d *Database) UpdateRecordByID(col, id string, data interface{}) (int64, er
 
 	res, err := collection.UpdateOne(ctx, filters, update)
 	if err != nil {
-		return -1, err
+		return "", err
 	}
-	count := res.ModifiedCount
+	count := strconv.FormatInt(res.ModifiedCount, 10)
 	return count, nil
 }
 
 // UpdteRecord is to update a record based on the filters provided
-func (d *Database) UpdateRecord(col string, filter, data interface{}) (int64, error) {
+func (d *Database) UpdateRecord(col string, filter, data interface{}) (string, error) {
 	if d.Client == nil {
-		return -1, errors.New("Database client is null")
+		return "", errors.New("Database client is null")
 	}
 	collection := d.Client.(*mongo.Client).Database(d.Name).Collection(col)
 	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
@@ -132,27 +132,27 @@ func (d *Database) UpdateRecord(col string, filter, data interface{}) (int64, er
 
 	res, err := collection.UpdateOne(ctx, filter, update)
 	if err != nil {
-		return -1, err
+		return "", err
 	}
-	count := res.ModifiedCount
+	count := strconv.FormatInt(res.ModifiedCount, 10)
 	return count, nil
 }
 
 // DeleteRecordByID is to delete a record based on the id provided
-func (d *Database) DeleteRecordByID(col, id string) (int64, error) {
+func (d *Database) DeleteRecordByID(col, id string) (string, error) {
 	if d.Client == nil {
-		return -1, errors.New("Database client is null")
+		return "", errors.New("Database client is null")
 	}
 	collection := d.Client.(*mongo.Client).Database(d.Name).Collection(col)
 	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
 
 	if id == "" {
-		return -1, errors.New("parameter id is empty")
+		return "", errors.New("parameter id is empty")
 	}
 	objID, err := primitive.ObjectIDFromHex(id)
 
 	if err != nil {
-		return -1, err
+		return "", err
 	}
 	filters := bson.M{
 		"_id": objID,
@@ -160,48 +160,50 @@ func (d *Database) DeleteRecordByID(col, id string) (int64, error) {
 
 	res, err := collection.DeleteOne(ctx, filters)
 	if err != nil {
-		return -1, err
+		return "", err
 	}
-	count := res.DeletedCount
+
+	count := strconv.FormatInt(res.DeletedCount, 10)
 	return count, nil
 }
 
 // DeleteRecord is to delete a record based on the filters provided
-func (d *Database) DeleteRecord(col string, filter interface{}) (int64, error) {
+func (d *Database) DeleteRecord(col string, filter interface{}) (string, error) {
 	if d.Client == nil {
-		return -1, errors.New("Database client is null")
+		return "", errors.New("Database client is null")
 	}
 	collection := d.Client.(*mongo.Client).Database(d.Name).Collection(col)
 	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
 
 	res, err := collection.DeleteOne(ctx, filter)
 	if err != nil {
-		return -1, err
+		return "", err
 	}
-	count := res.DeletedCount
+	count := strconv.FormatInt(res.DeletedCount, 10)
+
 	return count, nil
 }
 
 // DeleteRecords is to delete a records based on the filters provided
-func (d *Database) DeleteRecords(col string, filter interface{}) (int64, error) {
+func (d *Database) DeleteRecords(col string, filter interface{}) (string, error) {
 	if d.Client == nil {
-		return -1, errors.New("Database client is null")
+		return "", errors.New("Database client is null")
 	}
 	collection := d.Client.(*mongo.Client).Database(d.Name).Collection(col)
 	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
 
 	res, err := collection.DeleteMany(ctx, filter)
 	if err != nil {
-		return -1, err
+		return "", err
 	}
-	count := res.DeletedCount
+	count := strconv.FormatInt(res.DeletedCount, 10)
 	return count, nil
 }
 
 // FindRecord is to find a record based on the filters provided
 func (d *Database) FindRecord(col string, filter interface{}) (interface{}, error) {
 	if d.Client == nil {
-		return -1, errors.New("Database client is null")
+		return nil, errors.New("Database client is null")
 	}
 	collection := d.Client.(*mongo.Client).Database(d.Name).Collection(col)
 	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)

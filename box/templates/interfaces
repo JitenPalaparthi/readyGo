@@ -9,9 +9,9 @@ import (
 
 // {{.Model.Name}} Interface is to define all {{.Model.Name | ToLower}} related methods
 type {{.Model.Name}}Interface interface {
-    Create{{.Model.Name}}({{.Model.Name | ToLower}} *models.{{.Model.Name}})(interface{}, error)
-	Update{{.Model.Name}}ByID(id string, data map[string]interface{}) (result interface{}, err error)
-	Delete{{.Model.Name}}ByID(id string) (result interface{}, err error)
+    Create{{.Model.Name}}({{.Model.Name | ToLower}} *models.{{.Model.Name}})(string, error)
+	Update{{.Model.Name}}ByID(id string, data map[string]interface{}) (string, error)
+	Delete{{.Model.Name}}ByID(id string) (string, error)
 	Get{{.Model.Name}}ByID(id string) (*models.{{.Model.Name}}, error)
 	GetAll{{.Model.Name}}s(skip int64, limit int64, selector interface{}) ([]models.{{.Model.Name}}, error)
 	GetAll{{.Model.Name}}sBy(search string, selector interface{}, skip int64, limit int64) ([]models.{{.Model.Name}}, error)
