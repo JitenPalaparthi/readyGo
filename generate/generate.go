@@ -21,13 +21,14 @@ import (
 
 // Generate is a type that holds configuration data
 type Generate struct {
-	Version string  `json:"version" yaml:"version"`
-	Project string  `json:"project" yaml:"project"` // ideally project root directory .i.e project name
-	Kind    string  `json:"kind" yaml:"kind"`       // Kind of the project http , grpc , CloudEvents , cli
-	Port    string  `json:"port" yaml:"port"`       // Port that is used to communicate http project
-	DB      string  `json:"db" yaml:"db"`           // mongo , sql based postgres mariadb etc
-	Models  []Model `json:"models" yaml:"models"`
-	Mapping *mapping.Mapping
+	Version  string   `json:"version" yaml:"version"`
+	Project  string   `json:"project" yaml:"project"` // ideally project root directory .i.e project name
+	Kind     string   `json:"kind" yaml:"kind"`       // Kind of the project http , grpc , CloudEvents , cli
+	Port     string   `json:"port" yaml:"port"`       // Port that is used to communicate http project
+	DB       string   `json:"db" yaml:"db"`           // mongo , sql based postgres mariadb etc
+	Database Database `json:"database" yaml:"database"`
+	Models   []Model  `json:"models" yaml:"models"`
+	Mapping  *mapping.Mapping
 }
 
 // Model is to hold model data from configuration file
@@ -42,6 +43,13 @@ type Field struct {
 	Type        string `json:"type" yaml:"type"`               // Go basic types are only allowed
 	IsKey       bool   `json:"isKey" yaml:"isKey"`             // If it is a key field . Key fields generates different methods to check the data in the database is unique or not
 	ValidateExp string `json:"validateExp" yaml:"validateExp"` // Regular expression that would be used for field level validations in the models
+}
+
+// Database struct type contains database related information
+type Database struct {
+	Kind             string `json:"kind" yaml:"kind"`
+	ConnectionString string `json:"connectionString" yaml:"connectionString"`
+	Name             string `json:"name" yaml:"name"`
 }
 
 // New is to generate a new generater.
@@ -309,6 +317,19 @@ func (tg *Generate) Validate() (err error) {
 				id := Field{Name: "Id", Type: "string"}
 				tg.Models[i].Fields = append(tg.Models[i].Fields, id)
 			}
+			//	if ok{
+			//  todo if the type of the field for id is not string .. it has to be string
+			//	}
+		}
+		if tg.DB == "sql" {
+			_, ok := fieldMap["id"]
+			if !ok {
+				id := Field{Name: "Id", Type: "int"}
+				tg.Models[i].Fields = append(tg.Models[i].Fields, id)
+			}
+			//	if ok{
+			//  todo if the type of the field for id is not int .. it has to be int
+			//	}
 		}
 	}
 

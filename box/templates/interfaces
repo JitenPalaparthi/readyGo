@@ -14,6 +14,6 @@ type {{.Model.Name}}Interface interface {
 	Delete{{.Model.Name}}ByID(id string) (string, error)
 	Get{{.Model.Name}}ByID(id string) (*models.{{.Model.Name}}, error)
 	GetAll{{.Model.Name}}s(skip int64, limit int64, selector interface{}) ([]models.{{.Model.Name}}, error)
-	GetAll{{.Model.Name}}sBy(search string, selector interface{}, skip int64, limit int64) ([]models.{{.Model.Name}}, error)
+	GetAll{{.Model.Name}}sBy(key string, value interface{}, skip int64, limit int64) ([]models.{{.Model.Name}}, error)
     // Write any additional methods and implement them in database package
 }

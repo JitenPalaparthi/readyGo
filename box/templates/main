@@ -11,12 +11,12 @@ import (
 )
 
 const (
-	DBConnection = "mongodb://localhost:27017"
-	DBName       = "demoDb"
+	DBConnection =  "{{ $.config.Database.ConnectionString }}"
+	DBName       =  "{{ $.config.Database.Name }}"
 )
 
 func main() {
-log.Println("Application {{.Project}} has started")
+log.Println("Application {{$.config.Project}} has started")
 
 session, err := database.GetConnection(DBConnection, DBName)
 	//defer session.Disconnect(context.TODO())

@@ -197,17 +197,10 @@ func ({{.Model.Name | Initial}} *{{.Model.Name}}) GetAll{{.Model.Name}}sBy() fun
 				return
 			}
 
-			qstring := c.Request.URL.Query().Get("search")
+			qkey := c.Request.URL.Query().Get("key")
+			qvalue := c.Request.URL.Query().Get("value")
 
-			selector := make(map[string]interface{})
-			jsonMap := c.Request.URL.Query()
-
-			for key, val := range jsonMap {
-				if key != "search" {
-					selector[key] = val[0]
-				}
-			}
-			{{.Model.Name | ToLower}}s, err := {{.Model.Name | Initial}}.I{{.Model.Name}}.GetAll{{.Model.Name}}sBy(qstring, selector, int64(iskip), int64(ilimit))
+			{{.Model.Name | ToLower}}s, err := {{.Model.Name | Initial}}.I{{.Model.Name}}.GetAll{{.Model.Name}}sBy(qkey, qvalue, int64(iskip), int64(ilimit))
 			if err != nil {
 				c.JSON(http.StatusBadRequest, gin.H{
 					"status":  "failed",

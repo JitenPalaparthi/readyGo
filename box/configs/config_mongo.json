@@ -1,0 +1,42 @@
+{
+  "version":"0.1",
+  "kind": "http",
+  "project": "mongo_sample",
+  "port": "8082",
+  "db": "mongo",
+  "database": {
+    "kind": "mongo",
+    "connectionString": "mongodb://localhost:27017",
+    "name": "sample"
+  },
+  "models": [
+    {
+      "name": "person",
+      "fields": [
+         {
+          "name": "name",
+          "type": "string",
+          "isKey": true
+        },
+        {
+          "name": "email",
+          "type": "string",
+          "validateExp": "[a-zA-Z0-9]",
+          "isKey": true
+        },
+        {
+          "name": "mobile",
+          "type": "string"
+        },
+        {
+          "name": "status",
+          "type": "string"
+        },
+        {
+          "name": "last_Modified",
+          "type": "string"
+        }
+      ]
+    }
+  ]
+}
