@@ -21,14 +21,14 @@ import (
 
 // Generate is a type that holds configuration data
 type Generate struct {
-	Version  string   `json:"version" yaml:"version"`
-	Project  string   `json:"project" yaml:"project"` // ideally project root directory .i.e project name
-	Kind     string   `json:"kind" yaml:"kind"`       // Kind of the project http , grpc , CloudEvents , cli
-	Port     string   `json:"port" yaml:"port"`       // Port that is used to communicate http project
-	DB       string   `json:"db" yaml:"db"`           // mongo , sql based postgres mariadb etc
-	Database Database `json:"database" yaml:"database"`
-	Models   []Model  `json:"models" yaml:"models"`
-	Mapping  *mapping.Mapping
+	Version      string       `json:"version" yaml:"version"`
+	Project      string       `json:"project" yaml:"project"`           // ideally project root directory .i.e project name
+	Kind         string       `json:"kind" yaml:"kind"`                 // Kind of the project http , grpc , CloudEvents , cli
+	Port         string       `json:"port" yaml:"port"`                 // Port that is used to communicate http project
+	APISpec      APISpec      `json:"apiSpec" yaml:"apiSpec"`           //Api releted information generally used to design apis
+	DatabaseSpec DatabaseSpec `json:"databaseSpec" yaml:"databaseSpec"` //Database related information like sql|mongo connection string and db name .. to be maintained in this
+	Models       []Model      `json:"models" yaml:"models"`
+	Mapping      *mapping.Mapping
 }
 
 // Model is to hold model data from configuration file
@@ -45,11 +45,18 @@ type Field struct {
 	ValidateExp string `json:"validateExp" yaml:"validateExp"` // Regular expression that would be used for field level validations in the models
 }
 
-// Database struct type contains database related information
-type Database struct {
+// DatabaseSpec struct type contains database related information
+type DatabaseSpec struct {
 	Kind             string `json:"kind" yaml:"kind"`
 	ConnectionString string `json:"connectionString" yaml:"connectionString"`
 	Name             string `json:"name" yaml:"name"`
+}
+
+// APISpec struct type contains api related information
+type APISpec struct {
+	Kind    string `json:"kind" yaml:"kind"`       //http | grpc | cloudEvent
+	Port    string `json:"port" yaml:"port"`       // port to run on
+	Version string `json:"version" yaml:"version"` //Version that is used to define apis.example v1/public/get v2/private/create etc.
 }
 
 // New is to generate a new generater.
@@ -284,7 +291,7 @@ func (tg *Generate) Validate() (err error) {
 	if tg.Kind == "" || (tg.Kind != "http" && tg.Kind != "grpc" && tg.Kind != "cloudEvent" && tg.Kind != "cli") {
 		return errors.New(" Project type must be http | grpc | cloudEvent | cli")
 	}
-	if tg.DB == "" || (tg.DB != "mongo" && tg.DB != "sql") {
+	if tg.DatabaseSpec.Kind == "" || (tg.DatabaseSpec.Kind != "mongo" && tg.DatabaseSpec.Kind != "sql") {
 		return errors.New(" Databas type (DB) must be mongo | sql ")
 	}
 	// The following are supported types
@@ -311,7 +318,7 @@ func (tg *Generate) Validate() (err error) {
 				return errors.New("Not supported field type:" + f.Type)
 			}
 		}
-		if tg.DB == "mongo" {
+		if tg.DatabaseSpec.Kind == "mongo" {
 			_, ok := fieldMap["id"]
 			if !ok {
 				id := Field{Name: "Id", Type: "string"}
@@ -321,7 +328,7 @@ func (tg *Generate) Validate() (err error) {
 			//  todo if the type of the field for id is not string .. it has to be string
 			//	}
 		}
-		if tg.DB == "sql" {
+		if tg.DatabaseSpec.Kind == "sql" {
 			_, ok := fieldMap["id"]
 			if !ok {
 				id := Field{Name: "Id", Type: "int"}

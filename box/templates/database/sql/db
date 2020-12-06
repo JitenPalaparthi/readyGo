@@ -1,0 +1,72 @@
+package database
+
+import (
+	"{{.Project}}/models"
+	"gorm.io/gorm"
+	"strconv"
+)
+
+// {{.Model.Name}}DB is to maintain database related methods
+type {{.Model.Name}}DB struct {
+	DB *Database
+}
+
+func ({{.Model.Name | Initial}} *{{.Model.Name}}DB) Create{{.Model.Name}}({{.Model.Name | ToLower}} *models.{{.Model.Name}}) (result string, err error) {
+	err = {{.Model.Name | Initial}}.DB.Client.(*gorm.DB).AutoMigrate({{.Model.Name | ToLower}})
+	if err != nil {
+		return "", err
+	}
+	res := {{.Model.Name | Initial}}.DB.Client.(*gorm.DB).Create({{.Model.Name | ToLower}})
+	if res.Error != nil {
+		return "", res.Error
+	}
+
+	result = strconv.Itoa({{.Model.Name | ToLower}}.Id)
+	return result, nil
+}
+
+func ({{.Model.Name | Initial}} *{{.Model.Name}}DB)  Update{{.Model.Name}}ByID(id string, data map[string]interface{}) (result string, err error) {
+	res := {{.Model.Name | Initial}}.DB.Client.(*gorm.DB).Model(&models.{{.Model.Name}}{}).Where("id=?", id).Updates(data)
+	if res.Error != nil {
+		return "", res.Error
+	}
+	result = strconv.FormatInt(res.RowsAffected, 10)
+	return result, nil
+}
+
+func ({{.Model.Name | Initial}} *{{.Model.Name}}DB)  Delete{{.Model.Name}}ByID(id string) (result string, err error) {
+	res := {{.Model.Name | Initial}}.DB.Client.(*gorm.DB).Delete(&models.{{.Model.Name}}{}, &id)
+	if res.Error != nil {
+		return "", res.Error
+	}
+	result = strconv.FormatInt(res.RowsAffected, 10)
+	return result, nil
+}
+
+func  ({{.Model.Name | Initial}} *{{.Model.Name}}DB) Get{{.Model.Name}}ByID(id string) ({{.Model.Name | ToLower}} *models.{{.Model.Name}}, err error) {
+	{{.Model.Name | ToLower}} = &models.{{.Model.Name}}{}
+	res := {{.Model.Name | Initial}}.DB.Client.(*gorm.DB).First({{.Model.Name | ToLower}}, &id)
+	if res.Error != nil {
+		return nil, res.Error
+	}
+	return {{.Model.Name | ToLower}}, nil
+}
+
+
+func  ({{.Model.Name | Initial}} *{{.Model.Name}}DB) GetAll{{.Model.Name}}s(skip int64, limit int64, selector interface{}) ([]models.{{.Model.Name}}, error) {
+{{.Model.Name | ToLower}}s := []models.{{.Model.Name}}{}
+	res := {{.Model.Name | Initial}}.DB.Client.(*gorm.DB).Limit(int(skip)).Offset(int(limit)).Find(&{{.Model.Name | ToLower}}s)
+	if res.Error != nil {
+		return nil, res.Error
+	}
+	return {{.Model.Name | ToLower}}s , nil
+}
+
+func ({{.Model.Name | Initial}} *{{.Model.Name}}DB) GetAll{{.Model.Name}}sBy(key string, value interface{}, skip int64, limit int64) ([]models.{{.Model.Name}}, error) {
+{{.Model.Name | ToLower}}s := []models.{{.Model.Name}}{}
+	res:={{.Model.Name | Initial}}.DB.Client.(*gorm.DB).Where(key+"=?", value).Limit(int(skip)).Offset(int(limit)).Find(&{{.Model.Name | ToLower}}s)
+	if res.Error != nil {
+		return nil, res.Error
+	}
+	return {{.Model.Name | ToLower}}s , nil
+}

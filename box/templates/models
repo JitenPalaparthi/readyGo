@@ -15,7 +15,7 @@ import (
 )
 	type {{ .Model.Name }} struct {
 	{{- range .Model.Fields }}
-	{{ .Name }} {{ .Type }} `json:"{{.Name | ToLower}}"  {{ if eq $.config.DB "mongo" }}{{ if eq .Name "Id"}}bson:"_id,omitempty"{{else}}bson:"{{.Name | ToLower}}"{{- end}}{{- end}}`
+	{{ .Name }} {{ .Type }} `json:"{{.Name | ToLower}}"  {{ if eq $.config.DatabaseSpec.Kind "mongo" }}{{ if eq .Name "Id"}}bson:"_id,omitempty"{{else}}bson:"{{.Name | ToLower}}"{{- end}}{{- end}}`
 	{{- end}}
 	}
 {{ $ModelName := .Model.Name }}

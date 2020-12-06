@@ -1,0 +1,163 @@
+package database
+
+import (
+	"context"
+	"errors"
+	"{{.Project}}/helper"
+	"{{.Project}}/models"
+	"time"
+
+	"github.com/mitchellh/mapstructure"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
+)
+
+// {{.Model.Name}}DB is to maintain database related methods
+type {{.Model.Name}}DB struct {
+	DB *Database
+}
+
+{{- $modelName:=.Model.Name}}
+{{- range .Model.Fields}}
+{{- if eq .IsKey true }}
+func ({{$modelName | Initial}} *{{$modelName}}DB) Is{{$modelName}}ExistsBy{{.Name}}({{.Name | ToLower}} {{.Type}}) bool {
+	if {{.Name | ToLower}} == "" {
+		return false
+	}
+	filter := make(map[string]interface{}, 0)
+	filter["{{.Name | ToLower}}"] = {{.Name | ToLower}}
+	count, err := {{$modelName | Initial}}.DB.GetCount("{{$modelName | ToLower}}s", filter)
+	if err != nil {
+		if err.Error() == "not found" {
+			return false
+		}
+	}
+	if count > 0 {
+		return true
+	}
+	return false
+}
+{{- end}}
+{{- end}}
+
+func ({{.Model.Name | Initial}} *{{.Model.Name}}DB) Create{{.Model.Name}}({{.Model.Name | ToLower}} *models.{{.Model.Name}}) (result string, err error) {
+		{{- $modelName:=.Model.Name}}
+		{{- range .Model.Fields}}
+		{{- if eq .IsKey true }}
+		if {{$modelName | Initial}}.Is{{$modelName}}ExistsBy{{.Name}}({{$modelName | ToLower}}.{{.Name}}) {
+		return "",errors.New("{{$modelName}} already existed")
+		}
+		{{- end}}
+		{{- end}}
+		data, err := helper.ToMap({{.Model.Name | ToLower}}, "bson", "_id,omitempty")
+		if err != nil {
+			return "", err
+		}
+		result, err = {{.Model.Name | Initial}}.DB.InsertRecord("{{.Model.Name | ToLower}}s", data)
+		if err != nil {
+			return "", err
+		}
+	return result, nil
+}
+
+func ({{.Model.Name | Initial}} *{{.Model.Name}}DB) Update{{.Model.Name}}ByID(id string, data map[string]interface{}) (result string, err error) {
+	result, err = {{.Model.Name | Initial}}.DB.UpdateRecordByID("{{.Model.Name | ToLower}}s", id, data)
+	if err != nil {
+		return "", err
+	}
+	return result, nil
+}
+
+func ({{.Model.Name | Initial}} *{{.Model.Name}}DB) Delete{{.Model.Name}}ByID(id string) (result string, err error) {
+	result, err = {{.Model.Name | Initial}}.DB.DeleteRecordByID("{{.Model.Name | ToLower}}s", id)
+	if err != nil {
+		return "", err
+	}
+	return result, nil
+}
+
+func ({{.Model.Name | Initial}} *{{.Model.Name}}DB) Get{{.Model.Name}}ByID(id string) (*models.{{.Model.Name}}, error) {
+	{{.Model.Name | ToLower}} := &models.{{.Model.Name}}{}
+	mapData, err := {{.Model.Name | Initial}}.DB.FindRecordByID("{{.Model.Name | ToLower}}s",id)
+	if err != nil {
+		return nil, err
+	}
+	if err := mapstructure.Decode(mapData, &{{.Model.Name | ToLower}}); err != nil {
+		return nil, err
+	}
+	_id := mapData.(map[string]interface{})["_id"].(primitive.ObjectID).Hex()
+	{{.Model.Name | ToLower}}.Id = _id
+	return {{.Model.Name | ToLower}}, nil
+}
+
+func ({{.Model.Name | Initial}} *{{.Model.Name}}DB) GetAll{{.Model.Name}}s(skip int64, limit int64, selector interface{}) ([]models.{{.Model.Name}}, error) {
+	if _, ok := selector.(map[string]interface{}); !ok {
+		return nil, errors.New("wrong input type")
+	}
+	var result []models.{{.Model.Name}}
+	colleection := {{.Model.Name | Initial}}.DB.Client.(*mongo.Client).Database({{.Model.Name | Initial}}.DB.Name).Collection("{{.Model.Name | ToLower}}s")
+	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
+	findOptions := options.Find()
+	findOptions.SetLimit(limit).SetSkip(skip)
+	cur, err := colleection.Find(ctx, selector, findOptions)
+	if err != nil {
+		return nil, err
+	}
+	result = make([]models.{{.Model.Name}}, 0)
+	defer cur.Close(ctx)
+	for cur.Next(ctx) {
+		iresult := models.{{.Model.Name}}{}
+		err := cur.Decode(&iresult)
+		if err != nil {
+			return nil, err
+		}
+		result = append(result, iresult)
+		// do something with result....
+	}
+	if err := cur.Err(); err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
+func ({{.Model.Name | Initial}} *{{.Model.Name}}DB) GetAll{{.Model.Name}}sBy(key string, value interface{}, skip int64, limit int64) ([]models.{{.Model.Name}}, error) {
+	if key == "" {
+		return nil, errors.New("wrong input type")
+	}
+
+	if value == nil {
+		return nil, errors.New("wrong input type")
+	}
+
+	selector := make(map[string]interface{})
+
+	var result []models.{{.Model.Name}}
+	colleection := {{.Model.Name | Initial}}.DB.Client.(*mongo.Client).Database({{.Model.Name | Initial}}.DB.Name).Collection("{{.Model.Name | ToLower}}s")
+	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
+	findOptions := options.Find()
+	findOptions.SetLimit(limit).SetSkip(skip)
+
+	selector[key] = value
+
+	cur, err := colleection.Find(ctx, selector, findOptions)
+	if err != nil {
+		return nil, err
+	}
+	result = make([]models.{{.Model.Name}}, 0)
+	defer cur.Close(ctx)
+	for cur.Next(ctx) {
+		iresult := models.{{.Model.Name}}{}
+		err := cur.Decode(&iresult)
+		if err != nil {
+			return nil, err
+		}
+		result = append(result, iresult)
+		// do something with result....
+	}
+	if err := cur.Err(); err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}

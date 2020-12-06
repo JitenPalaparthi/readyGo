@@ -1,19 +1,22 @@
 {
-  "version":"0.1",
+  "version": "0.1",
   "kind": "http",
   "project": "mongo_sample",
-  "port": "8082",
-  "db": "mongo",
-  "database": {
+  "databaseSpec": {
     "kind": "mongo",
     "connectionString": "mongodb://localhost:27017",
     "name": "sample"
+  },
+  "apiSpec": {
+    "kind": "http",
+    "port": "8082",
+    "version": "v1"
   },
   "models": [
     {
       "name": "person",
       "fields": [
-         {
+        {
           "name": "name",
           "type": "string",
           "isKey": true

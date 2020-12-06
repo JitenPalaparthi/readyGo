@@ -11,8 +11,8 @@ import (
 )
 
 const (
-	DBConnection =  "{{ $.config.Database.ConnectionString }}"
-	DBName       =  "{{ $.config.Database.Name }}"
+	DBConnection =  "{{ $.config.DatabaseSpec.ConnectionString }}"
+	DBName       =  "{{ $.config.DatabaseSpec.Name }}"
 )
 
 func main() {
@@ -33,7 +33,7 @@ session, err := database.GetConnection(DBConnection, DBName)
      {{ range $.config.Models }}
      {{.Name | ToLower}} := new(handlers.{{.Name}})
 	 {{.Name | ToLower}}.I{{.Name}} = &database.{{.Name}}DB{DB: session}
-     {{.Name | ToLower}}Group := router.Group("/v1/{{.Name | ToLower}}")
+     {{.Name | ToLower}}Group := router.Group("/{{$.config.APISpec.Version}}/{{.Name | ToLower}}")
     {
      {{.Name | ToLower}}Group.POST("/create", {{.Name | ToLower}}.Create{{.Name}}())
 	 {{.Name | ToLower}}Group.DELETE("/delete/:id", {{.Name | ToLower}}.Delete{{.Name}}ByID())
@@ -43,6 +43,6 @@ session, err := database.GetConnection(DBConnection, DBName)
 	 {{.Name | ToLower}}Group.GET("/getAllBy/:skip/:limit", {{.Name | ToLower}}.GetAll{{.Name}}sBy())
     }
      {{end}}
-    router.Run(":{{$.config.Port}}")
+    router.Run(":{{$.config.APISpec.Port}}")
 
 }
