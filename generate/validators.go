@@ -38,7 +38,6 @@ func (tg *Generate) ValidateAndChangeIdentifier() (err error) {
 			tg.Models[i].Fields[j].Name = strings.ToUpper(string(tmpField[0])) + string(tmpField[1:])
 		}
 	}
-
 	return nil
 
 }

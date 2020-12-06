@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"fmt"
 	"log"
 	"readyGo/boxops"
 	"readyGo/generate"
@@ -28,7 +27,7 @@ var applyCmd = &cobra.Command{
 
 		ops := boxops.New("../box")
 		mapping, err := mapping.New(ops, "configs/mappings.json", projectType)
-		fmt.Println(*mapping)
+		//fmt.Println(*mapping)
 		if err != nil {
 			log.Fatal(err)
 		}
