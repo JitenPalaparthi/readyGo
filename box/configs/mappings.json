@@ -27,11 +27,6 @@
         },
         {
             "opType": "static-files",
-            "src": "static/containers/Dockerfile",
-            "dst": "Dockerfile"
-        },
-        {
-            "opType": "static-files",
             "src": "static/helper/helper.static",
             "dst": "helper/helper.go"
         },
@@ -69,6 +64,11 @@
             "opType": "single-file-templates",
             "src": "templates/docker-compose",
             "dst": "docker-compose.yaml"
+        },
+        {
+            "opType": "single-file-templates",
+            "src": "templates/http/Dockerfile",
+            "dst": "Dockerfile"
         }
     ],
     "http_sql_pg": [
@@ -96,11 +96,6 @@
             "opType": "static-files",
             "src": "static/databases/sql/postgres/database.static",
             "dst": "database/database.go"
-        },
-        {
-            "opType": "static-files",
-            "src": "static/containers/Dockerfile",
-            "dst": "Dockerfile"
         },
         {
             "opType": "static-files",
@@ -141,6 +136,11 @@
             "opType": "single-file-templates",
             "src": "templates/docker-compose",
             "dst": "docker-compose.yaml"
+        },
+        {
+            "opType": "single-file-templates",
+            "src": "templates/http/Dockerfile",
+            "dst": "Dockerfile"
         }
     ]
 }
