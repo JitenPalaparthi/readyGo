@@ -27,7 +27,7 @@ func Validate{{.Model.Name}}({{.Model.Name | Initial}} *{{.Model.Name}})(err err
 {{- if .ValidateExp }}
 var rx{{.Name}}=regexp.MustCompile("{{.ValidateExp}}")
 if !rx{{.Name}}.MatchString({{$ModelName | Initial}}.{{.Name}}) {
-	return errors.New({{$ModelName | Initial}}.{{.Name}} + " is not a valid value for given field {{.Name}}")
+	return errors.New("invalid value for given field: {{.Name}}")
 }	
 {{- end}}
 {{- end}}

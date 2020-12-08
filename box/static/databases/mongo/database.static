@@ -4,14 +4,11 @@
 package database
 
 import (
-	"bufio"
-	"bytes"
+	
 	"context"
 	"errors"
 	"fmt"
-	"io"
 	"log"
-	"mime/multipart"
 	"strconv"
 	"time"
 
@@ -19,14 +16,20 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/gridfs"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
 const (
-	Connection_Max_Retries        int8 = 10
-	Connection_Max_Retry_Duration      = time.Second * 5
+	// ConnectionMaxRetries is used to define maximum number or retries to connect to the database
+	ConnectionMaxRetries        int8 = 10
+	// ConnectionMaxRetryDuration is used to define maximum retry duration for each retry
+	ConnectionMaxRetryDuration      = time.Second * 5
+)
+
+var (
+	// ErrInvalidDatabaseClient is to define database error
+	ErrInvalidDatabaseClient = errors.New("invalid database client.Either it is null or no data")
 )
 
 // Database type contains database related information and respective db methods
@@ -42,20 +45,20 @@ try:
 	retries++
 	client, err := mongo.NewClient(options.Client().ApplyURI(connString))
 	if err != nil {
-		time.Sleep(Connection_Max_Retry_Duration)
+		time.Sleep(ConnectionMaxRetryDuration)
 		goto try
 	}
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 	err = client.Connect(ctx)
 	if err != nil {
-		time.Sleep(Connection_Max_Retry_Duration)
+		time.Sleep(ConnectionMaxRetryDuration)
 		goto try
 	}
 	//defer client.Disconnect(ctx)
 	err = client.Ping(ctx, readpref.Primary())
 	if err != nil {
-		if retries < Connection_Max_Retries {
-			time.Sleep(Connection_Max_Retry_Duration)
+		if retries < ConnectionMaxRetries {
+			time.Sleep(ConnectionMaxRetryDuration)
 			glog.Info("Trying to connect to mongodb.trying for the ", retries, " time")
 			goto try
 		}
@@ -75,7 +78,7 @@ func (d *Database) Disconnect(ctx context.Context) {
 // InsertRecord is to insert a record
 func (d *Database) InsertRecord(col string, data interface{}) (string, error) {
 	if d.Client == nil {
-		return "", errors.New("Database client is null")
+		return "", ErrInvalidDatabaseClient
 	}
 	collection := d.Client.(*mongo.Client).Database(d.Name).Collection(col)
 
@@ -93,7 +96,7 @@ func (d *Database) InsertRecord(col string, data interface{}) (string, error) {
 // UpdateRecordByID is to update a record based on the id provided
 func (d *Database) UpdateRecordByID(col, id string, data interface{}) (string, error) {
 	if d.Client == nil {
-		return "", errors.New("Database client is null")
+		return "", ErrInvalidDatabaseClient
 	}
 	collection := d.Client.(*mongo.Client).Database(d.Name).Collection(col)
 	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
@@ -122,10 +125,10 @@ func (d *Database) UpdateRecordByID(col, id string, data interface{}) (string, e
 	return count, nil
 }
 
-// UpdteRecord is to update a record based on the filters provided
+// UpdateRecord is to update a record based on the filters provided
 func (d *Database) UpdateRecord(col string, filter, data interface{}) (string, error) {
 	if d.Client == nil {
-		return "", errors.New("Database client is null")
+		return "", ErrInvalidDatabaseClient
 	}
 	collection := d.Client.(*mongo.Client).Database(d.Name).Collection(col)
 	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
@@ -145,7 +148,7 @@ func (d *Database) UpdateRecord(col string, filter, data interface{}) (string, e
 // DeleteRecordByID is to delete a record based on the id provided
 func (d *Database) DeleteRecordByID(col, id string) (string, error) {
 	if d.Client == nil {
-		return "", errors.New("Database client is null")
+		return "", ErrInvalidDatabaseClient
 	}
 	collection := d.Client.(*mongo.Client).Database(d.Name).Collection(col)
 	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
@@ -174,7 +177,7 @@ func (d *Database) DeleteRecordByID(col, id string) (string, error) {
 // DeleteRecord is to delete a record based on the filters provided
 func (d *Database) DeleteRecord(col string, filter interface{}) (string, error) {
 	if d.Client == nil {
-		return "", errors.New("Database client is null")
+		return "", ErrInvalidDatabaseClient
 	}
 	collection := d.Client.(*mongo.Client).Database(d.Name).Collection(col)
 	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
@@ -191,7 +194,7 @@ func (d *Database) DeleteRecord(col string, filter interface{}) (string, error) 
 // DeleteRecords is to delete a records based on the filters provided
 func (d *Database) DeleteRecords(col string, filter interface{}) (string, error) {
 	if d.Client == nil {
-		return "", errors.New("Database client is null")
+		return "", ErrInvalidDatabaseClient
 	}
 	collection := d.Client.(*mongo.Client).Database(d.Name).Collection(col)
 	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
@@ -207,7 +210,7 @@ func (d *Database) DeleteRecords(col string, filter interface{}) (string, error)
 // FindRecord is to find a record based on the filters provided
 func (d *Database) FindRecord(col string, filter interface{}) (interface{}, error) {
 	if d.Client == nil {
-		return nil, errors.New("Database client is null")
+		return nil, ErrInvalidDatabaseClient
 	}
 	collection := d.Client.(*mongo.Client).Database(d.Name).Collection(col)
 	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
@@ -225,7 +228,7 @@ func (d *Database) FindRecord(col string, filter interface{}) (interface{}, erro
 // FindRecordByID is to find a record based on the id provided
 func (d *Database) FindRecordByID(col, id string) (interface{}, error) {
 	if d.Client == nil {
-		return -1, errors.New("Database client is null")
+		return -1, ErrInvalidDatabaseClient
 	}
 	collection := d.Client.(*mongo.Client).Database(d.Name).Collection(col)
 	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
@@ -257,7 +260,7 @@ func (d *Database) FindRecordByID(col, id string) (interface{}, error) {
 // FindRecords is to find a records based on the filters provided
 func (d *Database) FindRecords(col string, filter interface{}) (interface{}, error) {
 	if d.Client == nil {
-		return -1, errors.New("Database client is null")
+		return -1, ErrInvalidDatabaseClient
 	}
 	collection := d.Client.(*mongo.Client).Database(d.Name).Collection(col)
 	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
@@ -290,7 +293,7 @@ func (d *Database) FindRecords(col string, filter interface{}) (interface{}, err
 // FindRecordsByPaging is to find a records based on the filters provided for paging as well
 func (d *Database) FindRecordsByPaging(col string, skip, limit int64, filter interface{}) (interface{}, error) {
 	if d.Client == nil {
-		return -1, errors.New("Database client is null")
+		return -1, ErrInvalidDatabaseClient
 	}
 	collection := d.Client.(*mongo.Client).Database(d.Name).Collection(col)
 	ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
@@ -325,7 +328,7 @@ func (d *Database) FindRecordsByPaging(col string, skip, limit int64, filter int
 // GetCount is to get the document count based on a filter
 func (d *Database) GetCount(col string, filter interface{}) (int64, error) {
 	if d.Client == nil {
-		return -1, errors.New("Database client is null")
+		return -1, ErrInvalidDatabaseClient
 	}
 	collection := d.Client.(*mongo.Client).Database(d.Name).Collection(col)
 
@@ -335,6 +338,7 @@ func (d *Database) GetCount(col string, filter interface{}) (int64, error) {
 
 }
 
+// CreateTextIndex is to create an text based index for a collection
 func (d *Database) CreateTextIndex(col string, field string) error {
 	view := d.Client.(*mongo.Client).Database(d.Name).Collection(col).Indexes()
 	cur, err := view.List(context.TODO())
@@ -355,66 +359,4 @@ func (d *Database) CreateTextIndex(col string, field string) error {
 	}
 	d.Client.(*mongo.Client).Database(d.Name).Collection(col).Indexes().CreateOne(context.TODO(), mod)
 	return err
-}
-
-func (d *Database) UploadFile(file multipart.File, filename string) error {
-	reader := bufio.NewReader(file)
-	defer func() { file.Close() }()
-	buf := make([]byte, 1024)
-
-	bucket, err := gridfs.NewBucket(
-		d.Client.(*mongo.Client).Database(d.Name),
-	)
-	if err != nil {
-		return err
-	}
-	uploadStream, err := bucket.OpenUploadStream(
-		filename,
-	)
-	if err != nil {
-		return err
-	}
-	defer uploadStream.Close()
-	for {
-		// read a chunk
-		n, err := reader.Read(buf)
-		if err != nil && err != io.EOF {
-			return errors.New("Could not read the input file")
-		}
-		if n == 0 {
-			break
-		}
-
-		if _, err := uploadStream.Write(buf[:n]); err != nil {
-			// write a chunk
-			return errors.New("Could not write to GridFs for " + filename)
-
-		}
-	}
-	return nil
-}
-
-func (d *Database) GetFile(fileName string) (buf bytes.Buffer, err error) {
-	db := d.Client.(*mongo.Client).Database(d.Name)
-	fsFiles := db.Collection("fs.files")
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
-	var results bson.M
-	err = fsFiles.FindOne(ctx, bson.M{}).Decode(&results)
-	if err != nil {
-		return buf, err
-	}
-	// you can print out the results
-	fmt.Println(results)
-
-	bucket, _ := gridfs.NewBucket(
-		db,
-	)
-	//var buf bytes.Buffer
-	dStream, err := bucket.DownloadToStreamByName(fileName, &buf)
-	if err != nil {
-		return buf, err
-	}
-	fmt.Printf("File size to download: %v\n", dStream)
-	return buf, err
-
 }

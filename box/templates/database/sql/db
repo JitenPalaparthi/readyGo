@@ -25,7 +25,7 @@ func ({{.Model.Name | Initial}} *{{.Model.Name}}DB) Create{{.Model.Name}}({{.Mod
 		return "", res.Error
 	}
 
-	result = strconv.Itoa({{.Model.Name | ToLower}}.Id)
+	result = strconv.Itoa({{.Model.Name | ToLower}}.ID)
 	return result, nil
 }
 
@@ -49,7 +49,7 @@ func ({{.Model.Name | Initial}} *{{.Model.Name}}DB)  Delete{{.Model.Name}}ByID(i
 	return result, nil
 }
 
-// Get{{.Model.Name}}ByID(id string) is to fetch a record from database provided by id
+// Get{{.Model.Name}}ByID is to fetch a record from database provided by id
 func  ({{.Model.Name | Initial}} *{{.Model.Name}}DB) Get{{.Model.Name}}ByID(id string) ({{.Model.Name | ToLower}} *models.{{.Model.Name}}, err error) {
 	{{.Model.Name | ToLower}} = &models.{{.Model.Name}}{}
 	res := {{.Model.Name | Initial}}.DB.Client.(*gorm.DB).First({{.Model.Name | ToLower}}, &id)

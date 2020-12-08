@@ -105,7 +105,7 @@ func (tg *Generate) Validate() (err error) {
 		if tg.DatabaseSpec.Kind == "mongo" {
 			_, ok := fieldMap["id"]
 			if !ok {
-				id := Field{Name: "Id", Type: "string"}
+				id := Field{Name: "ID", Type: "string"}
 				tg.Models[i].Fields = append(tg.Models[i].Fields, id)
 			}
 			//	if ok{
@@ -115,7 +115,7 @@ func (tg *Generate) Validate() (err error) {
 		if tg.DatabaseSpec.Kind == "sql" {
 			_, ok := fieldMap["id"]
 			if !ok {
-				id := Field{Name: "Id", Type: "int"}
+				id := Field{Name: "ID", Type: "int"}
 				tg.Models[i].Fields = append(tg.Models[i].Fields, id)
 			}
 			//	if ok{

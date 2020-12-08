@@ -58,10 +58,9 @@ func getClientIPByRequestRemoteAddr(req *http.Request) (ip string, err error) {
 	if err != nil {
 		log.Printf("debug: Getting req.RemoteAddr %v", err)
 		return "", err
-	} else {
-		log.Printf("debug: With req.RemoteAddr found IP:%v; Port: %v", ip, port)
-	}
-
+	} 
+	log.Printf("debug: With req.RemoteAddr found IP:%v; Port: %v", ip, port)
+	
 	userIP := net.ParseIP(ip)
 	if userIP == nil {
 		message := fmt.Sprintf("debug: Parsing IP from Request.RemoteAddr got nothing.")
@@ -142,6 +141,7 @@ func getMyInterfaceAddr() (net.IP, error) {
 	return addresses[0], nil
 }
 
+// GetPath is to get url path
 func GetPath(c *gin.Context) string {
 	path := c.Request.URL.Path
 	for _, param := range c.Params {
@@ -164,7 +164,7 @@ func ToMap(in interface{}, tag string, ignore ...string) (map[string]interface{}
 
 	// we only accept structs
 	if v.Kind() != reflect.Struct {
-		return nil, fmt.Errorf("ToMap only accepts structs; got %T", v)
+		return nil, fmt.Errorf("function ToMap only accepts structs; got %T", v)
 	}
 
 	typ := v.Type()

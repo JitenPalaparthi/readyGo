@@ -66,7 +66,7 @@ func ({{.Model.Name | Initial}} *{{.Model.Name}}) Create{{.Model.Name}}() func(c
 	}
 }
 
-// Get{{.Model.Name}}ByID() is to get respective object from database provided by id as a param
+// Get{{.Model.Name}}ByID is to get respective object from database provided by id as a param
 func ({{.Model.Name | Initial}} *{{.Model.Name}}) Get{{.Model.Name}}ByID() func(c *gin.Context) {
 	return func(c *gin.Context) {
 		if c.Request.Method == "GET" {

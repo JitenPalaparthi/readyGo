@@ -36,7 +36,7 @@
           "type": "string"
         },
         {
-          "name": "last_Modified",
+          "name": "lastModified",
           "type": "string"
         }
       ]

@@ -51,7 +51,7 @@ func ({{.Model.Name | Initial}} *{{.Model.Name}}DB) Create{{.Model.Name}}({{.Mod
 		{{- range .Model.Fields}}
 		{{- if eq .IsKey true }}
 		if {{$modelName | Initial}}.Is{{$modelName}}ExistsBy{{.Name}}({{$modelName | ToLower}}.{{.Name}}) {
-		return "",errors.New("{{$modelName}} already existed")
+		return "",errors.New("the given {{$modelName}} already existed")
 		}
 		{{- end}}
 		{{- end}}
@@ -84,7 +84,7 @@ func ({{.Model.Name | Initial}} *{{.Model.Name}}DB) Delete{{.Model.Name}}ByID(id
 	return result, nil
 }
 
-// Get{{.Model.Name}}ByID(id string) is to fetch a record from database provided by id
+// Get{{.Model.Name}}ByID is to fetch a record from database provided by id
 func ({{.Model.Name | Initial}} *{{.Model.Name}}DB) Get{{.Model.Name}}ByID(id string) (*models.{{.Model.Name}}, error) {
 	{{.Model.Name | ToLower}} := &models.{{.Model.Name}}{}
 	mapData, err := {{.Model.Name | Initial}}.DB.FindRecordByID("{{.Model.Name | ToLower}}s",id)
@@ -95,14 +95,14 @@ func ({{.Model.Name | Initial}} *{{.Model.Name}}DB) Get{{.Model.Name}}ByID(id st
 		return nil, err
 	}
 	_id := mapData.(map[string]interface{})["_id"].(primitive.ObjectID).Hex()
-	{{.Model.Name | ToLower}}.Id = _id
+	{{.Model.Name | ToLower}}.ID = _id
 	return {{.Model.Name | ToLower}}, nil
 }
 
 // GetAll{{.Model.Name}}s fetches all records from a table. skip and limit params are used to fetch specific number of records. selector is a additional param to fetch based on
 func ({{.Model.Name | Initial}} *{{.Model.Name}}DB) GetAll{{.Model.Name}}s(skip int64, limit int64, selector interface{}) ([]models.{{.Model.Name}}, error) {
 	if _, ok := selector.(map[string]interface{}); !ok {
-		return nil, errors.New("wrong input type")
+		return nil, errors.New("invalid input type")
 	}
 	var result []models.{{.Model.Name}}
 	colleection := {{.Model.Name | Initial}}.DB.Client.(*mongo.Client).Database({{.Model.Name | Initial}}.DB.Name).Collection("{{.Model.Name | ToLower}}s")
@@ -132,11 +132,11 @@ func ({{.Model.Name | Initial}} *{{.Model.Name}}DB) GetAll{{.Model.Name}}s(skip 
 // GetAll{{.Model.Name}}sBy fetches all records from a table. skip and limit params are used to fetch specific number of records.key and value are addition params to fetch based on a key with a value
 func ({{.Model.Name | Initial}} *{{.Model.Name}}DB) GetAll{{.Model.Name}}sBy(key string, value interface{}, skip int64, limit int64) ([]models.{{.Model.Name}}, error) {
 	if key == "" {
-		return nil, errors.New("wrong input type")
+		return nil, errors.New("invalid input type")
 	}
 
 	if value == nil {
-		return nil, errors.New("wrong input type")
+		return nil, errors.New("invalid input type")
 	}
 
 	selector := make(map[string]interface{})
