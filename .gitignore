@@ -17,3 +17,8 @@
 demo/
 cURL-Scripts/
 example/
+
+build.sh
+dist/
+readyGo
+version-readme.md
