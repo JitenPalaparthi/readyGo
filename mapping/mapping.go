@@ -22,6 +22,7 @@ type OpsData struct {
 	OpType string `json:"opType"`
 	Src    string `json:"src`
 	Dst    string `json:"dst`
+	Ext    string `json:"ext"`
 }
 
 // New creates a new Mapping
