@@ -21,6 +21,11 @@
             "dst": ""
         },
         {
+            "opType": "directories",
+            "src": "protos",
+            "dst": ""
+        },
+        {
             "opType": "static-files",
             "src": "static/databases/mongo/database.static",
             "dst": "database/database.go"
@@ -49,6 +54,12 @@
             "opType": "multiple-file-templates",
             "src": "templates/http/handlers",
             "dst": "handlers"
+        },
+        {
+            "opType": "multiple-file-templates",
+            "src": "templates/grpc/proto/protofile",
+            "dst": "protos",
+            "ext":"proto"
         },
         {
             "opType": "single-file-templates",
