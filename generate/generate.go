@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"readyGo/mapping"
 	"runtime"
+	"strconv"
 	"strings"
 	"text/template"
 
@@ -145,8 +146,17 @@ func (tg *Generate) CreateAll() (err error) {
 					}
 					return err
 				}
-
-				dst = path.Join(tg.Project, opsData.Dst, strings.ToLower(v.Name)+".go")
+				// If there is any extension in the opsData that means file to be created with the given extension. Otherwise create a default one with .go
+				if opsData.Ext == "" {
+					dst = path.Join(tg.Project, opsData.Dst, strings.ToLower(v.Name)+".go")
+				} else {
+					// If any extension starts with . add the extension as it is.Otherwise add . as a prefix to the opsData.Ext
+					if string(strings.Trim(opsData.Ext, " ")[0]) == "." {
+						dst = path.Join(tg.Project, opsData.Dst, strings.ToLower(v.Name)+opsData.Ext)
+					} else {
+						dst = path.Join(tg.Project, opsData.Dst, strings.ToLower(v.Name)+"."+opsData.Ext)
+					}
+				}
 				content, err := tg.Mapping.Reader.Read(opsData.Src)
 				if err != nil {
 					errRm := tg.RmDir()
@@ -168,6 +178,7 @@ func (tg *Generate) CreateAll() (err error) {
 			}
 
 		case "single-file-templates":
+			// Todo for opsData.Ext if there is an extension
 			mhandler := make(map[string]interface{})
 			mhandler["config"] = tg
 			dst := path.Join(tg.Project, opsData.Dst)
@@ -235,7 +246,14 @@ func WriteTmplToFile(filePath string, tmpl string, data interface{}) (err error)
 				}
 				return "x"
 			},
-		}).Parse(tmpl))
+		}).Funcs(template.FuncMap{
+		"Counter": func(str string) string {
+			if s, err := strconv.Atoi(str); err == nil {
+				count := s + 1
+				return strconv.Itoa(count)
+			}
+			return "0"
+		}}).Parse(tmpl))
 
 	err = t.Execute(file, data)
 
