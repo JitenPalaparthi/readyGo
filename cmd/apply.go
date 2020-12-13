@@ -48,6 +48,7 @@ var applyCmd = &cobra.Command{
 		}
 		err = tg.CreateAll()
 		if err != nil {
+			tg.RmDir()
 			log.Fatal(err)
 		}
 		fmt.Println(lintFiles)

@@ -1,7 +1,7 @@
 
 syntax = "proto3";
 
-package {{{.Project};
+package {{$.config.Project}};
 
 message GeneralResponse{
     int32 code=1;

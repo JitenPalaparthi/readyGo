@@ -10,3 +10,7 @@ package {{.Project}};
     {{- $Count = $Count | Counter}}
 	{{- end}}
 	}
+
+service {{ .Model.Name}}Service {
+    rpc Create{{.Model.Name}} ({{.Model.Name}}) returns(GeneralResponse);
+}
