@@ -1,3 +1,4 @@
+<img src="https://github.com/JitenPalaparthi/readyGo/blob/master/assets/readyGoBlue.png" width=400>
 # Overview
 
 *The phylosophy behind readyGo is "A Simple configuration should give a working project.".*
