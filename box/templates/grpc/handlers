@@ -7,19 +7,16 @@ import (
 	"context"
 	"{{.Project}}/interfaces"
 	"{{.Project}}/models"
-	pbc "{{.Project}}/protos/commonpb"
-	pb "{{.Project}}/protos/{{.Model.Name | ToLower}}pb"
-
+	pb "{{.Project}}/protos"
 	"flag"
-
 	"github.com/golang/glog"
 )
 
 // {{.Model.Name}} type used as a container for db interface and receiver for handler functions
 type {{.Model.Name}} struct {
 	I{{.Model.Name}} interfaces.{{.Model.Name}}Interface
+	pb.Unimplemented{{.Model.Name}}Server
 }
-
 
 func init() {
 	flag.Parse()
@@ -27,13 +24,13 @@ func init() {
 }
 
 // Create{{.Model.Name}} is to create object
-func ({{.Model.Name | Initial}} *{{.Model.Name}}) Create{{.Model.Name}}(ctx context.Context, in *pb.{{.Model.Name}}) (*pbc.GeneralResponse, error) {
+func ({{.Model.Name | Initial}} *{{.Model.Name}}) Create{{.Model.Name}}(ctx context.Context, in *pb.{{.Model.Name}}Request) (*pb.{{.Model.Name}}Response, error) {
 	{{.Model.Name | ToLower}} := &models.{{.Model.Name}}{}
 	{{ $ModelName := .Model.Name }}
 	{{- range .Model.Fields }}
 	{{$ModelName | ToLower}}.{{.Name}}=in.{{.Name}}
 	{{- end}}
-	out := &pbc.GeneralResponse{}
+	out := &pb.{{.Model.Name}}Response{}
 	if err := models.Validate{{.Model.Name}}({{.Model.Name | ToLower}}); err != nil {
 		glog.Error(err)
 		return nil, err

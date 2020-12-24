@@ -8,7 +8,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log"
 	"strconv"
 	"time"
 
@@ -237,9 +236,9 @@ func (d *Database) FindRecordByID(col, id string) (interface{}, error) {
 		return -1, errors.New("parameter id is empty")
 	}
 	objID, err := primitive.ObjectIDFromHex(id)
-	log.Println(objID)
+	glog.Info(objID)
 	if err != nil {
-		log.Println("here 1", err)
+		glog.Info("here 1", err)
 		return -1, err
 	}
 	filters := bson.M{
@@ -248,10 +247,10 @@ func (d *Database) FindRecordByID(col, id string) (interface{}, error) {
 
 	result := make(map[string]interface{})
 	res := collection.FindOne(ctx, filters)
-	log.Println(res)
+	glog.Info(res)
 	err = res.Decode(result)
 	if err != nil {
-		log.Println("here 2", err)
+		glog.Info("here 2", err)
 		return nil, err
 	}
 	return result, nil

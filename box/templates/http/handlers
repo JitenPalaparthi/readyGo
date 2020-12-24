@@ -5,7 +5,6 @@ package handlers
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strconv"
 	"{{.Project}}/interfaces"
@@ -28,7 +27,6 @@ func ({{.Model.Name | Initial}} *{{.Model.Name}}) Create{{.Model.Name}}() func(c
 			{{.Model.Name | ToLower}} = &models.{{.Model.Name}}{}
 
 			err = json.NewDecoder(c.Request.Body).Decode(&{{.Model.Name | ToLower}})
-			fmt.Println({{.Model.Name | ToLower}})
 			if err != nil {
 				c.JSON(http.StatusBadRequest, gin.H{
 					"status":  "failed",

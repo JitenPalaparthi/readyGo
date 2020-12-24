@@ -1,7 +1,7 @@
 {
     "version": "0.1",
     "kind": "grpc",
-    "project": "grpc_sample",
+    "project": "grpc_person_sample",
     "databaseSpec": {
       "kind": "mongo",
       "connectionString": "mongodb://localhost:27017",
@@ -9,7 +9,7 @@
     },
     "apiSpec": {
       "kind": "grpc",
-      "port": "8082",
+      "port": "50057",
       "version": "v1"
     },
     "models": [
@@ -29,6 +29,44 @@
           },
           {
             "name": "mobile",
+            "type": "string"
+          },
+          {
+            "name": "status",
+            "type": "string"
+          },
+          {
+            "name": "lastModified",
+            "type": "string"
+          }
+        ]
+      },
+      {
+        "name": "address",
+        "fields": [
+          {
+            "name": "line",
+            "type": "string"
+          },
+          {
+            "name": "street",
+            "type": "string",
+             "isKey": false
+          },
+          {
+            "name": "city",
+            "type": "string"
+          },
+          {
+            "name": "state",
+            "type": "string"
+          },
+          {
+            "name": "country",
+            "type": "string"
+          },
+          {
+            "name": "zip",
             "type": "string"
           },
           {

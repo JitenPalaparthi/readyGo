@@ -27,27 +27,27 @@
         },
         {
             "opType": "static-files",
-            "src": "static/databases/mongo/database.static",
+            "src": "static/common/databases/mongo/database.static",
             "dst": "database/database.go"
         },
         {
             "opType": "static-files",
-            "src": "static/helper/helper.static",
+            "src": "static/http/helper/helper.static",
             "dst": "helper/helper.go"
         },
         {
             "opType": "multiple-file-templates",
-            "src": "templates/models",
+            "src": "templates/common/models",
             "dst": "models"
         },
         {
             "opType": "multiple-file-templates",
-            "src": "templates/interfaces",
+            "src": "templates/common/interfaces",
             "dst": "interfaces"
         },
         {
             "opType": "multiple-file-templates",
-            "src": "templates/database/mongo/db",
+            "src": "templates/common/database/mongo/db",
             "dst": "database"
         },
         {
@@ -56,35 +56,24 @@
             "dst": "handlers"
         },
         {
-            "opType": "multiple-file-templates",
-            "src": "templates/grpc/proto/protofile",
-            "dst": "protos",
-            "ext":"proto"
-        },
-        {
             "opType": "single-file-templates",
-            "src": "templates/config",
+            "src": "templates/common/config",
             "dst": "application.json"
         },
         {
             "opType": "single-file-templates",
-            "src": "templates/main",
+            "src": "templates/http/main",
             "dst": "main.go"
         },
         {
             "opType": "single-file-templates",
-            "src": "templates/docker-compose",
+            "src": "templates/common/docker-compose",
             "dst": "docker-compose.yaml"
         },
         {
             "opType": "single-file-templates",
-            "src": "templates/http/Dockerfile",
+            "src": "templates/common/Dockerfile",
             "dst": "Dockerfile"
-        },
-        {
-            "opType": "single-file-templates",
-            "src": "templates/grpc/proto/common.proto",
-            "dst": "protos/common.proto"
         }
     ],
     "http_sql_pg": [
@@ -109,28 +98,33 @@
             "dst": ""
         },
         {
+            "opType": "directories",
+            "src": "protos",
+            "dst": ""
+        },
+        {
             "opType": "static-files",
-            "src": "static/databases/sql/postgres/database.static",
+            "src": "static/common/databases/sql/postgres/database.static",
             "dst": "database/database.go"
         },
         {
             "opType": "static-files",
-            "src": "static/helper/helper.static",
+            "src": "static/http/helper/helper.static",
             "dst": "helper/helper.go"
         },
         {
             "opType": "multiple-file-templates",
-            "src": "templates/models",
+            "src": "templates/common/models",
             "dst": "models"
         },
         {
             "opType": "multiple-file-templates",
-            "src": "templates/interfaces",
+            "src": "templates/common/interfaces",
             "dst": "interfaces"
         },
         {
             "opType": "multiple-file-templates",
-            "src": "templates/database/sql/db",
+            "src": "templates/common/database/sql/db",
             "dst": "database"
         },
         {
@@ -140,22 +134,22 @@
         },
         {
             "opType": "single-file-templates",
-            "src": "templates/config",
+            "src": "templates/common/config",
             "dst": "application.json"
         },
         {
             "opType": "single-file-templates",
-            "src": "templates/main",
+            "src": "templates/http/main",
             "dst": "main.go"
         },
         {
             "opType": "single-file-templates",
-            "src": "templates/docker-compose",
+            "src": "templates/common/docker-compose",
             "dst": "docker-compose.yaml"
         },
         {
             "opType": "single-file-templates",
-            "src": "templates/http/Dockerfile",
+            "src": "templates/common/Dockerfile",
             "dst": "Dockerfile"
         }
     ],
@@ -187,64 +181,54 @@
         },
         {
             "opType": "static-files",
-            "src": "static/databases/mongo/database.static",
+            "src": "static/common/databases/mongo/database.static",
             "dst": "database/database.go"
         },
         {
             "opType": "static-files",
-            "src": "static/helper/helper.static",
+            "src": "static/http/helper/helper.static",
             "dst": "helper/helper.go"
         },
         {
             "opType": "multiple-file-templates",
-            "src": "templates/models",
+            "src": "templates/common/models",
             "dst": "models"
         },
         {
             "opType": "multiple-file-templates",
-            "src": "templates/interfaces",
+            "src": "templates/common/interfaces",
             "dst": "interfaces"
         },
         {
             "opType": "multiple-file-templates",
-            "src": "templates/database/mongo/db",
+            "src": "templates/common/database/mongo/db",
             "dst": "database"
         },
         {
             "opType": "multiple-file-templates",
-            "src": "templates/grpc/handlers/handler",
+            "src": "templates/grpc/handlers",
             "dst": "handlers"
         },
          {
             "opType": "multiple-file-templates",
-            "src": "templates/grpc/proto/protofile",
+            "src": "templates/grpc/protofile",
             "dst": "protos",
             "ext":"proto"
         },
         {
             "opType": "single-file-templates",
-            "src": "templates/config",
-            "dst": "application.json"
-        },
-        {
-            "opType": "single-file-templates",
-            "src": "templates/main",
+            "src": "templates/grpc/main",
             "dst": "main.go"
         },
         {
             "opType": "single-file-templates",
-            "src": "templates/docker-compose",
+            "src": "templates/common/docker-compose",
             "dst": "docker-compose.yaml"
         },
         {
             "opType": "single-file-templates",
-            "src": "templates/http/Dockerfile",
+            "src": "templates/common/Dockerfile",
             "dst": "Dockerfile"
-        },
-        {
-            "opType": "single-file-templates",
-            "src": "templates/grpc/proto/common.proto",
-            "dst": "protos/common.proto"
         }
     ]
 }

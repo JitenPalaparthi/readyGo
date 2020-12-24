@@ -12,9 +12,9 @@ func init() {
 
 var versionCmd = &cobra.Command{
 	Use:   "version",
-	Short: "readyGo v0.0.4",
-	Long:  `readyGo v0.0.4.Currently in Alpha stage`,
+	Short: "readyGo v0.0.5",
+	Long:  `readyGo v0.0.5.Currently in Active Development`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("readyGo  v0.0.4")
+		fmt.Println("readyGo  v0.0.5")
 	},
 }
