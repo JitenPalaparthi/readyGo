@@ -45,3 +45,45 @@ func ({{.Model.Name | Initial}} *{{.Model.Name}}) Create{{.Model.Name}}(ctx cont
 	out.Message = result
 	return out, nil
 }
+// Update{{.Model.Name}}ByID is to update object in database
+func ({{.Model.Name | Initial}} *{{.Model.Name}}) Update{{.Model.Name}}ByID(ctx context.Context, in *pb.{{.Model.Name}}UpdateRequest) (*pb.{{.Model.Name}}Response, error) {
+	out := &pb.{{.Model.Name}}Response{}
+	result,err:={{.Model.Name | Initial}}.I{{.Model.Name}}.Update{{.Model.Name}}ByID(in.ID,in.Data.AsMap());
+	if err!=nil{
+		glog.Info(err)
+		return nil, err
+	}
+	out.Code = 200
+	out.Message = result
+	return out, nil
+}
+
+// Delete{{.Model.Name}}ByID is to delete object from database
+func ({{.Model.Name | Initial}} *{{.Model.Name}}) Delete{{.Model.Name}}ByID(ctx context.Context, in *pb.{{.Model.Name}}IDRequest) (*pb.{{.Model.Name}}Response, error) {
+	out := &pb.{{.Model.Name}}Response{}
+	result,err:={{.Model.Name | Initial}}.I{{.Model.Name}}.Delete{{.Model.Name}}ByID(in.ID);
+	if err!=nil{
+		glog.Info(err)
+		return nil, err
+	}
+	out.Code = 200
+	out.Message = result
+	return out, nil
+}
+
+// Create{{.Model.Name}} is to create object
+func ({{.Model.Name | Initial}} *{{.Model.Name}}) Get{{.Model.Name}}ByID(ctx context.Context, in *pb.{{.Model.Name}}IDRequest) (*pb.{{.Model.Name}}Request, error) {
+	{{.Model.Name | ToLower}} := &models.{{.Model.Name}}{}
+
+	{{.Model.Name | ToLower}} ,err:={{.Model.Name | Initial}}.I{{.Model.Name}}.Get{{.Model.Name}}ByID(in.ID);
+	if err!=nil{
+		glog.Info(err)
+		return nil, err
+	}
+	out := &pb.{{.Model.Name}}Request{}
+	{{ $ModelName := .Model.Name }}
+	{{- range .Model.Fields }}
+	out.{{.Name}}={{$ModelName | ToLower}}.{{.Name}}
+	{{- end}}
+	return out, nil
+}
