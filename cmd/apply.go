@@ -40,10 +40,7 @@ var applyCmd = &cobra.Command{
 		}
 
 		scaler, err := scaler.New(ops, "configs/scalers.json")
-		for _, v := range scaler {
-			log.Println(v.GoType)
-			log.Println(v.GrpcType)
-		}
+
 		if err != nil {
 			log.Fatal(err)
 		}
