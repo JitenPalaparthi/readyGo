@@ -1,7 +1,7 @@
 {
     "version": "0.1",
     "kind": "grpc",
-    "project": "grpcsample",
+    "project": "productsample",
     "databaseSpec": {
       "kind": "mongo",
       "connectionString": "mongodb://localhost:27017",
@@ -14,7 +14,7 @@
     },
     "models": [
       {
-        "name": "person",
+        "name": "product",
         "fields": [
           {
             "name": "name",
@@ -22,22 +22,17 @@
             "isKey": true
           },
           {
-            "name": "govtNo",
+            "name": "description",
+            "type": "string",
+            "validateExp": "[a-zA-Z0-9]"
+          },
+          {
+            "name": "refNo",
             "type": "long"
           },
           {
-            "name": "isIndian",
+            "name": "hasStock",
             "type": "bool"
-          },
-          {
-            "name": "email",
-            "type": "string",
-            "validateExp": "[a-zA-Z0-9]",
-            "isKey": true
-          },
-          {
-            "name": "mobile",
-            "type": "string"
           },
           {
             "name": "status",
