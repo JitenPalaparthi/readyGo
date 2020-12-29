@@ -1,7 +1,7 @@
 {
     "version": "0.1",
     "kind": "grpc",
-    "project": "grpc_person_sample",
+    "project": "grpcsample",
     "databaseSpec": {
       "kind": "mongo",
       "connectionString": "mongodb://localhost:27017",
@@ -20,6 +20,14 @@
             "name": "name",
             "type": "string",
             "isKey": true
+          },
+          {
+            "name": "govtNo",
+            "type": "long"
+          },
+          {
+            "name": "isIndian",
+            "type": "bool"
           },
           {
             "name": "email",

@@ -78,8 +78,6 @@ func (tg *Generate) Validate() (err error) {
 	if tg.DatabaseSpec.Kind == "" || (tg.DatabaseSpec.Kind != "mongo" && tg.DatabaseSpec.Kind != "sql") {
 		return errors.New(" Databas type (DB) must be mongo | sql ")
 	}
-	// The following are supported types
-	basicSupportedTypes := []string{"bool", "string", "int", "int8", "int16", "int32", "int64", "uint", "uint8", "uint16", "uint32", "uint64", "float32", "float64"}
 
 	// checking duplicate models and fields
 	modelMap := make(map[string]string)
@@ -97,10 +95,6 @@ func (tg *Generate) Validate() (err error) {
 			}
 			fieldMap[strings.ToLower(f.Name)] = "noted"
 
-			// Validate field types
-			if !strings.Contains(strings.Join(basicSupportedTypes, ","), strings.ToLower(f.Type)) {
-				return errors.New("Not supported field type:" + f.Type)
-			}
 		}
 		if tg.DatabaseSpec.Kind == "mongo" {
 			_, ok := fieldMap["id"]

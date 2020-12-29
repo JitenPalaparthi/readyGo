@@ -1,0 +1,34 @@
+{
+    "int": {
+        "goType": "int",
+        "grpcType": "int"
+    },
+    "uint": {
+        "goType": "uint32",
+        "grpcType": "uint32"
+    },
+    "long": {
+        "goType": "int64",
+        "grpcType": "int64"
+    },
+    "ulong": {
+        "goType": "uint64",
+        "grpcType": "uint64"
+    },
+    "float": {
+        "goType": "float32",
+        "grpcType": "float32"
+    },
+    "double": {
+        "goType": "float64",
+        "grpcType": "double"
+    },
+    "bool": {
+        "goType": "bool",
+        "grpcType": "bool"
+    },
+    "string": {
+        "goType": "string",
+        "grpcType": "string"
+    }
+}

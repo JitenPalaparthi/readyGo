@@ -71,7 +71,7 @@ func ({{.Model.Name | Initial}} *{{.Model.Name}}) Delete{{.Model.Name}}ByID(ctx 
 	return out, nil
 }
 
-// Create{{.Model.Name}} is to create object
+// Get{{.Model.Name}}ByID is to fetch object based on ID
 func ({{.Model.Name | Initial}} *{{.Model.Name}}) Get{{.Model.Name}}ByID(ctx context.Context, in *pb.{{.Model.Name}}IDRequest) (*pb.{{.Model.Name}}Request, error) {
 	{{.Model.Name | ToLower}} := &models.{{.Model.Name}}{}
 
@@ -85,5 +85,27 @@ func ({{.Model.Name | Initial}} *{{.Model.Name}}) Get{{.Model.Name}}ByID(ctx con
 	{{- range .Model.Fields }}
 	out.{{.Name}}={{$ModelName | ToLower}}.{{.Name}}
 	{{- end}}
+	return out, nil
+}
+
+
+// GetAll{{.Model.Name}}sBy is to fetch all objects based on provided parameters
+func ({{.Model.Name | Initial}} *{{.Model.Name}}) GetAll{{.Model.Name}}sBy(ctx context.Context, in *pb.{{.Model.Name}}GetAllByRequest) (*pb.{{.Model.Name}}sResponse, error) {
+	{{.Model.Name | ToLower}}s := make([]models.{{.Model.Name}},0)
+
+	{{.Model.Name | ToLower}}s ,err:={{.Model.Name | Initial}}.I{{.Model.Name}}.GetAll{{.Model.Name}}sBy(in.Key,in.Value,in.Skip,in.Limit);
+	if err!=nil{
+		glog.Info(err)
+		return nil, err
+	}
+	out := &pb.{{.Model.Name}}sResponse{}
+	for _,m:=range {{.Model.Name | ToLower}}s{
+	single := &pb.{{.Model.Name}}Request{}
+	{{ $ModelName := .Model.Name }}
+	{{- range .Model.Fields }}
+	single.{{.Name}}=m.{{.Name}}
+	{{- end}}
+		out.{{$ModelName}}s = append(out.{{$ModelName}}s,single)
+	}
 	return out, nil
 }

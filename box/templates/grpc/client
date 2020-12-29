@@ -1,0 +1,48 @@
+package main
+
+import (
+	"context"
+	"log"
+	"time"
+
+	pb "grpcsample/protos"
+
+	"google.golang.org/grpc"
+	"google.golang.org/protobuf/types/known/structpb"
+)
+
+const (
+	address     = "localhost:50057"
+	defaultName = "world"
+)
+
+func main() {
+	// Set up a connection to the server.
+	conn, err := grpc.Dial(address, grpc.WithInsecure(), grpc.WithBlock())
+	if err != nil {
+		log.Fatalf("did not connect: %v", err)
+	}
+	defer conn.Close()
+	c := pb.NewPersonClient(conn)
+
+	// Contact the server and print out its response.
+	// name := defaultName
+	// if len(os.Args) > 1 {
+	// 	name = os.Args[1]
+	// }
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+
+	m, _ := structpb.NewStruct(map[string]interface{}{
+		"firstName": "John",
+		"lastName":  "Smith",
+		"isAlive":   true,
+		"age":       27,
+	})
+
+	r, err := c.UpdatePersonByID(ctx, &pb.PersonUpdateRequest{Data: m, ID: "10001"})
+	if err != nil {
+		log.Fatalf("could not greet: %v", err)
+	}
+	log.Printf("Greeting: %s", r)
+}

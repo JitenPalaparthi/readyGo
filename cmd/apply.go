@@ -9,6 +9,7 @@ import (
 	"readyGo/boxops"
 	"readyGo/generate"
 	"readyGo/mapping"
+	"readyGo/scaler"
 
 	"github.com/spf13/cobra"
 	"golang.org/x/lint"
@@ -38,11 +39,20 @@ var applyCmd = &cobra.Command{
 			log.Fatal(err)
 		}
 
+		scaler, err := scaler.New(ops, "configs/scalers.json")
+		for _, v := range scaler {
+			log.Println(v.GoType)
+			log.Println(v.GrpcType)
+		}
+		if err != nil {
+			log.Fatal(err)
+		}
+
 		if applyFile == "default" {
 			log.Fatal("apply must supply corrosponding configuration file")
 		}
 
-		tg, err := generate.New(&applyFile, mapping)
+		tg, err := generate.New(&applyFile, mapping, scaler)
 		if err != nil {
 			log.Fatal(err)
 		}

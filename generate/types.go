@@ -1,6 +1,9 @@
 package generate
 
-import "readyGo/mapping"
+import (
+	"readyGo/mapping"
+	"readyGo/scaler"
+)
 
 // Generate is a type that holds configuration data
 type Generate struct {
@@ -12,6 +15,7 @@ type Generate struct {
 	DatabaseSpec DatabaseSpec `json:"databaseSpec" yaml:"databaseSpec"` //Database related information like sql|mongo connection string and db name .. to be maintained in this
 	Models       []Model      `json:"models" yaml:"models"`
 	Mapping      *mapping.Mapping
+	Scalers      scaler.Map
 }
 
 // Model is to hold model data from configuration file

@@ -8,6 +8,7 @@ import (
 	"path"
 	"path/filepath"
 	"readyGo/mapping"
+	"readyGo/scaler"
 	"runtime"
 	"strconv"
 	"strings"
@@ -17,7 +18,7 @@ import (
 )
 
 // New is to generate a new generater.
-func New(file *string, mapping *mapping.Mapping) (tg *Generate, err error) {
+func New(file *string, mapping *mapping.Mapping, scaler scaler.Map) (tg *Generate, err error) {
 
 	if file == nil || *file == "" {
 		return nil, errors.New("no file provided")
@@ -58,6 +59,8 @@ func New(file *string, mapping *mapping.Mapping) (tg *Generate, err error) {
 	tg.Project = root
 
 	tg.Mapping = mapping
+
+	tg.Scalers = scaler
 
 	err = tg.Validate()
 
@@ -166,7 +169,7 @@ func (tg *Generate) CreateAll() (err error) {
 					return err
 				}
 				if content != "" {
-					err := WriteTmplToFile(dst, content, mhandler)
+					err := tg.WriteTmplToFile(dst, content, mhandler)
 					if err != nil {
 						errRm := tg.RmDir()
 						if errRm != nil {
@@ -201,7 +204,7 @@ func (tg *Generate) CreateAll() (err error) {
 				return err
 			}
 			if content != "" {
-				err := WriteTmplToFile(dst, content, mhandler)
+				err := tg.WriteTmplToFile(dst, content, mhandler)
 				if err != nil {
 					errRm := tg.RmDir()
 					if errRm != nil {
@@ -228,7 +231,7 @@ func (tg *Generate) RmDir() (err error) {
 }
 
 // WriteTmplToFile is to convert from template to a file
-func WriteTmplToFile(filePath string, tmpl string, data interface{}) (err error) {
+func (tg *Generate) WriteTmplToFile(filePath string, tmpl string, data interface{}) (err error) {
 	file, err := os.Create(filePath)
 	if err != nil {
 		return err
@@ -253,8 +256,19 @@ func WriteTmplToFile(filePath string, tmpl string, data interface{}) (err error)
 				return strconv.Itoa(count)
 			}
 			return "0"
+		}}).Funcs(template.FuncMap{
+		"GoType": func(tpe string) string {
+			if scler := tg.Scalers.GetScaler(tpe); scler != nil {
+				return scler.GoType
+			}
+			return ""
+		}}).Funcs(template.FuncMap{
+		"GrpcType": func(tpe string) string {
+			if scler := tg.Scalers.GetScaler(tpe); scler != nil {
+				return scler.GrpcType
+			}
+			return ""
 		}}).Parse(tmpl))
-
 	err = t.Execute(file, data)
 
 	if err != nil {

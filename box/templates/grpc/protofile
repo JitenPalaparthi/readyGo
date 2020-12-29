@@ -8,7 +8,7 @@ option go_package = "{{.Project}}/protos";
 {{ $Count:="0"}}
 	message {{.Model.Name}}Request  {
 	{{- range .Model.Fields }}
-	 {{ .Type }} {{ .Name }} = {{$Count | Counter}};
+	 {{ .Type | GrpcType}} {{ .Name }} = {{$Count | Counter}};
     {{- $Count = $Count | Counter}}
 	{{- end}}
 	}
@@ -25,10 +25,21 @@ message {{.Model.Name}}UpdateRequest{
 message {{.Model.Name}}IDRequest{
 	string ID=1;
     }
+message {{.Model.Name}}GetAllByRequest{
+	string Key=1;
+	string Value=2;
+	int64 Skip=3;
+	int64 Limit=4;
+    }
+
+message {{.Model.Name}}sResponse{
+	repeated {{.Model.Name}}Request {{.Model.Name}}s=1;
+}
 
 service {{ .Model.Name}} {
     rpc Create{{.Model.Name}} ({{.Model.Name}}Request) returns({{.Model.Name}}Response);
 	rpc Update{{.Model.Name}}ByID ({{.Model.Name}}UpdateRequest) returns({{.Model.Name}}Response);
 	rpc Delete{{.Model.Name}}ByID ({{.Model.Name}}IDRequest) returns({{.Model.Name}}Response);
 	rpc Get{{.Model.Name}}ByID ({{.Model.Name}}IDRequest) returns({{.Model.Name}}Request);
+	rpc GetAll{{.Model.Name}}sBy ({{.Model.Name}}GetAllByRequest) returns({{.Model.Name}}sResponse);
 }
