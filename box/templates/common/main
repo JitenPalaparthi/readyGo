@@ -5,7 +5,8 @@ package main
 import (
 	"{{$.config.Project}}/database"
 	"{{$.config.Project}}/handlers"
-	"log"
+	"github.com/golang/glog"
+
 	_"context"
 	"github.com/gin-gonic/gin"
 )
@@ -18,16 +19,15 @@ const (
 )
 
 func main() {
-log.Println("Application {{$.config.Project}} has started")
+glog.Info("Application {{$.config.Project}} has started")
 
 session, err := database.GetConnection(DBConnection, DBName)
 	//defer session.Disconnect(context.TODO())
 
 	if err != nil {
-		log.Fatal("mongodb database is not connected", err)
+		glog.Fatal("mongodb database is not connected", err)
 	}
-	log.Println(session)
-
+	
 	gin.ForceConsoleColor()
 
 	router := gin.Default()

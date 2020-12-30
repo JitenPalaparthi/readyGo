@@ -5,6 +5,7 @@ go 1.15
 require (
 	github.com/gin-gonic/gin v1.6.3
 	github.com/gobuffalo/packr v1.30.1
+	github.com/inancgumus/screen v0.0.0-20190314163918-06e984b86ed3
 	github.com/spf13/cobra v1.1.1
 	golang.org/x/lint v0.0.0-20200302205851-738671d3881b
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc v1.0.1 // indirect
