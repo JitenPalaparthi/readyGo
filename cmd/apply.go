@@ -10,6 +10,7 @@ import (
 	"readyGo/generate"
 	"readyGo/mapping"
 	"readyGo/scaler"
+	"strings"
 
 	"github.com/spf13/cobra"
 	"golang.org/x/lint"
@@ -20,8 +21,8 @@ var lintFiles bool
 
 func init() {
 
-	applyCmd.Flags().StringVarP(&applyFile, "filename", "f", "default", "config file to generate the project")
-	applyCmd.Flags().StringVarP(&projectType, "type", "t", "http_mongo", "type of the project http_mongo | http_sql_pg | grpc_mogo | grpc_sql | cloudevent")
+	applyCmd.Flags().StringVarP(&applyFile, "filename", "f", "", "user has to privide the file.There is no default file.")
+	applyCmd.Flags().StringVarP(&projectType, "type", "t", "http_mongo", "type of the project can be http_mongo | http_sql_pg | grpc_mongo | grpc_sql_pg")
 	applyCmd.Flags().BoolVarP(&lintFiles, "lint", "l", false, "lints all generated files and gives warnings and errors")
 
 	rootCmd.AddCommand(applyCmd)
@@ -36,29 +37,28 @@ var applyCmd = &cobra.Command{
 		ops := boxops.New("../box")
 		mapping, err := mapping.New(ops, "configs/mappings.json", projectType)
 		if err != nil {
-			log.Fatal(err)
+			log.Fatal(Fata(err))
 		}
 
 		scaler, err := scaler.New(ops, "configs/scalers.json")
 
 		if err != nil {
-			log.Fatal(err)
+			log.Fatal(Fata(err))
 		}
 
 		if applyFile == "default" {
-			log.Fatal("apply must supply corrosponding configuration file")
+			log.Fatal(Fata("apply must supply corrosponding configuration file"))
 		}
 
 		tg, err := generate.New(&applyFile, mapping, scaler)
 		if err != nil {
-			log.Fatal(err)
+			log.Fatal(Fata(err))
 		}
 		err = tg.CreateAll()
 		if err != nil {
 			tg.RmDir()
-			log.Fatal(err)
+			log.Fatal(Fata(err))
 		}
-		fmt.Println(lintFiles)
 		if lintFiles {
 			err := filepath.Walk("./"+tg.Project,
 				func(path string, info os.FileInfo, err error) error {
@@ -73,10 +73,11 @@ var applyCmd = &cobra.Command{
 				})
 
 			if err != nil {
-				log.Println(err)
+				log.Println(Warn(err))
 			}
 
 		}
+		DisplayInfo(projectType)
 	},
 }
 
@@ -98,4 +99,34 @@ func lintFile(filename string, minConfidence float64) {
 			fmt.Printf("%s:%v: %s\n", filename, p.Position, p.Text)
 		}
 	}
+}
+
+// DisplayInfo is to display information regarding project
+func DisplayInfo(projectType string) {
+	fmt.Println(Info("Attention please"))
+	fmt.Println()
+	if strings.Contains(projectType, "http") || strings.Contains(projectType, "grpc") {
+		fmt.Println(Warn("port information"))
+		fmt.Println(Details("readyGo does not know whether the port is available or not."))
+		fmt.Println(Details("User has to make sure that the port is available and not behind firewall"))
+	}
+	fmt.Println()
+	if strings.Contains(projectType, "grpc") {
+		fmt.Println(Warn("grpc protocol buffer information"))
+		fmt.Println(Details("readyGo does not generate proto buffer go files for you."))
+		fmt.Println(Details("User has to make sure that protoc , proto_gen_go and protoc_gen_go_grpc tools are installed w.r.t the OS"))
+	}
+	fmt.Println()
+	if strings.Contains(projectType, "mongo") {
+		fmt.Println(Warn("mongo database information"))
+		fmt.Println(Details("readyGo does not start the database."))
+		fmt.Println(Details("Make sure your mongodb database is started , up and running"))
+	}
+	fmt.Println()
+	if strings.Contains(projectType, "sql") {
+		fmt.Println(Warn("sql database information"))
+		fmt.Println(Details("readyGo does not start the database."))
+		fmt.Println(Details("Make sure your sql database is started , up and running"))
+	}
+	fmt.Println()
 }
