@@ -236,10 +236,8 @@ func (d *Database) FindRecordByID(col, id string) (interface{}, error) {
 		return -1, errors.New("parameter id is empty")
 	}
 	objID, err := primitive.ObjectIDFromHex(id)
-	glog.Info(objID)
 	if err != nil {
-		glog.Info("here 1", err)
-		return -1, err
+			return -1, err
 	}
 	filters := bson.M{
 		"_id": objID,
@@ -247,10 +245,8 @@ func (d *Database) FindRecordByID(col, id string) (interface{}, error) {
 
 	result := make(map[string]interface{})
 	res := collection.FindOne(ctx, filters)
-	glog.Info(res)
 	err = res.Decode(result)
 	if err != nil {
-		glog.Info("here 2", err)
 		return nil, err
 	}
 	return result, nil
