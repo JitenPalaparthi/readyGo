@@ -9,12 +9,18 @@ import (
 	"path/filepath"
 	"readyGo/mapping"
 	"readyGo/scaler"
+	"regexp"
 	"runtime"
 	"strconv"
 	"strings"
 	"text/template"
 
 	"gopkg.in/yaml.v2"
+)
+
+var (
+	//ErrInvalidProjectName is to define error information upon invalid project name
+	ErrInvalidProjectName = errors.New("invalid project name; it must have only characters;no special chars,whitespaces,digits are allowed;")
 )
 
 // New is to generate a new generater.
@@ -54,9 +60,16 @@ func New(file *string, mapping *mapping.Mapping, scaler scaler.Map) (tg *Generat
 		return nil, err
 	}
 
-	root := strings.ToLower(tg.Project)
+	//root := strings.ToLower(tg.Project)
 
-	tg.Project = root
+	//tg.Project = root
+	matched, err := regexp.MatchString("^[a-zA-Z]*$", tg.Project)
+	if !matched {
+		return nil, ErrInvalidProjectName
+	}
+	if err != nil {
+		return nil, err
+	}
 
 	tg.Mapping = mapping
 

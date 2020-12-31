@@ -1,7 +1,7 @@
 {
     "version": "0.1",
     "kind": "grpc",
-    "project": "productsample",
+    "project": "product_sample",
     "databaseSpec": {
       "kind": "mongo",
       "connectionString": "mongodb://localhost:27017",
