@@ -3,6 +3,7 @@ package generate
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"path"
@@ -55,14 +56,11 @@ func New(file *string, mapping *mapping.Mapping, scaler scaler.Map) (tg *Generat
 		}
 	}
 
-	err = tg.ValidateAndChangeIdentifier()
+	err = tg.ChangeIden()
 	if err != nil {
 		return nil, err
 	}
 
-	//root := strings.ToLower(tg.Project)
-
-	//tg.Project = root
 	matched, err := regexp.MatchString("^[a-zA-Z]*$", tg.Project)
 	if !matched {
 		return nil, ErrInvalidProjectName
@@ -74,6 +72,20 @@ func New(file *string, mapping *mapping.Mapping, scaler scaler.Map) (tg *Generat
 	tg.Mapping = mapping
 
 	tg.Scalers = scaler
+
+	tg.SetFieldCategory()
+
+	for _, m := range tg.Models {
+		for _, f := range m.Fields {
+			fmt.Println(m.Name, ":", f.Name, ":", f.Type, ":", f.Category)
+		}
+	}
+
+	err = tg.ValidateTypes()
+
+	if err != nil {
+		return nil, err
+	}
 
 	err = tg.Validate()
 

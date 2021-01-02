@@ -44,3 +44,12 @@ func (m Map) GetScaler(configType string) *Scaler {
 	}
 	return nil
 }
+
+// IsValidreadyGotype is to check whether type is valid type or not
+func (m Map) IsValidreadyGotype(configType string) bool {
+	_, ok := m[configType]
+	if ok {
+		return true
+	}
+	return false
+}

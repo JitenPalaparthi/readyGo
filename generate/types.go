@@ -27,9 +27,11 @@ type Model struct {
 // Field is to hold fields in a model that comes from configuration file
 type Field struct {
 	Name        string `json:"name" yaml:"name"`               // Name of the field. Should be valid Go identifier
-	Type        string `json:"type" yaml:"type"`               // Go basic types are only allowed
+	Type        string `json:"type" yaml:"type"`               // type should be either readyGo specified scaler type or a defined model
 	IsKey       bool   `json:"isKey" yaml:"isKey"`             // If it is a key field . Key fields generates different methods to check the data in the database is unique or not
-	ValidateExp string `json:"validateExp" yaml:"validateExp"` // Regular expression that would be used for field level validations in the models
+	ValidateExp string `json:"validateExp" yaml:"validateExp"` // Regular expression that would be used for field level validations in models
+	Category    string `json:"category" yaml:"category"`       // Category is general field types are scalers if its a type for a model then it is model etc
+	Annotation  string `json:"annotation" yaml:"annotation"`   // Field Annotations are generally used for json bson gorm etc.
 }
 
 // DatabaseSpec struct type contains database related information

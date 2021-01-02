@@ -4,14 +4,20 @@
 syntax = "proto3";
 package {{.Project}};
 import "google/protobuf/struct.proto";
+{{- range .Model.Fields }}
+{{ if eq .Category "model"}}import "{{$.config.Project}}/protos/{{.Name | ToLower}}.proto";{{ end}}
+{{- end}}
 option go_package = "{{.Project}}/protos";
+
 {{ $Count:="0"}}
-	message {{.Model.Name}}Request  {
+	message {{.Model.Name}}Type  {
 	{{- range .Model.Fields }}
-	 {{ .Type | GrpcType}} {{ .Name }} = {{$Count | Counter}};
+	{{ if eq .Category "scaler"}}{{ .Type | GrpcType}} {{ .Name }} = {{$Count | Counter}};{{- end}}
+	{{ if eq .Category "model"}}{{ .Type}}Type {{ .Name }} = {{$Count | Counter}};{{- end}}
     {{- $Count = $Count | Counter}}
 	{{- end}}
 	}
+
 message {{.Model.Name}}Response{
 		int32 code=1;
 		string error=2;
@@ -33,13 +39,13 @@ message {{.Model.Name}}GetAllByRequest{
     }
 
 message {{.Model.Name}}sResponse{
-	repeated {{.Model.Name}}Request {{.Model.Name}}s=1;
+	repeated {{.Model.Name}}Type {{.Model.Name}}s=1;
 }
 
 service {{ .Model.Name}} {
-    rpc Create{{.Model.Name}} ({{.Model.Name}}Request) returns({{.Model.Name}}Response);
+    rpc Create{{.Model.Name}} ({{.Model.Name}}Type) returns({{.Model.Name}}Response);
 	rpc Update{{.Model.Name}}ByID ({{.Model.Name}}UpdateRequest) returns({{.Model.Name}}Response);
 	rpc Delete{{.Model.Name}}ByID ({{.Model.Name}}IDRequest) returns({{.Model.Name}}Response);
-	rpc Get{{.Model.Name}}ByID ({{.Model.Name}}IDRequest) returns({{.Model.Name}}Request);
+	rpc Get{{.Model.Name}}ByID ({{.Model.Name}}IDRequest) returns({{.Model.Name}}Type);
 	rpc GetAll{{.Model.Name}}sBy ({{.Model.Name}}GetAllByRequest) returns({{.Model.Name}}sResponse);
 }

@@ -10,6 +10,8 @@ import (
 	pb "{{.Project}}/protos"
 	"flag"
 	"github.com/golang/glog"
+	"github.com/fatih/structs"
+	"github.com/mitchellh/mapstructure"
 )
 
 // {{.Model.Name}} type used as a container for db interface and receiver for handler functions
@@ -24,18 +26,23 @@ func init() {
 }
 
 // Create{{.Model.Name}} is to create object
-func ({{.Model.Name | Initial}} *{{.Model.Name}}) Create{{.Model.Name}}(ctx context.Context, in *pb.{{.Model.Name}}Request) (*pb.{{.Model.Name}}Response, error) {
+func ({{.Model.Name | Initial}} *{{.Model.Name}}) Create{{.Model.Name}}(ctx context.Context, in *pb.{{.Model.Name}}Type) (*pb.{{.Model.Name}}Response, error) {
 	{{.Model.Name | ToLower}} := &models.{{.Model.Name}}{}
 	{{ $ModelName := .Model.Name }}
-	{{- range .Model.Fields }}
+	sm := structs.Map(in)
+	err:=mapstructure.Decode(sm, {{.Model.Name | ToLower}})
+	if err!=nil{
+		glog.Info(err)
+		return nil, err
+	}
+	/*{{- range .Model.Fields }}
 	{{$ModelName | ToLower}}.{{.Name}}=in.{{.Name}}
-	{{- end}}
+	{{- end}}*/
 	out := &pb.{{.Model.Name}}Response{}
 	if err := models.Validate{{.Model.Name}}({{.Model.Name | ToLower}}); err != nil {
 		glog.Error(err)
 		return nil, err
 	}
-
 	result,err:={{.Model.Name | Initial}}.I{{.Model.Name}}.Create{{.Model.Name}}({{.Model.Name | ToLower}});
 	if err!=nil{
 		glog.Info(err)
@@ -72,7 +79,7 @@ func ({{.Model.Name | Initial}} *{{.Model.Name}}) Delete{{.Model.Name}}ByID(ctx 
 }
 
 // Get{{.Model.Name}}ByID is to fetch object based on ID
-func ({{.Model.Name | Initial}} *{{.Model.Name}}) Get{{.Model.Name}}ByID(ctx context.Context, in *pb.{{.Model.Name}}IDRequest) (*pb.{{.Model.Name}}Request, error) {
+func ({{.Model.Name | Initial}} *{{.Model.Name}}) Get{{.Model.Name}}ByID(ctx context.Context, in *pb.{{.Model.Name}}IDRequest) (*pb.{{.Model.Name}}Type, error) {
 	{{.Model.Name | ToLower}} := &models.{{.Model.Name}}{}
 
 	{{.Model.Name | ToLower}} ,err:={{.Model.Name | Initial}}.I{{.Model.Name}}.Get{{.Model.Name}}ByID(in.ID);
@@ -80,11 +87,17 @@ func ({{.Model.Name | Initial}} *{{.Model.Name}}) Get{{.Model.Name}}ByID(ctx con
 		glog.Info(err)
 		return nil, err
 	}
-	out := &pb.{{.Model.Name}}Request{}
-	{{ $ModelName := .Model.Name }}
+	out := &pb.{{.Model.Name}}Type{}
+	sm := structs.Map({{.Model.Name | ToLower}})
+	err=mapstructure.Decode(sm, out)
+	if err!=nil{
+		glog.Info(err)
+		return nil, err
+	}
+	/*{{ $ModelName := .Model.Name }}
 	{{- range .Model.Fields }}
 	out.{{.Name}}={{$ModelName | ToLower}}.{{.Name}}
-	{{- end}}
+	{{- end}}*/
 	return out, nil
 }
 
@@ -92,20 +105,25 @@ func ({{.Model.Name | Initial}} *{{.Model.Name}}) Get{{.Model.Name}}ByID(ctx con
 // GetAll{{.Model.Name}}sBy is to fetch all objects based on provided parameters
 func ({{.Model.Name | Initial}} *{{.Model.Name}}) GetAll{{.Model.Name}}sBy(ctx context.Context, in *pb.{{.Model.Name}}GetAllByRequest) (*pb.{{.Model.Name}}sResponse, error) {
 	{{.Model.Name | ToLower}}s := make([]models.{{.Model.Name}},0)
-
 	{{.Model.Name | ToLower}}s ,err:={{.Model.Name | Initial}}.I{{.Model.Name}}.GetAll{{.Model.Name}}sBy(in.Key,in.Value,in.Skip,in.Limit);
 	if err!=nil{
 		glog.Info(err)
 		return nil, err
 	}
 	out := &pb.{{.Model.Name}}sResponse{}
-	for _,m:=range {{.Model.Name | ToLower}}s{
-	single := &pb.{{.Model.Name}}Request{}
+	for _,{{.Model.Name | ToLower}}:=range {{.Model.Name | ToLower}}s{
+	single := &pb.{{.Model.Name}}Type{}
 	{{ $ModelName := .Model.Name }}
-	{{- range .Model.Fields }}
-	single.{{.Name}}=m.{{.Name}}
-	{{- end}}
-		out.{{$ModelName}}s = append(out.{{$ModelName}}s,single)
+	/*{{- range .Model.Fields }}
+	single.{{.Name}}={{$ModelName | ToLower}}.{{.Name}}
+	{{- end}}*/
+	sm := structs.Map({{$ModelName | ToLower}})
+	err = mapstructure.Decode(sm, single)
+	if err!=nil{
+		glog.Info(err)
+		return nil, err
+	}
+	out.{{$ModelName}}s = append(out.{{$ModelName}}s,single)
 	}
 	return out, nil
 }
