@@ -1,7 +1,7 @@
 {
     "int": {
         "goType": "int",
-        "grpcType": "int"
+        "grpcType": "int32"
     },
     "uint": {
         "goType": "uint32",
