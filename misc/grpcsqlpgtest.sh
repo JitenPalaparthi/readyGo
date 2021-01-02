@@ -14,3 +14,4 @@ cd grpcsqlpgsample
 go mod init grpcsqlpgsample
 
 go run main.go
+

@@ -1,7 +1,7 @@
 {
   "version": "0.1",
   "kind": "http",
-  "project": "sql_sample",
+  "project": "sqlpgsample",
   "databaseSpec": {
     "kind": "sql",
     "connectionString": "user=jiten  password=admin host=localhost port=5432 dbname=sample",
