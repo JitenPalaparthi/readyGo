@@ -5,7 +5,7 @@
 
 - **readyGo** is a command line interface( probably the name of readyGo CLI would be readyGo itself) application, it is designed to scaffold creation of different types of go based projects.readyGo is designed for developers in mind. Ideally **readyGo** should provide ready to use application code. The code is generated based on configurations provided by the end user i.e "The great developer :)".
 
-- By version 1 release, it will support **http**(as of v0.0.3 supported), **grpc**, **CloudEvents** template engines with various databases **(sql/nosql)**, **pub-sub** and **CloudEvents plugins** and probably even more.
+- By version 1 release, it will support **http**, **grpc**, **CloudEvents**(not supported as of v0.0.8) template engines with various databases **(sql/nosql)**, **pub-sub** and **CloudEvents plugins** and probably even more.
 
 - The present version of **readyGo** is **v0.0.8**. It supports **http+mongodb and http+sql** (Postgres but with simple tweaks ca make it work for others like MySQL, CockroachDb etc..)
 
