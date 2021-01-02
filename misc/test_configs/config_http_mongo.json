@@ -1,11 +1,11 @@
 {
   "version": "0.1",
   "kind": "http",
-  "project": "mongosample",
+  "project": "contacts",
   "databaseSpec": {
     "kind": "mongo",
     "connectionString": "mongodb://localhost:27017",
-    "name": "sample"
+    "name": "contacts"
   },
   "apiSpec": {
     "kind": "http",
@@ -22,14 +22,13 @@
           "isKey": true
         },
         {
-          "name": "email",
+          "name": "description",
           "type": "string",
-          "validateExp": "[a-zA-Z0-9]",
-          "isKey": true
+          "validateExp": "[a-zA-Z0-9]"
         },
         {
-          "name": "mobile",
-          "type": "string"
+          "name": "refNo",
+          "type": "long"
         },
         {
           "name": "status",
@@ -37,6 +36,35 @@
         },
         {
           "name": "lastModified",
+          "type": "string"
+        },
+        {
+          "name": "Address",
+          "type": "Address"
+        }
+      ]
+    },
+    {
+      "name": "Address",
+      "fields": [
+        {
+          "name": "houseno",
+          "type": "string"
+        },
+        {
+          "name": "street",
+          "type": "string"
+        },
+        {
+          "name": "state",
+          "type": "string"
+        },
+        {
+          "name": "country",
+          "type": "string"
+        },
+        {
+          "name": "zip",
           "type": "string"
         }
       ]

@@ -7,7 +7,7 @@
 
 - By version 1 release, it will support **http**(as of v0.0.3 supported), **grpc**, **CloudEvents** template engines with various databases **(sql/nosql)**, **pub-sub** and **CloudEvents plugins** and probably even more.
 
-- The present version of **readyGo** is **v0.0.3**. It supports **http+mongodb and http+sql** (Postgres but with simple tweaks ca make it work for others like MySQL, CockroachDb etc..)
+- The present version of **readyGo** is **v0.0.8**. It supports **http+mongodb and http+sql** (Postgres but with simple tweaks ca make it work for others like MySQL, CockroachDb etc..)
 
 - There are two types of users for **readyGo**
 

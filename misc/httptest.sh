@@ -1,12 +1,12 @@
 #!/bin/sh
 
-rm -rf mongosample
+rm -rf contacts
 
-go run main.go apply -f misc/test_configs/config_mongo.json -t http_mongo
+go run main.go apply -f misc/test_configs/config_http_mongo.json -t http_mongo
 
-cd mongosample
+cd contacts
 
-go mod init mongosample
+go mod init contacts
 
 go run main.go
 
