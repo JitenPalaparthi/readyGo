@@ -15,8 +15,8 @@
    inkscape:version="1.0.1 (1.0.1+r74)"
    sodipodi:docname="ReadyGoBold-QuickStart.svg"
    inkscape:export-filename="/home/jiten/Desktop/ReadyGoBold-QuickStart.png"
-   inkscape:export-xdpi="216.662"
-   inkscape:export-ydpi="216.662">
+   inkscape:export-xdpi="127"
+   inkscape:export-ydpi="127">
   <defs
      id="defs3988" />
   <sodipodi:namedview
@@ -57,7 +57,7 @@
      id="layer1">
     <g
        id="g111"
-       transform="translate(-15.768912,-79.847583)">
+       transform="translate(-15.995155,-101.93669)">
       <text
          xml:space="preserve"
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:22.5px;line-height:1.25;font-family:Orbitron;-inkscape-font-specification:'Orbitron, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;word-spacing:0px;opacity:0.8;fill:#0d6efd;fill-opacity:1;stroke-width:0.213728"
@@ -514,15 +514,15 @@
     </g>
     <text
        xml:space="preserve"
-       style="font-size:11.481px;line-height:1.25;font-family:'Liberation Sans';-inkscape-font-specification:'Liberation Sans, Normal';word-spacing:0px;stroke-width:0.109059;fill:#ff6600;"
-       x="5.3353419"
-       y="31.878502"
+       style="font-size:11.481px;line-height:1.25;font-family:'Liberation Sans';-inkscape-font-specification:'Liberation Sans, Normal';word-spacing:0px;fill:#ff6600;stroke-width:0.109059"
+       x="5.0576801"
+       y="13.879939"
        id="text62"
-       transform="scale(0.81481637,1.2272704)"><tspan
+       transform="scale(0.81481636,1.2272704)"><tspan
          sodipodi:role="line"
          id="tspan60"
-         x="5.3353419"
-         y="31.878502"
-         style="stroke-width:0.109059;fill:#ff6600;">How to readyGo?Quick Start video</tspan></text>
+         x="5.0576801"
+         y="13.879939"
+         style="fill:#ff6600;stroke-width:0.109059">How to readyGo?Quick Start video</tspan></text>
   </g>
 </svg>
