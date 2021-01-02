@@ -13,7 +13,10 @@
    version="1.1"
    id="svg3994"
    inkscape:version="1.0.1 (1.0.1+r74)"
-   sodipodi:docname="ReadyGoBold-QuickStart.svg">
+   sodipodi:docname="ReadyGoBold-QuickStart.svg"
+   inkscape:export-filename="/home/jiten/Desktop/ReadyGoBold-QuickStart.png"
+   inkscape:export-xdpi="216.662"
+   inkscape:export-ydpi="216.662">
   <defs
      id="defs3988" />
   <sodipodi:namedview
@@ -44,7 +47,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -54,7 +57,7 @@
      id="layer1">
     <g
        id="g111"
-       transform="translate(-12.700002,-83.079213)">
+       transform="translate(-15.768912,-79.847583)">
       <text
          xml:space="preserve"
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:22.5px;line-height:1.25;font-family:Orbitron;-inkscape-font-specification:'Orbitron, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;word-spacing:0px;opacity:0.8;fill:#0d6efd;fill-opacity:1;stroke-width:0.213728"
@@ -511,15 +514,15 @@
     </g>
     <text
        xml:space="preserve"
-       style="font-size:11.6148px;line-height:1.25;font-family:'Liberation Sans';-inkscape-font-specification:'Liberation Sans, Normal';word-spacing:0px;stroke-width:0.11033"
-       x="1.8749336"
-       y="20.380135"
+       style="font-size:11.481px;line-height:1.25;font-family:'Liberation Sans';-inkscape-font-specification:'Liberation Sans, Normal';word-spacing:0px;stroke-width:0.109059;fill:#ff6600;"
+       x="5.3353419"
+       y="31.878502"
        id="text62"
-       transform="scale(0.82431112,1.2131342)"><tspan
+       transform="scale(0.81481637,1.2272704)"><tspan
          sodipodi:role="line"
          id="tspan60"
-         x="1.8749336"
-         y="20.380135"
-         style="stroke-width:0.11033">How to readyGo?Quick Start video</tspan></text>
+         x="5.3353419"
+         y="31.878502"
+         style="stroke-width:0.109059;fill:#ff6600;">How to readyGo?Quick Start video</tspan></text>
   </g>
 </svg>
