@@ -35,7 +35,7 @@ var applyCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 
 		ops := boxops.New("../box")
-		mapping, err := mapping.New(ops, "configs/mappings.json", projectType)
+		mapping, err := mapping.New(ops, "configs/mappings/"+projectType+".json", projectType)
 		if err != nil {
 			log.Fatal(Fata(err))
 		}

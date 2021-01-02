@@ -39,7 +39,7 @@ func New(reader Reader, file, key string) (mapping *Mapping, err error) {
 	if err != nil {
 		return nil, err
 	}
-	opsData, ok := fullOpsMap[key]
+	opsData, ok := fullOpsMap["data"]
 	if !ok {
 		return nil, errors.New("required data not found")
 	}

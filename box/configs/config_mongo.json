@@ -1,7 +1,7 @@
 {
   "version": "0.1",
   "kind": "http",
-  "project": "mongo_sample",
+  "project": "mongosample",
   "databaseSpec": {
     "kind": "mongo",
     "connectionString": "mongodb://localhost:27017",
