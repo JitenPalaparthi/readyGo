@@ -15,8 +15,8 @@
    inkscape:version="1.0.1 (1.0.1+r74)"
    sodipodi:docname="ReadyGoBold-QuickStart.svg"
    inkscape:export-filename="/home/jiten/Desktop/ReadyGoBold-QuickStart.png"
-   inkscape:export-xdpi="127"
-   inkscape:export-ydpi="127">
+   inkscape:export-xdpi="71.10759"
+   inkscape:export-ydpi="71.10759">
   <defs
      id="defs3988" />
   <sodipodi:namedview
@@ -26,9 +26,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.8359833"
-     inkscape:cx="430.26612"
-     inkscape:cy="247.89524"
+     inkscape:zoom="0.9983453"
+     inkscape:cx="288.46268"
+     inkscape:cy="100.04698"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      inkscape:document-rotation="0"
@@ -57,7 +57,7 @@
      id="layer1">
     <g
        id="g111"
-       transform="translate(-15.995155,-101.93669)">
+       transform="translate(-17.264691,-106.3693)">
       <text
          xml:space="preserve"
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:22.5px;line-height:1.25;font-family:Orbitron;-inkscape-font-specification:'Orbitron, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;word-spacing:0px;opacity:0.8;fill:#0d6efd;fill-opacity:1;stroke-width:0.213728"
@@ -515,14 +515,14 @@
     <text
        xml:space="preserve"
        style="font-size:11.481px;line-height:1.25;font-family:'Liberation Sans';-inkscape-font-specification:'Liberation Sans, Normal';word-spacing:0px;fill:#ff6600;stroke-width:0.109059"
-       x="5.0576801"
-       y="13.879939"
+       x="3.4996171"
+       y="10.268171"
        id="text62"
        transform="scale(0.81481636,1.2272704)"><tspan
          sodipodi:role="line"
          id="tspan60"
-         x="5.0576801"
-         y="13.879939"
+         x="3.4996171"
+         y="10.268171"
          style="fill:#ff6600;stroke-width:0.109059">How to readyGo?Quick Start video</tspan></text>
   </g>
 </svg>
