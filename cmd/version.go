@@ -12,11 +12,11 @@ func init() {
 
 var versionCmd = &cobra.Command{
 	Use:   "version",
-	Short: "readyGo v0.0.7",
-	Long: `readyGo v0.0.7.Currently in Active Development\n grpc Supported versions:
+	Short: "readyGo v0.0.8",
+	Long: `readyGo v0.0.8.Currently in Active Development\n grpc Supported versions:
 	 	\nprotoc-gen-go v1.25.0
 	 	\nprotoc        v3.14.0`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("readyGo  v0.0.7\n\nCompiled and tested for grpc versions:\t\nprotoc-gen-go v1.25.0\t\nprotoc        v3.14.0")
+		fmt.Println("readyGo  v0.0.8\n\nCompiled and tested for grpc versions:\t\nprotoc-gen-go v1.25.0\t\nprotoc        v3.14.0")
 	},
 }

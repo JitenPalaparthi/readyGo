@@ -2,7 +2,7 @@
 
 rm -rf mongosample
 
-go run main.go apply -f box/configs/config_mongo.json -t http_mongo
+go run main.go apply -f misc/test_configs/config_mongo.json -t http_mongo
 
 cd mongosample
 
