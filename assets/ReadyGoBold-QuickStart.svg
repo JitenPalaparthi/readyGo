@@ -57,7 +57,9 @@
      id="layer1">
     <g
        id="g111"
-       transform="translate(-17.264691,-106.3693)">
+       transform="translate(-18.119558,-98.483994)"
+       inkscape:export-xdpi="227.54428"
+       inkscape:export-ydpi="227.54428">
       <text
          xml:space="preserve"
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:22.5px;line-height:1.25;font-family:Orbitron;-inkscape-font-specification:'Orbitron, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;word-spacing:0px;opacity:0.8;fill:#0d6efd;fill-opacity:1;stroke-width:0.213728"
@@ -515,14 +517,16 @@
     <text
        xml:space="preserve"
        style="font-size:11.481px;line-height:1.25;font-family:'Liberation Sans';-inkscape-font-specification:'Liberation Sans, Normal';word-spacing:0px;fill:#ff6600;stroke-width:0.109059"
-       x="3.4996171"
-       y="10.268171"
+       x="2.4504642"
+       y="16.693249"
        id="text62"
-       transform="scale(0.81481636,1.2272704)"><tspan
+       transform="scale(0.81481636,1.2272704)"
+       inkscape:export-xdpi="227.54428"
+       inkscape:export-ydpi="227.54428"><tspan
          sodipodi:role="line"
          id="tspan60"
-         x="3.4996171"
-         y="10.268171"
+         x="2.4504642"
+         y="16.693249"
          style="fill:#ff6600;stroke-width:0.109059">How to readyGo?Quick Start video</tspan></text>
   </g>
 </svg>
