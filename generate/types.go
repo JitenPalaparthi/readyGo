@@ -28,6 +28,7 @@ type Model struct {
 type Field struct {
 	Name        string `json:"name" yaml:"name"`               // Name of the field. Should be valid Go identifier
 	Type        string `json:"type" yaml:"type"`               // type should be either readyGo specified scaler type or a defined model
+	Definition  string `json:"definition" yaml:"definition"`   // definition is to define function.Dont want to give more fields to user to set so type should be auto matially taken when type is given as function
 	IsKey       bool   `json:"isKey" yaml:"isKey"`             // If it is a key field . Key fields generates different methods to check the data in the database is unique or not
 	ValidateExp string `json:"validateExp" yaml:"validateExp"` // Regular expression that would be used for field level validations in models
 	Category    string `json:"category" yaml:"category"`       // Category is general field types are scalers if its a type for a model then it is model etc
@@ -43,7 +44,7 @@ type DatabaseSpec struct {
 
 // APISpec struct type contains api related information
 type APISpec struct {
-	Kind    string `json:"kind" yaml:"kind"`       //http | grpc | cloudEvent
+	Kind    string `json:"kind" yaml:"kind"`       // http | grpc | cloudEvent
 	Port    string `json:"port" yaml:"port"`       // port to run on
-	Version string `json:"version" yaml:"version"` //Version that is used to define apis.example v1/public/get v2/private/create etc.
+	Version string `json:"version" yaml:"version"` // Version that is used to define apis.example v1/public/get v2/private/create etc.
 }

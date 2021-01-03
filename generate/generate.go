@@ -92,11 +92,11 @@ func New(file *string, mapping *mapping.Mapping, scaler scaler.Map) (tg *Generat
 		}
 	}
 
-	err = tg.ValidateTypes()
+	/*err = tg.ValidateTypes()
 
 	if err != nil {
 		return nil, err
-	}
+	}*/
 
 	err = tg.Validate()
 
@@ -304,6 +304,21 @@ func (tg *Generate) WriteTmplToFile(filePath string, tmpl string, data interface
 				return scler.GrpcType
 			}
 			return ""
+		}}).Funcs(template.FuncMap{
+		"GoRegExFormat": func(str string) string {
+			if str == "" {
+				return ""
+			}
+			str = strings.Trim(str, " ")
+			//strbuff := []byte(str)
+			if len(str) > 2 {
+				//	strbuff[0] = 96
+				//	strbuff[len(strbuff)-1] = 96
+				stroriginal := str
+				str = strings.Replace(str[1:len(str)-1], "`", `"`+"`"+`"`, -2)
+				return string(stroriginal[0]) + str + string(stroriginal[len(stroriginal)-1])
+			}
+			return string(str)
 		}}).Parse(tmpl))
 	err = t.Execute(file, data)
 

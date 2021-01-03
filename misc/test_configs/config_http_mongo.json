@@ -22,21 +22,26 @@
           "isKey": true
         },
         {
-          "name": "description",
+          "name": "email",
           "type": "string",
-          "validateExp": "[a-zA-Z0-9]"
+          "isKey": true,
+          "validateExp": "^[a-zA-Z0-9.!#$%&'*+\\\\/=?^_\\\\`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$"
         },
         {
-          "name": "refNo",
+          "name": "gender",
+          "type": "string"
+        },
+        {
+          "name": "contact",
           "type": "long"
         },
         {
           "name": "status",
-          "type": "string"
+          "type": "global.GetDefaultStr(`active`)"
         },
         {
           "name": "lastModified",
-          "type": "string"
+          "type": "global.GetCurrentDateTimeInStr()"
         },
         {
           "name": "Address",
@@ -48,7 +53,7 @@
       "name": "Address",
       "fields": [
         {
-          "name": "houseno",
+          "name": "addressline",
           "type": "string"
         },
         {

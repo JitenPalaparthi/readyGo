@@ -7,6 +7,16 @@ import (
 	"strings"
 )
 
+// FieldValidator is an interface used to implement validater logic
+type FieldValidator interface {
+	IsValidIdentifier(fielden string) bool
+	ChangeIden() error
+	SetFieldCategory()
+	IsModelType(iden string) bool
+	Validate() (err error)
+	GetFunctionReturnType(fn string) string
+}
+
 var (
 	// ErrNoProjectName is to define error that project name is missing is not provided
 	ErrNoProjectName = errors.New("project name is missing")
@@ -119,6 +129,8 @@ func (tg *Generate) SetFieldCategory() {
 			if tg.Scalers.IsValidreadyGotype(f.Type) {
 				tg.Models[mi].Fields[i].Category = "scaler" // all readyGo types are scaler types
 			} else if strings.Contains(f.Type, "global.") {
+				tg.Models[mi].Fields[i].Definition = f.Type
+				tg.Models[mi].Fields[i].Type = "string"       // Todo fetch this from reading global. functions return type
 				tg.Models[mi].Fields[i].Category = "function" // any type that contains global. is a function category as all functionsa re global.xxxfuncname
 			} else if tg.IsModelType(f.Type) {
 				tg.Models[mi].Fields[i].Category = "model" // model category are types that are already one of the models
