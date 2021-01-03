@@ -27,52 +27,52 @@
         },
         {
             "opType": "static-files",
-            "src": "static/common/databases/sql/postgres/database.static",
+            "src": "lang/go/static/common/databases/sql/postgres/database.static",
             "dst": "database/database.go"
         },
         {
             "opType": "static-files",
-            "src": "static/http/helper/helper.static",
+            "src": "lang/go/static/http/helper/helper.static",
             "dst": "helper/helper.go"
         },
         {
             "opType": "multiple-file-templates",
-            "src": "templates/common/models",
+            "src": "lang/go/templates/common/models",
             "dst": "models"
         },
         {
             "opType": "multiple-file-templates",
-            "src": "templates/common/interfaces",
+            "src": "lang/go/templates/common/interfaces",
             "dst": "interfaces"
         },
         {
             "opType": "multiple-file-templates",
-            "src": "templates/common/database/sql/db",
+            "src": "lang/go/templates/common/database/sql/db",
             "dst": "database"
         },
         {
             "opType": "multiple-file-templates",
-            "src": "templates/http/handlers",
+            "src": "lang/go/templates/http/handlers",
             "dst": "handlers"
         },
         {
             "opType": "single-file-templates",
-            "src": "templates/common/config",
+            "src": "lang/go/templates/common/config",
             "dst": "application.json"
         },
         {
             "opType": "single-file-templates",
-            "src": "templates/http/main",
+            "src": "lang/go/templates/http/main",
             "dst": "main.go"
         },
         {
             "opType": "single-file-templates",
-            "src": "templates/common/docker-compose",
+            "src": "lang/go/templates/common/docker-compose",
             "dst": "docker-compose.yaml"
         },
         {
             "opType": "single-file-templates",
-            "src": "templates/common/Dockerfile",
+            "src": "lang/go/templates/common/Dockerfile",
             "dst": "Dockerfile"
         }
     ]

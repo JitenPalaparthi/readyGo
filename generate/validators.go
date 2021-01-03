@@ -3,12 +3,8 @@ package generate
 import (
 	"errors"
 	"fmt"
-	"log"
 	"regexp"
-	"sort"
 	"strings"
-
-	"golang.org/x/lint"
 )
 
 var (
@@ -59,61 +55,6 @@ func (tg *Generate) ChangeIden() error {
 		}
 	}
 	return nil
-}
-
-// ValidateAndChangeIdentifier is to validate and Change as and where required
-func (tg *Generate) ValidateAndChangeIdentifier() (err error) {
-	for i, m := range tg.Models {
-		tmpModel := m.Name
-		ok, problems, err := ValidModelType(tmpModel)
-		if !ok {
-			for _, problem := range problems {
-				log.Println("Warning:", problem)
-			}
-			if err != nil {
-				return err
-			}
-		}
-		tg.Models[i].Name = strings.ToUpper(string(tmpModel[0])) + string(tmpModel[1:])
-		for j, f := range m.Fields {
-			tmpField := f.Name
-			ok, problems, err := ValidFieldType(tmpField, f.Type)
-			if !ok {
-				for _, problem := range problems {
-					log.Println("Warning:", problem)
-				}
-				if err != nil {
-					return err
-				}
-				//return errors.New("invalid field or type in configuration file :" + tmpField + ":" + f.Type)
-			}
-			tg.Models[i].Fields[j].Name = strings.ToUpper(string(tmpField[0])) + string(tmpField[1:])
-		}
-	}
-	return nil
-
-}
-
-// ValidModelType is to validate the model type
-func ValidModelType(name string) (bool, []lint.Problem, error) {
-	var l lint.Linter
-	problems, err := l.Lint("", []byte("//Package valid is a valid package \n package valid \n type "+name+" struct{}"))
-	//fmt.Println(problems, err)
-	if len(problems) > 0 || err != nil {
-		return false, problems, err
-	}
-	return true, nil, nil
-}
-
-// ValidFieldType is to validate the model type
-func ValidFieldType(field, tpe string) (bool, []lint.Problem, error) {
-	var l lint.Linter
-	problems, err := l.Lint("", []byte("//Package valid is a valid package \n package valid\n type "+field+" "+tpe))
-	//	fmt.Println(problems, err)
-	if len(problems) > 0 || err != nil {
-		return false, problems, err
-	}
-	return true, nil, nil
 }
 
 // Validate is to validate the object
@@ -169,11 +110,6 @@ func (tg *Generate) Validate() (err error) {
 	}
 
 	return err
-}
-
-func contains(s []string, searchterm string) bool {
-	i := sort.SearchStrings(s, searchterm)
-	return i < len(s) && s[i] == searchterm
 }
 
 // SetFieldCategory each field is set into certain category. They are scaler, model , function,default value etc..
