@@ -22,16 +22,27 @@ import (
 var (
 	//ErrInvalidProjectName is to define error information upon invalid project name
 	ErrInvalidProjectName = errors.New("invalid project name; it must have only characters;no special chars,whitespaces,digits are allowed;")
+
+	// ErrNoFile is to define error that no file provided
+	ErrNoFile = errors.New("no file provided")
+
+	// ErrEmptyMapping is to define error that mapping is empty.
+	ErrEmptyMapping = errors.New("invalid mapping;mapping cannot be empty")
+	// ErrInvalidTemlateGenerator is to define error that invalid template generator is provided
+	ErrInvalidTemlateGenerator = errors.New("invalid template generater;try to instantiate it through generater.New function")
+
+	// ErrInvalidRoot is to define error as invalid root directory
+	ErrInvalidRoot = errors.New("invalid root directory")
 )
 
 // New is to generate a new generater.
 func New(file *string, mapping *mapping.Mapping, scaler scaler.Map) (tg *Generate, err error) {
 
 	if file == nil || *file == "" {
-		return nil, errors.New("no file provided")
+		return nil, ErrNoFile
 	}
 	if mapping == nil {
-		return nil, errors.New("mapping cannot be empty")
+		return nil, ErrEmptyMapping
 	}
 
 	ext := filepath.Ext(*file)
@@ -99,10 +110,10 @@ func New(file *string, mapping *mapping.Mapping, scaler scaler.Map) (tg *Generat
 // CreateAll creates all kinds of files based on the provided mappings
 func (tg *Generate) CreateAll() (err error) {
 	if tg == nil {
-		return errors.New("temp	late generater is not a valid object.Try to instantiate it through generater.New function")
+		return ErrInvalidTemlateGenerator
 	}
 	if tg.Project == "" {
-		return errors.New("invalid root directory")
+		return ErrInvalidRoot
 	}
 	// Todo write more conditions here
 

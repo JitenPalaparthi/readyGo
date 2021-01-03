@@ -5,6 +5,11 @@ import (
 	"errors"
 )
 
+var (
+	// ErrReaderNotProvided is to return when reader is nil or empty
+	ErrReaderNotProvided = errors.New("reader is empty or nil")
+)
+
 // Reader interface reads a file and retunrs it as string
 type Reader interface {
 	Read(string) (string, error)
@@ -22,7 +27,7 @@ type Map map[string]*Scaler
 // New creates a new ScalerType
 func New(reader Reader, file string) (Map, error) {
 	if reader == nil {
-		return nil, errors.New("reader object is not provided or nil")
+		return nil, ErrReaderNotProvided
 	}
 	content, err := reader.Read(file) // Read the scaler config file
 	if err != nil {

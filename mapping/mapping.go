@@ -5,6 +5,13 @@ import (
 	"errors"
 )
 
+var (
+	// ErrReaderNotProvided is to return when reader is nil or empty
+	ErrReaderNotProvided = errors.New("reader is empty or nil")
+	// ErrNoData is to return err when there is not data
+	ErrNoData = errors.New("no data found")
+)
+
 // Reader interface reads a file and retunrs it as string
 type Reader interface {
 	Read(string) (string, error)
@@ -28,7 +35,7 @@ type OpsData struct {
 // New creates a new Mapping
 func New(reader Reader, file, key string) (mapping *Mapping, err error) {
 	if reader == nil {
-		return nil, errors.New("reader object is not provided or nil")
+		return nil, ErrReaderNotProvided
 	}
 	content, err := reader.Read(file) // Read the mappings file
 	if err != nil {
@@ -41,7 +48,7 @@ func New(reader Reader, file, key string) (mapping *Mapping, err error) {
 	}
 	opsData, ok := fullOpsMap["data"]
 	if !ok {
-		return nil, errors.New("required data not found")
+		return nil, ErrNoData
 	}
 	mapping = &Mapping{}
 	mapping.Key = key

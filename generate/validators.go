@@ -11,6 +11,15 @@ import (
 	"golang.org/x/lint"
 )
 
+var (
+	// ErrNoProjectName is to define error that project name is missing is not provided
+	ErrNoProjectName = errors.New("project name is missing")
+	//ErrInvalidProjectType is to define error as invalid project type
+	ErrInvalidProjectType = errors.New("invalid project type;project type must be http | grpc | cloudEvent | cli")
+	// ErrInvalidDatabase is to define error that invalid database
+	ErrInvalidDatabase = errors.New("invalid database;databas type (DB) must be mongo | sql ")
+)
+
 // IsValidIdentifier is to check whether the field is a valid identifier or not
 func (tg *Generate) IsValidIdentifier(fielden string) bool {
 
@@ -110,15 +119,15 @@ func ValidFieldType(field, tpe string) (bool, []lint.Problem, error) {
 // Validate is to validate the object
 func (tg *Generate) Validate() (err error) {
 	if tg.Project == "" {
-		return errors.New("Project name is missing")
+		return ErrNoProjectName
 	}
 	// Validate whether Project name is proper identifier
 
 	if tg.Kind == "" || (tg.Kind != "http" && tg.Kind != "grpc" && tg.Kind != "cloudEvent" && tg.Kind != "cli") {
-		return errors.New(" Project type must be http | grpc | cloudEvent | cli")
+		return ErrInvalidProjectType
 	}
 	if tg.DatabaseSpec.Kind == "" || (tg.DatabaseSpec.Kind != "mongo" && tg.DatabaseSpec.Kind != "sql") {
-		return errors.New(" Databas type (DB) must be mongo | sql ")
+		return ErrInvalidDatabase
 	}
 	// checking duplicate models and fields
 	modelMap := make(map[string]string)
