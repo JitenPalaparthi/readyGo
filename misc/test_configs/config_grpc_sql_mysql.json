@@ -1,0 +1,61 @@
+{
+    "version": "0.1",
+    "kind": "grpc",
+    "project": "grpcsqlpgsample",
+    "databaseSpec": {
+      "kind": "sql",
+      "connectionString": "root:mysql@123@tcp(127.0.0.1:3306)/dbname?charset=utf8mb4&parseTime=True&loc=Local",
+      "name": "sample"
+    },
+    "apiSpec": {
+      "kind": "grpc",
+      "port": "50057",
+      "version": "v1"
+    },
+    "models": [
+      {
+        "name": "product",
+        "fields": [
+          {
+            "name": "name",
+            "type": "string",
+            "isKey": true
+          },
+          {
+            "name": "description",
+            "type": "string",
+            "validateExp": "[a-zA-Z0-9]"
+          },
+          {
+            "name": "refNo",
+            "type": "long"
+          },
+          {
+            "name": "hasStock",
+            "type": "bool"
+          },
+          {
+            "name": "status",
+            "type": "string"
+          },
+          {
+            "name": "lastModified",
+            "type": "string"
+          },
+          {
+            "name": "Address",
+            "type": "Address"
+          }
+        ]
+      },
+      {
+        "name": "Address",
+        "fields": [
+          {
+            "name": "name",
+            "type": "string"
+          }
+        ]
+      }
+    ]
+  }
