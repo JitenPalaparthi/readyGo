@@ -1,6 +1,5 @@
 <img src="https://github.com/JitenPalaparthi/readyGo/blob/master/assets/readyGoBlue.png" width=400>
-# Overview
-
+ 
 *The phylosophy behind readyGo is "A Simple configuration should give a working project.".*
 
 - **readyGo** is a command line interface( probably the name of readyGo CLI would be readyGo itself) application, it is designed to scaffold creation of different types of go based projects.readyGo is designed for developers in mind. Ideally **readyGo** should provide ready to use application code. The code is generated based on configurations provided by the end user i.e "The great developer :)".
