@@ -5,6 +5,14 @@ import (
 	"readyGo/scaler"
 )
 
+// Implementer is an interface used to implement validation and lang specific logic
+type Implementer interface {
+	IsValidIdentifier(fielden string) bool
+	///SetFieldCategory()
+	//IsModelType(iden string) bool
+	GetFuncReturnType(interface{}) string
+}
+
 // Generate is a type that holds configuration data
 type Generate struct {
 	Version      string       `json:"version" yaml:"version"`
@@ -16,6 +24,7 @@ type Generate struct {
 	Models       []Model      `json:"models" yaml:"models"`
 	Mapping      *mapping.Mapping
 	Scalers      scaler.Map
+	Implementer  Implementer // interface to use lang specific implementation logic
 }
 
 // Model is to hold model data from configuration file

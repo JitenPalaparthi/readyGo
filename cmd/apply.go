@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"readyGo/boxops"
 	"readyGo/generate"
+	"readyGo/lang/implement"
 	"readyGo/mapping"
 	"readyGo/scaler"
 	"strings"
@@ -50,7 +51,9 @@ var applyCmd = &cobra.Command{
 			log.Fatal(Fata("apply must supply corrosponding configuration file"))
 		}
 
-		tg, err := generate.New(&applyFile, mapping, scaler)
+		imlementer := implement.New()
+
+		tg, err := generate.New(&applyFile, mapping, scaler, imlementer)
 		if err != nil {
 			log.Fatal(Fata(err))
 		}

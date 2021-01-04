@@ -7,16 +7,6 @@ import (
 	"strings"
 )
 
-// FieldValidator is an interface used to implement validater logic
-type FieldValidator interface {
-	IsValidIdentifier(fielden string) bool
-	ChangeIden() error
-	SetFieldCategory()
-	IsModelType(iden string) bool
-	Validate() (err error)
-	GetFunctionReturnType(fn string) string
-}
-
 var (
 	// ErrNoProjectName is to define error that project name is missing is not provided
 	ErrNoProjectName = errors.New("project name is missing")
@@ -49,14 +39,14 @@ func (tg *Generate) IsValidIdentifier(fielden string) bool {
 // ChangeIden is to change all identifiers based on
 func (tg *Generate) ChangeIden() error {
 	for i, m := range tg.Models {
-		if !tg.IsValidIdentifier(m.Name) {
+		if !tg.Implementer.IsValidIdentifier(m.Name) {
 			fmt.Println(m.Name)
 			return errors.New(m.Name + " is invalid identifier")
 		}
 		tmpModel := m.Name
 		tg.Models[i].Name = strings.ToUpper(string(tmpModel[0])) + string(tmpModel[1:])
 		for j, f := range m.Fields {
-			if !tg.IsValidIdentifier(f.Name) {
+			if !tg.Implementer.IsValidIdentifier(f.Name) {
 				fmt.Println(f.Name)
 				return errors.New(f.Name + " is invalid identifier")
 			}
@@ -130,8 +120,8 @@ func (tg *Generate) SetFieldCategory() {
 				tg.Models[mi].Fields[i].Category = "scaler" // all readyGo types are scaler types
 			} else if strings.Contains(f.Type, "global.") {
 				tg.Models[mi].Fields[i].Definition = f.Type
-				tg.Models[mi].Fields[i].Type = "string"       // Todo fetch this from reading global. functions return type
-				tg.Models[mi].Fields[i].Category = "function" // any type that contains global. is a function category as all functionsa re global.xxxfuncname
+				tg.Models[mi].Fields[i].Type = tg.Implementer.GetFuncReturnType(f.Type) // Todo fetch this from reading global. functions return type
+				tg.Models[mi].Fields[i].Category = "function"                           // any type that contains global. is a function category as all functionsa re global.xxxfuncname
 			} else if tg.IsModelType(f.Type) {
 				tg.Models[mi].Fields[i].Category = "model" // model category are types that are already one of the models
 			} else {

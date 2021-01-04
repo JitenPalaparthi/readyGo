@@ -9,7 +9,12 @@ func GetCurrentDateTimeInStr() string {
 	return time.Now().String()
 }
 
-// GetDefaultStr is to get the default value
+// GetCurrentDateTimeInTime is to get the current date and time in string format
+func GetCurrentDateTimeInTime() time.Time {
+	return time.Now()
+}
+
+// GetDefaultStr is to get the default value which is of string type
 func GetDefaultStr(str string) string {
 	return str
 }

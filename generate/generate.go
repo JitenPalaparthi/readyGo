@@ -28,6 +28,10 @@ var (
 
 	// ErrEmptyMapping is to define error that mapping is empty.
 	ErrEmptyMapping = errors.New("invalid mapping;mapping cannot be empty")
+
+	//ErrEmptyImplementer is to define error that implementer is nil
+	ErrEmptyImplementer = errors.New("invalid implementer;implmenter cannot be nil")
+
 	// ErrInvalidTemlateGenerator is to define error that invalid template generator is provided
 	ErrInvalidTemlateGenerator = errors.New("invalid template generater;try to instantiate it through generater.New function")
 
@@ -36,13 +40,16 @@ var (
 )
 
 // New is to generate a new generater.
-func New(file *string, mapping *mapping.Mapping, scaler scaler.Map) (tg *Generate, err error) {
+func New(file *string, mapping *mapping.Mapping, scaler scaler.Map, implementer Implementer) (tg *Generate, err error) {
 
 	if file == nil || *file == "" {
 		return nil, ErrNoFile
 	}
 	if mapping == nil {
 		return nil, ErrEmptyMapping
+	}
+	if implementer == nil {
+		return nil, ErrEmptyImplementer
 	}
 
 	ext := filepath.Ext(*file)
@@ -67,6 +74,12 @@ func New(file *string, mapping *mapping.Mapping, scaler scaler.Map) (tg *Generat
 		}
 	}
 
+	tg.Mapping = mapping
+
+	tg.Scalers = scaler
+
+	tg.Implementer = implementer
+
 	err = tg.ChangeIden()
 	if err != nil {
 		return nil, err
@@ -79,10 +92,6 @@ func New(file *string, mapping *mapping.Mapping, scaler scaler.Map) (tg *Generat
 	if err != nil {
 		return nil, err
 	}
-
-	tg.Mapping = mapping
-
-	tg.Scalers = scaler
 
 	tg.SetFieldCategory()
 
