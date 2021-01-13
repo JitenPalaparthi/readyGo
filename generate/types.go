@@ -15,22 +15,30 @@ type Implementer interface {
 
 // Generate is a type that holds configuration data
 type Generate struct {
-	Version      string       `json:"version" yaml:"version"`
-	Project      string       `json:"project" yaml:"project"`           // ideally project root directory .i.e project name
-	Kind         string       `json:"kind" yaml:"kind"`                 // Kind of the project http , grpc , CloudEvents , cli
-	Port         string       `json:"port" yaml:"port"`                 // Port that is used to communicate http project
-	APISpec      APISpec      `json:"apiSpec" yaml:"apiSpec"`           //Api releted information generally used to design apis
-	DatabaseSpec DatabaseSpec `json:"databaseSpec" yaml:"databaseSpec"` //Database related information like sql|mongo connection string and db name .. to be maintained in this
-	Models       []Model      `json:"models" yaml:"models"`
-	Mapping      *mapping.Mapping
-	Scalers      scaler.Map
-	Implementer  Implementer // interface to use lang specific implementation logic
+	Version       string        `json:"version" yaml:"version"`
+	Project       string        `json:"project" yaml:"project"`           // ideally project root directory .i.e project name
+	Kind          string        `json:"kind" yaml:"kind"`                 // Kind of the project http , grpc , CloudEvents , cli
+	Port          string        `json:"port" yaml:"port"`                 // Port that is used to communicate http project
+	APISpec       APISpec       `json:"apiSpec" yaml:"apiSpec"`           // Api releted information generally used to design apis
+	DatabaseSpec  DatabaseSpec  `json:"databaseSpec" yaml:"databaseSpec"` // Database related information like sql|mongo connection string and db name .. to be maintained in this
+	MessagingSpec MessagingSpec `json:"messagingpec" yaml:"messagingpec"` // Messaging related information. kind is nsq | nats | kafka
+	Models        []Model       `json:"models" yaml:"models"`
+	Mapping       *mapping.Mapping
+	Scalers       scaler.Map
+	Implementer   Implementer // interface to use lang specific implementation logic
 }
 
 // Model is to hold model data from configuration file
 type Model struct {
-	Name   string  `json:"name" yaml:"name"`
-	Fields []Field `json:"fields" yaml:"fields"`
+	Name               string             `json:"name" yaml:"name"`
+	MessagingModelSpec MessagingModelSpec `json:"messagingModelSpec" yaml:"messagingModelSpec"`
+	Fields             []Field            `json:"fields" yaml:"fields"`
+}
+
+// MessagingModelSpec is to define model specific messging metadata
+type MessagingModelSpec struct {
+	MessageRespondType string `json:"messageRespondType" yaml:"messageRespondType"` // There are two types as of now. prouce|consume
+	Topic              string `json:"topic" yaml:"topic"`                           // Topic is topic for nats , subject for kafka
 }
 
 // Field is to hold fields in a model that comes from configuration file
@@ -56,4 +64,10 @@ type APISpec struct {
 	Kind    string `json:"kind" yaml:"kind"`       // http | grpc | cloudEvent
 	Port    string `json:"port" yaml:"port"`       // port to run on
 	Version string `json:"version" yaml:"version"` // Version that is used to define apis.example v1/public/get v2/private/create etc.
+}
+
+// MessagingSpec struct type contains message queue related information
+type MessagingSpec struct {
+	Kind             string `json:"kind" yaml:"kind"`
+	ConnectionString string `json:"connectionString" yaml:"connectionString"`
 }
