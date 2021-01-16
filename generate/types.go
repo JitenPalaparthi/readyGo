@@ -16,12 +16,12 @@ type Implementer interface {
 // Generate is a type that holds configuration data
 type Generate struct {
 	Version       string        `json:"version" yaml:"version"`
-	Project       string        `json:"project" yaml:"project"`           // ideally project root directory .i.e project name
-	Kind          string        `json:"kind" yaml:"kind"`                 // Kind of the project http , grpc , CloudEvents , cli
-	Port          string        `json:"port" yaml:"port"`                 // Port that is used to communicate http project
-	APISpec       APISpec       `json:"apiSpec" yaml:"apiSpec"`           // Api releted information generally used to design apis
-	DatabaseSpec  DatabaseSpec  `json:"databaseSpec" yaml:"databaseSpec"` // Database related information like sql|mongo connection string and db name .. to be maintained in this
-	MessagingSpec MessagingSpec `json:"messagingpec" yaml:"messagingpec"` // Messaging related information. kind is nsq | nats | kafka
+	Project       string        `json:"project" yaml:"project"`             // ideally project root directory .i.e project name
+	Kind          string        `json:"kind" yaml:"kind"`                   // Kind of the project http , grpc , CloudEvents , cli
+	Port          string        `json:"port" yaml:"port"`                   // Port that is used to communicate http project
+	APISpec       APISpec       `json:"apiSpec" yaml:"apiSpec"`             // Api releted information generally used to design apis
+	DatabaseSpec  DatabaseSpec  `json:"databaseSpec" yaml:"databaseSpec"`   // Database related information like sql|mongo connection string and db name .. to be maintained in this
+	MessagingSpec MessagingSpec `json:"messagingSpec" yaml:"messagingSpec"` // Messaging related information. kind is nsq | nats | kafka
 	Models        []Model       `json:"models" yaml:"models"`
 	Mapping       *mapping.Mapping
 	Scalers       scaler.Map
@@ -37,7 +37,7 @@ type Model struct {
 
 // MessagingModelSpec is to define model specific messging metadata
 type MessagingModelSpec struct {
-	MessageRespondType string `json:"messageRespondType" yaml:"messageRespondType"` // There are two types as of now. prouce|consume
+	MessageRespondType string `json:"messageRespondType" yaml:"messageRespondType"` // There are two types as of now. publish|subscribe
 	Topic              string `json:"topic" yaml:"topic"`                           // Topic is topic for nats , subject for kafka
 }
 

@@ -1,0 +1,31 @@
+package messaging
+
+import nats "github.com/nats-io/nats.go"
+
+// Message is a message content, ideally for a channel
+type Message struct {
+	Data    []byte
+	Subject string
+}
+
+var (
+	ChanMessage chan Message
+	NC          *nats.Conn //Nats Connection
+)
+
+// Init the channel at the beginning of the handler usage
+func Init(nc *nats.Conn) {
+	if ChanMessage == nil {
+		ChanMessage = make(chan Message, 20)
+		go Produce(nc)
+	}
+}
+
+// Produce is to  produce messages by the producer
+func Produce(nc *nats.Conn) {
+	for msg := range ChanMessage {
+		if nc != nil {
+			nc.Publish(msg.Subject, msg.Data)
+		}
+	}
+}

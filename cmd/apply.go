@@ -23,7 +23,7 @@ var lintFiles bool
 func init() {
 
 	applyCmd.Flags().StringVarP(&applyFile, "filename", "f", "", "user has to privide the file.There is no default file.")
-	applyCmd.Flags().StringVarP(&projectType, "type", "t", "http_mongo", "type of the project can be http_mongo | http_sql_pg | grpc_mongo | grpc_sql_pg")
+	applyCmd.Flags().StringVarP(&projectType, "type", "t", "http__nosql_mongo", "type of the project can be http_mongo | http_sql_pg | grpc_mongo | grpc_sql_pg")
 	applyCmd.Flags().BoolVarP(&lintFiles, "lint", "l", false, "lints all generated files and gives warnings and errors")
 
 	rootCmd.AddCommand(applyCmd)

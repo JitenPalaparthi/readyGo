@@ -7,6 +7,9 @@ import (
 	"context"
 	"{{.Project}}/interfaces"
 	"{{.Project}}/models"
+	{{- if .Model.MessagingModelSpec.MessageRespondType}}
+	"{{.Project}}/messaging"
+	{{- end}}
 	pb "{{.Project}}/protos"
 	"flag"
 	"github.com/golang/glog"
@@ -48,6 +51,11 @@ func ({{.Model.Name | Initial}} *{{.Model.Name}}) Create{{.Model.Name}}(ctx cont
 		glog.Info(err)
 		return nil, err
 	}
+	{{- if eq .Model.MessagingModelSpec.MessageRespondType "publish"}}
+			// If it is publisher
+			b, _ := models.ToBytes({{.Model.Name | ToLower}})
+			messaging.ChanMessage <- messaging.Message{Data: b, Subject: "{{.Model.MessagingModelSpec.Topic}}"}
+	{{- end}}
 	out.Code = 201
 	out.Message = result
 	return out, nil

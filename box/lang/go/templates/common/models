@@ -13,6 +13,8 @@ import (
 	"errors"
 	"regexp"
 	{{- end}}
+	"bytes"
+	"encoding/gob"
 )
 // {{ .Model.Name }} type contains all releated fields
 	type {{ .Model.Name }} struct {
@@ -32,4 +34,15 @@ if !rx{{.Name}}.MatchString({{$ModelName | Initial}}.{{.Name}}) {
 {{- end}}
 {{- end}}
 	return nil
+}
+
+// BytesTo{{.Model.Name}} is to convert given bytes to the {{.Model.Name}} object.
+func BytesTo{{.Model.Name}}(b []byte) (*{{.Model.Name}}, error) {
+	t := &{{.Model.Name}}{}
+	dec := gob.NewDecoder(bytes.NewReader(b))
+	err := dec.Decode(t)
+	if err != nil {
+		return nil, err
+	}
+	return t, nil
 }

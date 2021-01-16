@@ -6,6 +6,9 @@ import (
 	"net"
 	"{{$.config.Project}}/database"
 	"{{$.config.Project}}/handlers"
+	{{- if eq $.config.MessagingSpec.Kind "nats" }}
+	"{{$.config.Project}}/messaging"
+	{{- end}}
 	pb "{{$.config.Project}}/protos"
 	"github.com/golang/glog"
 	"google.golang.org/grpc"
@@ -17,6 +20,10 @@ const (
 	DBConnection =  "{{ $.config.DatabaseSpec.ConnectionString }}"
 	// DBName is to store database name
 	DBName       =  "{{ $.config.DatabaseSpec.Name }}"
+	{{- if eq $.config.MessagingSpec.Kind "nats" }}
+	//MessageBrokerConnection is to connect to the message broker
+	MessageBrokerConnection = "{{$.config.MessagingSpec.ConnectionString}}" 
+	{{- end}}
 )
 
 func main() {
@@ -28,6 +35,14 @@ session, err := database.GetConnection(DBConnection, DBName)
 	if err != nil {
 		glog.Fatal("{{$.config.DatabaseSpec.Kind}} database is not connected", err)
 	}
+	{{- if eq $.config.MessagingSpec.Kind "nats" }}
+	messageCon, err := messaging.GetNatsConnection(MessageBrokerConnection)
+	if err != nil {
+		glog.Fatal("message broker is not connected", err) 
+	}
+	messaging.Init(messageCon) // This has to be added in the template
+	{{- end}}
+	
 	lis, err := net.Listen("tcp", ":{{$.config.APISpec.Port}}")
 	if err != nil {
 		glog.Fatalf("failed to listen: %v", err)

@@ -7,6 +7,7 @@ require (
 	github.com/gobuffalo/packr v1.30.1
 	github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b
 	github.com/inancgumus/screen v0.0.0-20190314163918-06e984b86ed3
+	github.com/segmentio/kafka-go v0.4.8 // indirect
 	github.com/spf13/cobra v1.1.1
 	golang.org/x/lint v0.0.0-20200302205851-738671d3881b
 	google.golang.org/grpc v1.27.0

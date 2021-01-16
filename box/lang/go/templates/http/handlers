@@ -15,6 +15,9 @@ import (
 	"strconv"
 	"{{.Project}}/interfaces"
 	"{{.Project}}/models"
+	{{- if .Model.MessagingModelSpec.MessageRespondType}}
+	"{{.Project}}/messaging"
+	{{- end}}
 	{{- if eq $AreThereGlobalFuncs "true" }}
 	"{{.Project}}/global"
 	{{- end}}
@@ -67,6 +70,11 @@ func ({{.Model.Name | Initial}} *{{.Model.Name}}) Create{{.Model.Name}}() func(c
 				c.Abort()
 				return
 			}
+			{{- if eq .Model.MessagingModelSpec.MessageRespondType "publish"}}
+			// If it is publisher
+			b, _ := models.ToBytes({{.Model.Name | ToLower}})
+			messaging.ChanMessage <- messaging.Message{Data: b, Subject: "{{.Model.MessagingModelSpec.Topic}}"}
+			{{- end}}
 			c.JSON(http.StatusOK, gin.H{
 				"status":  "success",
 				"message": result,

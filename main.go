@@ -7,5 +7,4 @@ import (
 func main() {
 	// Muruga bless me.
 	cmd.Execute()
-
 }
