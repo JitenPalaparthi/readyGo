@@ -34,12 +34,13 @@ glog.Info("Application {{$.config.Project}} has started")
 		glog.Fatal("{{$.config.DatabaseSpec.Kind}} database is not connected", err)
 	}
 
-	{{- if eq $.config.MessagingSpec.Kind "nats" }}
-	messageCon, err := messaging.GetNatsConnection(MessageBrokerConnection)
+	{{- if $.config.MessagingSpec.Kind }}
+	message, err := messaging.GetConnection(MessageBrokerConnection)
 	if err != nil {
-		glog.Fatal("message broker is not connected", err) 
+		glog.Fatal("message broker is not connected", err)
 	}
-	messaging.Init(messageCon) // This has to be added in the template
+	message.Init()
+	defer message.Disconnect()
 	{{- end}}
 
 	gin.ForceConsoleColor()
@@ -49,6 +50,10 @@ glog.Info("Application {{$.config.Project}} has started")
      {{ range $.config.Models }}
      {{.Name | ToLower}} := new(handlers.{{.Name}})
 	 {{.Name | ToLower}}.I{{.Name}} = &database.{{.Name}}DB{DB: session}
+	 {{- if .MessagingModelSpec.MessageRespondType}}
+	 {{.Name | ToLower}}.Messaging = message
+	 {{- end}}
+
      {{.Name | ToLower}}Group := router.Group("/{{$.config.APISpec.Version}}/{{.Name | ToLower}}")
     {
      {{.Name | ToLower}}Group.POST("/create", {{.Name | ToLower}}.Create{{.Name}}())

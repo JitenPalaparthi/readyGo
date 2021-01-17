@@ -27,6 +27,9 @@ import (
 // {{.Model.Name}} type used as a container for db interface and receiver for handler functions
 type {{.Model.Name}} struct {
 	I{{.Model.Name}} interfaces.{{.Model.Name}}Interface
+	{{- if .Model.MessagingModelSpec.MessageRespondType}}
+	Messaging *messaging.Messaging
+	{{- end}}
 }
 
 // Create{{.Model.Name}} is to post an object provided by json in the body
@@ -73,7 +76,7 @@ func ({{.Model.Name | Initial}} *{{.Model.Name}}) Create{{.Model.Name}}() func(c
 			{{- if eq .Model.MessagingModelSpec.MessageRespondType "publish"}}
 			// If it is publisher
 			b, _ := models.ToBytes({{.Model.Name | ToLower}})
-			messaging.ChanMessage <- messaging.Message{Data: b, Subject: "{{.Model.MessagingModelSpec.Topic}}"}
+			{{.Model.Name | Initial}}.Messaging.ChanMessage <- messaging.Message{Data: b, Subject: "{{.Model.MessagingModelSpec.Topic}}"}
 			{{- end}}
 			c.JSON(http.StatusOK, gin.H{
 				"status":  "success",

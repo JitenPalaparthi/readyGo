@@ -35,12 +35,13 @@ session, err := database.GetConnection(DBConnection, DBName)
 	if err != nil {
 		glog.Fatal("{{$.config.DatabaseSpec.Kind}} database is not connected", err)
 	}
-	{{- if eq $.config.MessagingSpec.Kind "nats" }}
-	messageCon, err := messaging.GetNatsConnection(MessageBrokerConnection)
+		{{- if $.config.MessagingSpec.Kind }}
+	message, err := messaging.GetConnection(MessageBrokerConnection)
 	if err != nil {
-		glog.Fatal("message broker is not connected", err) 
+		glog.Fatal("message broker is not connected", err)
 	}
-	messaging.Init(messageCon) // This has to be added in the template
+	message.Init()
+	defer message.Disconnect()
 	{{- end}}
 	
 	lis, err := net.Listen("tcp", ":{{$.config.APISpec.Port}}")
@@ -52,6 +53,9 @@ session, err := database.GetConnection(DBConnection, DBName)
 	 {{- range $.config.Models }}
      {{.Name | ToLower}} := new(handlers.{{.Name}})
 	 {{.Name | ToLower}}.I{{.Name}} = &database.{{.Name}}DB{DB: session}
+	 {{- if .MessagingModelSpec.MessageRespondType}}
+	 {{.Name | ToLower}}.Messaging = message
+	 {{- end}}
 	 //{{.Name | ToLower}}pb.Register{{.Name}}Server(server, {{.Name | ToLower}})	
 	 pb.Register{{.Name}}Server(server, {{.Name | ToLower}})	
      {{- end}}

@@ -21,6 +21,9 @@ import (
 type {{.Model.Name}} struct {
 	I{{.Model.Name}} interfaces.{{.Model.Name}}Interface
 	pb.Unimplemented{{.Model.Name}}Server
+	{{- if .Model.MessagingModelSpec.MessageRespondType}}
+	Messaging *messaging.Messaging
+	{{- end}}
 }
 
 func init() {
@@ -54,7 +57,7 @@ func ({{.Model.Name | Initial}} *{{.Model.Name}}) Create{{.Model.Name}}(ctx cont
 	{{- if eq .Model.MessagingModelSpec.MessageRespondType "publish"}}
 			// If it is publisher
 			b, _ := models.ToBytes({{.Model.Name | ToLower}})
-			messaging.ChanMessage <- messaging.Message{Data: b, Subject: "{{.Model.MessagingModelSpec.Topic}}"}
+			{{.Model.Name | Initial}}.Messaging.ChanMessage <- messaging.Message{Data: b, Subject: "{{.Model.MessagingModelSpec.Topic}}"}
 	{{- end}}
 	out.Code = 201
 	out.Message = result

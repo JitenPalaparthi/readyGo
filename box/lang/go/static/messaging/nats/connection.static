@@ -13,7 +13,7 @@ const (
 )
 
 // GetConnection is to get the connection of Nats
-func GetNatsConnection(url string) (*nats.Conn, error) {
+func GetConnection(url string) (*Messaging, error) {
 	var retries int8 = 0
 	var nc *nats.Conn
 try:
@@ -32,5 +32,6 @@ try:
 		return nil, err
 	}
 	//defer connection.Close()
-	return nc, nil
+	return &Messaging{Client: nc}, nil
+	//return nc, nil
 }
