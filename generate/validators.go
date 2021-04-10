@@ -145,40 +145,42 @@ func (tg *Generate) IsModelType(iden string) bool {
 	return false
 }
 
-// ValidateTypes is to valudate whether a type is readyGo type or a model type
-func (tg *Generate) ValidateTypes() (err error) {
-	//models := make([]string, 0)
-	//fields := make([]string, 0)
-	for mi := 0; mi < len(tg.Models); mi++ {
-		//models = append(models, tg.Models[mi].Name)
-		for _, f := range tg.Models[mi].Fields {
-			if !tg.Scalers.IsValidreadyGotype(f.Type) {
-				//fields = append(fields, f.Type)
-				var check bool = false
-				for m := 0; m < len(tg.Models); m++ {
-					if tg.Models[m].Name == f.Type {
-						check = true
-					}
+// ValidateTypes checks whether a type is either a readyGo or model type
+func (tg *Generate) ValidateTypes() error {
+	//Use Go's shorthand range loop
+	for m := range tg.Models {
+		for f := range tg.Models[m].Fields {
+			// Check model name equals field type first, preventing unnecessary map lookups
+			if tg.Models[m].Name == tg.Models[m].Fields[f].Type {
+				continue
+			}
+
+			// Remove function IsValidreadyGotype() overhead. It's not needed for a simple map lookup.
+			// Function names should have correct capitalisation. I would have renamed to IsReadyGoType() but the function isn't needed.
+			if _, ok := tg.Scalers[tg.Models[m].Fields[f].Type]; ok {
+				continue
+			}
+
+			var found bool
+			for md := range tg.Models {
+				// Ignore the current model because it has already been checked.
+				if md == m {
+					continue
 				}
-				if !check {
-					return errors.New(f.Type + " is neither a readyGo type nor a model type")
+
+				// Use indexes to lookup rather than copying the struct to another variable.
+				if tg.Models[md].Name == tg.Models[m].Fields[f].Type {
+					found = true
+					// Exit out of the loop as soon as a match is found.
+					break
 				}
+			}
+			if !found {
+				// Give more detail in error messages so you spend less time debugging. E.g: What if the type was misspelled as a tab, null (byte(0)) or space characters?
+				return fmt.Errorf("`%s` is neither a readyGo type nor a model type in `%s`", tg.Models[m].Fields[f].Type, tg.Models[m].Name)
 			}
 		}
 	}
-	/*if len(fields) == 0 {
-		return nil
-	}
-	var check bool = false
-	for _, f := range fields {
-		for _, md := range models {
-			if md == f {
-				check = true
-			}
-		}
-		if !check {
-			return errors.New(f + " is neither a readyGo type nor a model type")
-		}
-	}*/
+
 	return nil
 }
