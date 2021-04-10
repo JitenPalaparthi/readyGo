@@ -147,21 +147,29 @@ func (tg *Generate) IsModelType(iden string) bool {
 
 // ValidateTypes is to valudate whether a type is readyGo type or a model type
 func (tg *Generate) ValidateTypes() (err error) {
-	models := make([]string, 0)
-	fields := make([]string, 0)
+	//models := make([]string, 0)
+	//fields := make([]string, 0)
 	for mi := 0; mi < len(tg.Models); mi++ {
-		models = append(models, tg.Models[mi].Name)
+		//models = append(models, tg.Models[mi].Name)
 		for _, f := range tg.Models[mi].Fields {
 			if !tg.Scalers.IsValidreadyGotype(f.Type) {
-				fields = append(fields, f.Type)
+				//fields = append(fields, f.Type)
+				var check bool = false
+				for m := 0; m < len(tg.Models); m++ {
+					if tg.Models[m].Name == f.Type {
+						check = true
+					}
+				}
+				if !check {
+					return errors.New(f.Type + " is neither a readyGo type nor a model type")
+				}
 			}
 		}
 	}
-	if len(fields) == 0 {
+	/*if len(fields) == 0 {
 		return nil
 	}
 	var check bool = false
-
 	for _, f := range fields {
 		for _, md := range models {
 			if md == f {
@@ -171,6 +179,6 @@ func (tg *Generate) ValidateTypes() (err error) {
 		if !check {
 			return errors.New(f + " is neither a readyGo type nor a model type")
 		}
-	}
+	}*/
 	return nil
 }
