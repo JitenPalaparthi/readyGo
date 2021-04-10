@@ -5,13 +5,14 @@ services:
     restart: always
     build: ./
     ports:
-     - "{{$.config.Port}}:{{$.config.Port}}"
+     - "{{$.config.APISpec.Port}}:{{$.config.APISpec.Port}}"
     links:
-       - mongo
+       - db
+       - mb
     networks: 
       - backend
-  
-  mongo:
+  {{- if eq $.config.DatabaseSpec.Kind "mongo" }}
+  db:
     container_name: mongo_db
     image: mongo
     ports:
@@ -20,6 +21,30 @@ services:
      - "./data/db:/data/db"
     networks: 
       - backend
+  {{- end}}
+    {{- if eq $.config.DatabaseSpec.Kind "mongo" }}
+  db:
+    container_name: mongo_db
+    image: mongo
+    ports:
+     - "27017:27017"
+    volumes:
+     - "./data/db:/data/db"
+    networks: 
+      - backend
+  {{- end}}
+  {{- if eq $.config.MessagingSpec.Kind "nats" }}
+  mb:
+    container_name: nats_messaging
+    image: nats
+    ports:
+      - "4222:4222"
+      - "6222:6222"
+      - "8222:8222"
+    networks:
+      - backend
+  {{- end}}
+
 
 networks:
   backend:
