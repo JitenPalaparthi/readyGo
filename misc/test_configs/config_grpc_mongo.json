@@ -3,9 +3,10 @@
   "kind": "grpc",
   "project": "grpcsample",
   "databaseSpec": {
-    "kind": "mongo",
+    "kind":"nosql",
+    "name": "mongo",
     "connectionString": "mongodb://localhost:27017",
-    "name": "sample"
+    "dbName": "sample"
   },
   "apiSpec": {
     "kind": "grpc",

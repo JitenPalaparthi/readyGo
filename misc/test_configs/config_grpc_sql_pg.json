@@ -4,8 +4,9 @@
     "project": "grpcsqlpgsample",
     "databaseSpec": {
       "kind": "sql",
+       "name":"postgres",
       "connectionString": "user=jiten  password=admin host=localhost port=5432 dbname=sample",
-      "name": "sample"
+      "dbName": "sample"
     },
     "apiSpec": {
       "kind": "grpc",

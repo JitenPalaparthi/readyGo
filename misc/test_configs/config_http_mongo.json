@@ -3,9 +3,10 @@
   "kind": "http",
   "project": "contacts",
   "databaseSpec": {
-    "kind": "mongo",
+    "kind":"nosql",
+    "name": "mongo",
     "connectionString": "mongodb://localhost:27017",
-    "name": "contacts"
+    "dbName": "contacts"
   },
   "apiSpec": {
     "kind": "http",
