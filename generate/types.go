@@ -54,9 +54,10 @@ type Field struct {
 
 // DatabaseSpec struct type contains database related information
 type DatabaseSpec struct {
-	Kind             string `json:"kind" yaml:"kind"`
+	Kind             string `json:"kind" yaml:"kind"` //sql nosql
+	Name             string `json:"name" yaml:"name"` // mongo mysql
 	ConnectionString string `json:"connectionString" yaml:"connectionString"`
-	Name             string `json:"name" yaml:"name"`
+	DBName           string `json:"dbName" yaml:"dbName"`
 }
 
 // APISpec struct type contains api related information

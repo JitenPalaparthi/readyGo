@@ -11,7 +11,7 @@ services:
        - mb
     networks: 
       - backend
-  {{- if eq $.config.DatabaseSpec.Kind "mongo" }}
+  {{- if eq $.config.DatabaseSpec.Name "mongo" }}
   db:
     container_name: mongo_db
     image: mongo
@@ -22,7 +22,7 @@ services:
     networks: 
       - backend
   {{- end}}
-    {{- if eq $.config.DatabaseSpec.Kind "mongo" }}
+    {{- if eq $.config.DatabaseSpec.Name "mongo" }}
   db:
     container_name: mongo_db
     image: mongo

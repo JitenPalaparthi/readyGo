@@ -17,7 +17,7 @@ const (
 	// DBConnection is to store database connection information
 	DBConnection =  "{{ $.config.DatabaseSpec.ConnectionString }}"
 	// DBName is to store database name
-	DBName       =  "{{ $.config.DatabaseSpec.Name }}"
+	DBName       =  "{{ $.config.DatabaseSpec.DBName }}"
 	{{- if eq $.config.MessagingSpec.Kind "nats" }}
 	//MessageBrokerConnection is to connect to the message broker
 	MessageBrokerConnection = "{{$.config.MessagingSpec.ConnectionString}}" 
@@ -31,7 +31,7 @@ glog.Info("Application {{$.config.Project}} has started")
 	//defer session.Disconnect(context.TODO())
 
 	if err != nil {
-		glog.Fatal("{{$.config.DatabaseSpec.Kind}} database is not connected", err)
+		glog.Fatal("{{$.config.DatabaseSpec.Name}} database is not connected", err)
 	}
 
 	{{- if $.config.MessagingSpec.Kind }}

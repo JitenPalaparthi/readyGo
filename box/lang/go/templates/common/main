@@ -15,7 +15,7 @@ const (
 	// DBConnection is to store database connection information
 	DBConnection =  "{{ $.config.DatabaseSpec.ConnectionString }}"
 	// DBName is to store database name
-	DBName       =  "{{ $.config.DatabaseSpec.Name }}"
+	DBName       =  "{{ $.config.DatabaseSpec.DBName }}"
 )
 
 func main() {

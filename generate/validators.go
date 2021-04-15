@@ -13,7 +13,10 @@ var (
 	//ErrInvalidProjectType is to define error as invalid project type
 	ErrInvalidProjectType = errors.New("invalid project type;project type must be http | grpc | cloudEvent | cli")
 	// ErrInvalidDatabase is to define error that invalid database
-	ErrInvalidDatabase = errors.New("invalid database;databas type (DB) must be mongo | sql ")
+	ErrInvalidDatabase          = errors.New("invalid database;database type (DB) must be mongo | sql ")
+	ErrInvalidDatabaseName      = errors.New("sql kind supports only mysql or postgress")
+	ErrInvalidDatabasenosqlName = errors.New("nosql kind supports only mongo or cassendra")
+	ErrInvalidDatabaseKind      = errors.New("database kind supports only sql or nosql")
 )
 
 // IsValidIdentifier is to check whether the field is a valid identifier or not
@@ -67,8 +70,14 @@ func (tg *Generate) Validate() (err error) {
 	if tg.Kind == "" || (tg.Kind != "http" && tg.Kind != "grpc" && tg.Kind != "cloudEvent" && tg.Kind != "cli") {
 		return ErrInvalidProjectType
 	}
-	if tg.DatabaseSpec.Kind == "" || (tg.DatabaseSpec.Kind != "mongo" && tg.DatabaseSpec.Kind != "sql") {
-		return ErrInvalidDatabase
+	if tg.DatabaseSpec.Kind == "sql" && (tg.DatabaseSpec.Name != "mysql" && tg.DatabaseSpec.Name != "postgres") {
+		return ErrInvalidDatabaseName
+	}
+	if tg.DatabaseSpec.Kind == "nosql" && (tg.DatabaseSpec.Name != "mongo" && tg.DatabaseSpec.Name != "cassendra") {
+		return ErrInvalidDatabasenosqlName
+	}
+	if tg.DatabaseSpec.Kind != "nosql" && tg.DatabaseSpec.Kind != "sql" {
+		return ErrInvalidDatabaseKind
 	}
 	// checking duplicate models and fields
 	modelMap := make(map[string]string)
@@ -87,7 +96,7 @@ func (tg *Generate) Validate() (err error) {
 			fieldMap[strings.ToLower(f.Name)] = "noted"
 
 		}
-		if tg.DatabaseSpec.Kind == "mongo" {
+		if tg.DatabaseSpec.Name == "mongo" {
 			_, ok := fieldMap["id"]
 			if !ok {
 				id := Field{Name: "ID", Type: "string", Category: "scaler"}
@@ -113,22 +122,28 @@ func (tg *Generate) Validate() (err error) {
 }
 
 // SetFieldCategory each field is set into certain category. They are scaler, model , function,default value etc..
-func (tg *Generate) SetFieldCategory() {
+func (tg *Generate) SetFieldCategory() error {
 	for mi := 0; mi < len(tg.Models); mi++ {
 		for i, f := range tg.Models[mi].Fields {
-			if tg.Scalers.IsValidreadyGotype(f.Type) {
+			ftype := f.Type
+			if strings.Contains(f.Type, "[]") {
+				ftype = strings.Split(ftype, "[]")[1]
+			}
+			if tg.Scalers.IsValidreadyGotype(ftype) {
 				tg.Models[mi].Fields[i].Category = "scaler" // all readyGo types are scaler types
-			} else if strings.Contains(f.Type, "global.") {
-				tg.Models[mi].Fields[i].Definition = f.Type
-				tg.Models[mi].Fields[i].Type = tg.Implementer.GetFuncReturnType(f.Type) // Todo fetch this from reading global. functions return type
-				tg.Models[mi].Fields[i].Category = "function"                           // any type that contains global. is a function category as all functionsa re global.xxxfuncname
-			} else if tg.IsModelType(f.Type) {
+			} else if strings.Contains(ftype, "global.") {
+				tg.Models[mi].Fields[i].Definition = ftype
+				tg.Models[mi].Fields[i].Type = tg.Implementer.GetFuncReturnType(ftype) // Todo fetch this from reading global. functions return type
+				tg.Models[mi].Fields[i].Category = "function"                          // any type that contains global. is a function category as all functionsa re global.xxxfuncname
+			} else if tg.IsModelType(ftype) {
 				tg.Models[mi].Fields[i].Category = "model" // model category are types that are already one of the models
 			} else {
 				tg.Models[mi].Fields[i].Category = "undefined" // undefined category is a category that does not fall into any of above
+				return errors.New(ftype + " type is undefined")
 			}
 		}
 	}
+	return nil
 }
 
 // IsModelType is to check whether a filed is a model field

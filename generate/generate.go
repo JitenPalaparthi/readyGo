@@ -93,7 +93,10 @@ func New(file *string, mapping *mapping.Mapping, scaler scaler.Map, implementer 
 		return nil, err
 	}
 
-	tg.SetFieldCategory()
+	err = tg.SetFieldCategory()
+	if err != nil {
+		return tg, err
+	}
 
 	for _, m := range tg.Models {
 		for _, f := range m.Fields {
