@@ -12,7 +12,7 @@ var (
 	ErrNoData = errors.New("no data found")
 )
 
-// Reader interface reads a file and retunrs it as string
+// Reader interface reads a file and retunrns it as string
 type Reader interface {
 	Read(string) (string, error)
 }
