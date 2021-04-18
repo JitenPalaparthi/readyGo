@@ -1,88 +1,96 @@
 {
-    "version": "0.1",
-    "kind": "http",
-    "project": "httpmongocontactsnats",
-    "databaseSpec": {
-      "kind":"nosql",
+  "version": "0.1",
+  "kind": "http",
+  "project": "contact",
+  "databaseSpec": {
+    "kind": "nosql",
     "name": "mongo",
-      "connectionString": "mongodb://localhost:27017",
-      "dbName": "contacts"
-    },
-    "apiSpec": {
-      "kind": "http",
-      "port": "50060",
-      "version": "v1"
-    },
-    "messagingSpec":{
-      "kind":"broker",
-      "name":"nats",
-      "connectionString":"nats://localhost:4222"
-    },
-    "models": [
-      {
-        "name": "person",
-        "messagingModelSpec":{
-          "messageRespondType":"publish",
-          "topic":"person_topic"
-        },
-        "fields": [
-          {
-            "name": "name",
-            "type": "string",
-            "isKey": true
-          },
-          {
-            "name": "email",
-            "type": "string",
-            "isKey": true,
-            "validateExp": "^[a-zA-Z0-9.!#$%&'*+\\\\/=?^_\\\\`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$"
-          },
-          {
-            "name": "gender",
-            "type": "string"
-          },
-          {
-            "name": "contact",
-            "type": "long"
-          },
-          {
-            "name": "status",
-            "type": "global.GetDefaultStr(`active`)"
-          },
-          {
-            "name": "lastModified",
-            "type": "global.GetCurrentDateTimeInStr()"
-          },
-          {
-            "name": "Address",
-            "type": "Address"
-          }
-        ]
+    "connectionString": "mongodb://localhost:27017",
+    "dbName": "contacts"
+  },
+  "apiSpec": {
+    "kind": "http",
+    "port": "50060",
+    "version": "v1"
+  },
+  "messagingSpec": {
+    "kind": "broker",
+    "name": "nats",
+    "connectionString": "nats://localhost:4222"
+  },
+  "models": [
+    {
+      "name": "person",
+      "messagingModelSpec": {
+        "messageRespondType": "publish",
+        "topic": "person_topic"
       },
-      {
-        "name": "Address",
-        "fields": [
-          {
-            "name": "addressline",
-            "type": "string"
-          },
-          {
-            "name": "street",
-            "type": "string"
-          },
-          {
-            "name": "state",
-            "type": "string"
-          },
-          {
-            "name": "country",
-            "type": "string"
-          },
-          {
-            "name": "zip",
-            "type": "string"
-          }
-        ]
-      }
-    ]
-  }
+      "fields": [
+        {
+          "name": "name",
+          "type": "string",
+          "isKey": true
+        },
+        {
+          "name": "email",
+          "type": "string",
+          "isKey": true,
+          "validateExp": "^[a-zA-Z0-9.!#$%&'*+\\\\/=?^_\\\\`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$"
+        },
+        {
+          "name": "gender",
+          "type": "string"
+        },
+        {
+          "name": "contact",
+          "type": "long"
+        },
+        {
+          "name": "socialMedia",
+          "type": "[]string"
+        },
+        {
+          "name": "status",
+          "type": "global.GetDefaultStr(`active`)"
+        },
+        {
+          "name": "lastModified",
+          "type": "global.GetCurrentDateTimeInStr()"
+        },
+        {
+          "name": "Address",
+          "type": "Address"
+        }
+      ]
+    },
+    {
+      "name": "Address",
+      "fields": [
+        {
+          "name": "addressline",
+          "type": "string"
+        },
+        {
+          "name": "street",
+          "type": "string"
+        },
+        {
+          "name":"city",
+          "type":"string"
+        },
+        {
+          "name": "state",
+          "type": "string"
+        },
+        {
+          "name": "country",
+          "type": "string"
+        },
+        {
+          "name": "zip",
+          "type": "string"
+        }
+      ]
+    }
+  ]
+}
