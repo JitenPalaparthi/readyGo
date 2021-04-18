@@ -8,12 +8,14 @@ services:
      - "{{$.config.APISpec.Port}}:{{$.config.APISpec.Port}}"
     links:
        - db
+    {{- if eq $.config.MessagingSpec.Name "nats" }}    
        - mb
+    {{- end}}
     networks: 
       - backend
   {{- if eq $.config.DatabaseSpec.Name "mongo" }}
   db:
-    container_name: mongo_db
+    container_name: {{$.config.DatabaseSpec.Name}}_db
     image: mongo
     ports:
      - "27017:27017"
@@ -22,18 +24,32 @@ services:
     networks: 
       - backend
   {{- end}}
-    {{- if eq $.config.DatabaseSpec.Name "mongo" }}
+
+  {{- if eq $.config.DatabaseSpec.Name "mysql" }}
   db:
-    container_name: mongo_db
-    image: mongo
+    container_name: {{$.config.DatabaseSpec.Name}}_db
+    image: mysql
     ports:
-     - "27017:27017"
+     - "3306:3306"
     volumes:
-     - "./data/db:/data/db"
+     - db_data:/var/lib/mysql
+    restart: always
     networks: 
       - backend
   {{- end}}
-  {{- if eq $.config.MessagingSpec.Kind "nats" }}
+  {{- if eq $.config.DatabaseSpec.Name "postgres" }}
+  db:
+    container_name: {{$.config.DatabaseSpec.Name}}_db
+    image: postgres
+    ports:
+     - "5432:5432"
+    volumes:
+     - ./tmp/db:/var/lib/postgresql/data
+    restart: always
+    networks: 
+      - backend
+  {{- end}}
+  {{- if eq $.config.MessagingSpec.Name "nats" }}
   mb:
     container_name: nats_messaging
     image: nats
@@ -44,7 +60,6 @@ services:
     networks:
       - backend
   {{- end}}
-
 
 networks:
   backend:

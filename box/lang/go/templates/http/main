@@ -5,20 +5,21 @@ package main
 import (
 	"{{$.config.Project}}/database"
 	"{{$.config.Project}}/handlers"
-	{{- if eq $.config.MessagingSpec.Kind "nats" }}
+	{{- if eq $.config.MessagingSpec.Name "nats" }}
 	"{{$.config.Project}}/messaging"
 	{{- end}}
 	"github.com/golang/glog"
 	_"context"
 	"github.com/gin-gonic/gin"
+	"os"
 )
 
-const (
+var (
 	// DBConnection is to store database connection information
 	DBConnection =  "{{ $.config.DatabaseSpec.ConnectionString }}"
 	// DBName is to store database name
 	DBName       =  "{{ $.config.DatabaseSpec.DBName }}"
-	{{- if eq $.config.MessagingSpec.Kind "nats" }}
+	{{- if eq $.config.MessagingSpec.Name "nats" }}
 	//MessageBrokerConnection is to connect to the message broker
 	MessageBrokerConnection = "{{$.config.MessagingSpec.ConnectionString}}" 
 	{{- end}}
@@ -26,7 +27,17 @@ const (
 
 func main() {
 glog.Info("Application {{$.config.Project}} has started")
-
+ if os.Getenv("DB_CONNECTION") != "" {
+		DBConnection = os.Getenv("DB_CONNECTION")
+	}
+	if os.Getenv("DB_NAME") != "" {
+		DBName = os.Getenv("DB_NAME")
+	}
+	{{- if eq $.config.MessagingSpec.Name "nats" }}
+    if os.Getenv("MB_CONNECTION")!=""{
+		MessageBrokerConnection=os.Getenv("MB_CONNECTION")
+	}
+	{{- end}}
 	session, err := database.GetConnection(DBConnection, DBName)
 	//defer session.Disconnect(context.TODO())
 
@@ -34,7 +45,7 @@ glog.Info("Application {{$.config.Project}} has started")
 		glog.Fatal("{{$.config.DatabaseSpec.Name}} database is not connected", err)
 	}
 
-	{{- if $.config.MessagingSpec.Kind }}
+	{{- if $.config.MessagingSpec.Name }}
 	message, err := messaging.GetConnection(MessageBrokerConnection)
 	if err != nil {
 		glog.Fatal("message broker is not connected", err)

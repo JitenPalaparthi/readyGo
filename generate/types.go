@@ -26,6 +26,7 @@ type Generate struct {
 	Mapping       *mapping.Mapping
 	Scalers       scaler.Map
 	Implementer   Implementer // interface to use lang specific implementation logic
+	Plugins       Plugin      `json:"plugins" yaml:"Plugins"`
 }
 
 // Model is to hold model data from configuration file
@@ -69,6 +70,29 @@ type APISpec struct {
 
 // MessagingSpec struct type contains message queue related information
 type MessagingSpec struct {
-	Kind             string `json:"kind" yaml:"kind"`
+	Kind             string `json:"kind" yaml:"kind"` // broker brokerless
+	Name             string `json:"name" yaml:"name"` // nats nsq
 	ConnectionString string `json:"connectionString" yaml:"connectionString"`
 }
+
+// Complete Plugins type are written here
+
+type Plugin struct {
+	Config map[string]interface{} `json:"config" yaml:"config"` // Ideally vault:some config values
+}
+
+/*type Security struct {
+	Config map[string]interface{} `json:"config" yaml:"config"` // Ideally vault:some config values
+}
+
+type Orchestrator struct {
+	Config map[string]interface{} `json:"config" yaml:"config"` // docker-compose: related values , nomad:true etc..
+}
+
+type Monitoring struct {
+	Config map[string]interface{} `json:"config" yaml:"config"` // prometheus or datadog etc with its configuration
+}
+
+type Observability struct {
+	Config map[string]interface{} `json:"config" yaml:"config"` //openTelemetry : enable or disable etc
+}*/

@@ -1,7 +1,7 @@
 {
     "version": "0.1",
     "kind": "http",
-    "project": "contactsnats",
+    "project": "httpmongocontactsnats",
     "databaseSpec": {
       "kind":"nosql",
     "name": "mongo",
@@ -14,7 +14,8 @@
       "version": "v1"
     },
     "messagingSpec":{
-      "kind":"nats",
+      "kind":"broker",
+      "name":"nats",
       "connectionString":"nats://localhost:4222"
     },
     "models": [

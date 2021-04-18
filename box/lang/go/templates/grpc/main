@@ -4,9 +4,10 @@ package main
 
 import (
 	"net"
+	"os"
 	"{{$.config.Project}}/database"
 	"{{$.config.Project}}/handlers"
-	{{- if eq $.config.MessagingSpec.Kind "nats" }}
+	{{- if eq $.config.MessagingSpec.Name "nats" }}
 	"{{$.config.Project}}/messaging"
 	{{- end}}
 	pb "{{$.config.Project}}/protos"
@@ -15,12 +16,12 @@ import (
 	"google.golang.org/grpc/reflection"
 )
 
-const (
+var (
 	// DBConnection is to store database connection information
 	DBConnection =  "{{ $.config.DatabaseSpec.ConnectionString }}"
 	// DBName is to store database name
 	DBName       =  "{{ $.config.DatabaseSpec.DBName }}"
-	{{- if eq $.config.MessagingSpec.Kind "nats" }}
+	{{- if eq $.config.MessagingSpec.Name "nats" }}
 	//MessageBrokerConnection is to connect to the message broker
 	MessageBrokerConnection = "{{$.config.MessagingSpec.ConnectionString}}" 
 	{{- end}}
@@ -28,14 +29,24 @@ const (
 
 func main() {
 glog.Info("Application {{$.config.Project}} has started")
-
+    if os.Getenv("DB_CONNECTION") != "" {
+		DBConnection = os.Getenv("DB_CONNECTION")
+	}
+	if os.Getenv("DB_NAME") != "" {
+		DBName = os.Getenv("DB_NAME")
+	}
+	{{- if eq $.config.MessagingSpec.Name "nats" }}
+    if os.Getenv("MB_CONNECTION")!=""{
+		MessageBrokerConnection=os.Getenv("MB_CONNECTION")
+	}
+	{{- end}}
 session, err := database.GetConnection(DBConnection, DBName)
 	//defer session.Disconnect(context.TODO())
 
 	if err != nil {
 		glog.Fatal("{{$.config.DatabaseSpec.Name}} database is not connected", err)
 	}
-		{{- if $.config.MessagingSpec.Kind }}
+		{{- if $.config.MessagingSpec.Name }}
 	message, err := messaging.GetConnection(MessageBrokerConnection)
 	if err != nil {
 		glog.Fatal("message broker is not connected", err)

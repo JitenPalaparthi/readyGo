@@ -2,19 +2,21 @@
     "version": "0.1",
     "kind": "http",
     "project": "eduEmPowerService",
+    "apiSpec": {
+        "kind": "http",
+        "port": "50060",
+        "version": "v1"
+    },
+    
     "databaseSpec": {
         "kind": "nosql",
         "name":"mongo",
         "connectionString": "mongodb://localhost:27017",
         "dbName": "eduempowerDb"
     },
-    "apiSpec": {
-        "kind": "http",
-        "port": "50060",
-        "version": "v1"
-    },
     "messagingSpec": {
-        "kind": "nats",
+        "kind":"broker",
+        "name":"nats",
         "connectionString": "nats://localhost:4222"
     },
     "models": [

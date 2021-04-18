@@ -9,7 +9,6 @@ import (
 	"readyGo/boxops"
 	"readyGo/generate"
 	"readyGo/lang/implement"
-	"readyGo/mapping"
 	"readyGo/scaler"
 	"strings"
 
@@ -17,29 +16,24 @@ import (
 	"golang.org/x/lint"
 )
 
-var applyFile, projectType string
+var genFile, projectType string
 var lintFiles bool
 
 func init() {
 
-	applyCmd.Flags().StringVarP(&applyFile, "filename", "f", "", "user has to privide the file.There is no default file.")
-	applyCmd.Flags().StringVarP(&projectType, "type", "t", "http__nosql_mongo", "type of the project can be http_mongo | http_sql_pg | grpc_mongo | grpc_sql_pg")
-	applyCmd.Flags().BoolVarP(&lintFiles, "lint", "l", false, "lints all generated files and gives warnings and errors")
+	genCmd.Flags().StringVarP(&genFile, "filename", "f", "", "user has to privide the file.There is no default file.")
+	genCmd.Flags().BoolVarP(&lintFiles, "lint", "l", false, "lints all generated files and gives warnings and errors")
 
-	rootCmd.AddCommand(applyCmd)
+	rootCmd.AddCommand(genCmd)
 }
 
-var applyCmd = &cobra.Command{
-	Use:   "apply",
-	Short: "applies a configuration file",
-	Long:  `apply applies a configuration file for the project generation.User must supply a configuration file`,
+var genCmd = &cobra.Command{
+	Use:   "gen",
+	Short: "gen generates a project",
+	Long:  `gen generates a project  provided by the  configuration file .User must supply a configuration file`,
 	Run: func(cmd *cobra.Command, args []string) {
 
 		ops := boxops.New("../box")
-		mapping, err := mapping.New(ops, "configs/mappings/"+projectType+".json", projectType)
-		if err != nil {
-			log.Fatal(Fata(err))
-		}
 
 		scaler, err := scaler.New(ops, "configs/scalers.json")
 
@@ -47,13 +41,13 @@ var applyCmd = &cobra.Command{
 			log.Fatal(Fata(err))
 		}
 
-		if applyFile == "default" {
-			log.Fatal(Fata("apply must supply corrosponding configuration file"))
+		if genFile == "default" {
+			log.Fatal(Fata("gen must supply corrosponding configuration file"))
 		}
 
 		imlementer := implement.New()
 
-		tg, err := generate.New(&applyFile, mapping, scaler, imlementer)
+		tg, err := generate.New(&genFile, scaler, imlementer)
 		if err != nil {
 			log.Fatal(Fata(err))
 		}
@@ -62,6 +56,7 @@ var applyCmd = &cobra.Command{
 			tg.RmDir()
 			log.Fatal(Fata(err))
 		}
+		tg.ShowModelDetails()
 		if lintFiles {
 			err := filepath.Walk("./"+tg.Project,
 				func(path string, info os.FileInfo, err error) error {
@@ -80,7 +75,7 @@ var applyCmd = &cobra.Command{
 			}
 
 		}
-		DisplayInfo(projectType)
+		DisplayInfo(tg.Kind + ":" + tg.DatabaseSpec.Name + ":" + tg.DatabaseSpec.Kind + ":" + tg.MessagingSpec.Name)
 	},
 }
 

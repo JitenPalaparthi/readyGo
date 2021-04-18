@@ -5,15 +5,18 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
 	"path"
 	"path/filepath"
+	"readyGo/boxops"
 	"readyGo/mapping"
 	"readyGo/scaler"
 	"regexp"
 	"runtime"
 	"strconv"
 	"strings"
+	"text/tabwriter"
 	"text/template"
 
 	"gopkg.in/yaml.v2"
@@ -40,7 +43,7 @@ var (
 )
 
 // New is to generate a new generater.
-func New(file *string, mapping *mapping.Mapping, scaler scaler.Map, implementer Implementer) (tg *Generate, err error) {
+func NewGen(file *string, mapping *mapping.Mapping, scaler scaler.Map, implementer Implementer) (tg *Generate, err error) {
 
 	if file == nil || *file == "" {
 		return nil, ErrNoFile
@@ -117,6 +120,100 @@ func New(file *string, mapping *mapping.Mapping, scaler scaler.Map, implementer 
 	}
 
 	return tg, nil
+}
+
+// New is to generate a new generater.
+func New(file *string, scaler scaler.Map, implementer Implementer) (tg *Generate, err error) {
+
+	if file == nil || *file == "" {
+		return nil, ErrNoFile
+	}
+
+	if implementer == nil {
+		return nil, ErrEmptyImplementer
+	}
+
+	ext := filepath.Ext(*file)
+	if ext != ".json" && ext != ".yaml" && ext != ".yml" {
+		return nil, errors.New("Only json | yaml | yml files are allowed ")
+	}
+	cFile, err := ioutil.ReadFile(*file)
+	if err != nil {
+		return nil, err
+	}
+	if ext == ".json" {
+		err = json.Unmarshal([]byte(cFile), &tg)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	if ext == ".yaml" || ext == ".yml" {
+		err = yaml.Unmarshal([]byte(cFile), &tg)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	// Logic to identify mapping
+
+	projectType := tg.APISpec.Kind + "_" + tg.DatabaseSpec.Name
+	if tg.MessagingSpec.Name != "" {
+		projectType = projectType + "_" + tg.MessagingSpec.Name
+	}
+
+	ops := boxops.New("../box")
+	mapping, err := mapping.New(ops, "configs/mappings/"+projectType+".json", projectType)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	tg.Mapping = mapping
+
+	tg.Scalers = scaler
+
+	tg.Implementer = implementer
+
+	err = tg.ChangeIden()
+	if err != nil {
+		return nil, err
+	}
+
+	matched, err := regexp.MatchString("^[a-zA-Z]*$", tg.Project)
+	if !matched {
+		return nil, ErrInvalidProjectName
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	err = tg.SetFieldCategory()
+	if err != nil {
+		return tg, err
+	}
+
+	err = tg.Validate()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return tg, nil
+}
+
+func (tg *Generate) ShowModelDetails() {
+	tw := new(tabwriter.Writer)
+	tw.Init(os.Stdout, 0, 8, 0, '\t', 0)
+	fmt.Println("As per the given input, the below are the files that were generated")
+	fmt.Fprintln(tw, "------------------------------------------------------------------------")
+	fmt.Fprintln(tw, "Model Name\t\tField Name\t\tField Type\t\tCategory")
+	for _, m := range tg.Models {
+		for _, f := range m.Fields {
+			fmt.Fprintf(tw, "%v\t\t%v\t\t%v\t\t%v\n", m.Name, f.Name, f.Type, f.Category)
+		}
+	}
+	fmt.Fprintln(tw, "------------------------------------------------------------------------")
+	tw.Flush()
 }
 
 // CreateAll creates all kinds of files based on the provided mappings

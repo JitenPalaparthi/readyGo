@@ -1,7 +1,7 @@
 {
   "version": "0.1",
   "kind": "grpc",
-  "project": "grpcsample",
+  "project": "grpcmongoproductSample",
   "databaseSpec": {
     "kind":"nosql",
     "name": "mongo",

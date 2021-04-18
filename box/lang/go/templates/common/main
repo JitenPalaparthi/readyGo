@@ -6,12 +6,12 @@ import (
 	"{{$.config.Project}}/database"
 	"{{$.config.Project}}/handlers"
 	"github.com/golang/glog"
-
+    "os"
 	_"context"
 	"github.com/gin-gonic/gin"
 )
 
-const (
+var (
 	// DBConnection is to store database connection information
 	DBConnection =  "{{ $.config.DatabaseSpec.ConnectionString }}"
 	// DBName is to store database name
@@ -20,6 +20,13 @@ const (
 
 func main() {
 glog.Info("Application {{$.config.Project}} has started")
+
+if os.Getenv("DB_CONNECTION") != "" {
+		DBConnection = os.Getenv("DB_CONNECTION")
+	}
+	if os.Getenv("DB_NAME") != "" {
+		DBName = os.Getenv("DB_NAME")
+	}
 
 session, err := database.GetConnection(DBConnection, DBName)
 	//defer session.Disconnect(context.TODO())
