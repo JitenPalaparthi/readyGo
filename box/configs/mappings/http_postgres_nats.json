@@ -20,16 +20,44 @@
             "src": "handlers",
             "dst": ""
         },
-       
+        {
+            "opType": "directories",
+            "src": "global",
+            "dst": ""
+        },
+        {
+            "opType": "directories",
+            "src": "messaging",
+            "dst": ""
+        },
         {
             "opType": "static-files",
-            "src": "lang/go/static/common/databases/sql/mysql/database.static",
+            "src": "lang/go/static/common/databases/sql/postgres/database.static",
             "dst": "database/database.go"
+        },
+        {
+            "opType": "static-files",
+            "src": "lang/go/static/common/global/functions.go",
+            "dst": "global/functions.go"
+        },{
+            "opType": "static-files",
+            "src": "lang/go/static/messaging/nats/connection.static",
+            "dst": "messaging/connection.go"
+        },
+        {
+            "opType": "static-files",
+            "src": "lang/go/static/messaging/nats/messaging.static",
+            "dst": "messaging/messaging.go"
         },
         {
             "opType": "static-files",
             "src": "lang/go/static/http/helper/helper.static",
             "dst": "helper/helper.go"
+        },
+        {
+            "opType": "static-files",
+            "src": "lang/go/static/models/models.static",
+            "dst": "models/models.go"
         },
         {
             "opType": "multiple-file-templates",
@@ -63,7 +91,7 @@
         },
         {
             "opType": "single-file-templates",
-            "src": "lang/go/emplates/common/docker-compose",
+            "src": "lang/go/templates/common/docker-compose",
             "dst": "docker-compose.yaml"
         },
         {

@@ -136,7 +136,12 @@ func (tg *Generate) SetFieldCategory() error {
 				tg.Models[mi].Fields[i].Type = tg.Implementer.GetFuncReturnType(ftype) // Todo fetch this from reading global. functions return type
 				tg.Models[mi].Fields[i].Category = "function"                          // any type that contains global. is a function category as all functionsa re global.xxxfuncname
 			} else if tg.IsModelType(ftype) {
-				tg.Models[mi].Fields[i].Category = "model" // model category are types that are already one of the models
+				fmt.Println(ftype, f.Type)
+				if strings.Contains(f.Type, "[]") {
+					tg.Models[mi].Fields[i].Category = "array model" // model category are types that are already one of the models
+				} else {
+					tg.Models[mi].Fields[i].Category = "model" // model category are types that are already one of the models
+				}
 			} else {
 				tg.Models[mi].Fields[i].Category = "undefined" // undefined category is a category that does not fall into any of above
 				return errors.New(ftype + " type is undefined")
@@ -148,6 +153,20 @@ func (tg *Generate) SetFieldCategory() error {
 
 // IsModelType is to check whether a filed is a model field
 func (tg *Generate) IsModelType(iden string) bool {
+	models := make([]string, 0)
+	for mi := 0; mi < len(tg.Models); mi++ {
+		models = append(models, tg.Models[mi].Name)
+	}
+	for _, m := range models {
+		if m == iden {
+			return true
+		}
+	}
+	return false
+}
+
+// IsModelArrayType is to check whether a filed is a model field
+func (tg *Generate) IsModelArrayType(iden string) bool {
 	models := make([]string, 0)
 	for mi := 0; mi < len(tg.Models); mi++ {
 		models = append(models, tg.Models[mi].Name)

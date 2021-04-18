@@ -22,7 +22,7 @@
         },
         {
             "opType": "directories",
-            "src": "protos",
+            "src": "global",
             "dst": ""
         },
         {

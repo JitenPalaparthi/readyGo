@@ -17,7 +17,7 @@
     },
     "float": {
         "goType": "float32",
-        "grpcType": "float32"
+        "grpcType": "float"
     },
     "double": {
         "goType": "float64",
@@ -43,19 +43,19 @@
         "goType": "[]int64",
         "grpcType": "repeated int64"
     },
-    "ulong": {
+    "[]ulong": {
         "goType": "[]uint64",
         "grpcType": "repeated uint64"
     },
-    "float": {
+    "[]float": {
         "goType": "[]float32",
-        "grpcType": "repeated float32"
+        "grpcType": "repeated float"
     },
-    "double": {
+    "[]double": {
         "goType": "[]float64",
         "grpcType": "repeated double"
     },
-    "bool": {
+    "[]bool": {
         "goType": "[]bool",
         "grpcType": "repeated bool"
     },

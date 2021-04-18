@@ -1,21 +1,22 @@
 {
     "version": "0.1",
     "kind": "http",
-    "project": "edughttp",
+    "project": "eduEmPowerService",
     "apiSpec": {
         "kind": "http",
-        "port": "50060",
+        "port": "50061",
         "version": "v1"
     },
+    
     "databaseSpec": {
-        "kind": "nosql",
-        "name": "mongo",
-        "connectionString": "mongodb://localhost:27017",
+        "kind": "sql",
+        "name":"postgres",
+        "connectionString": "user=jiten  password=admin host=localhost port=5432 dbname=sample",
         "dbName": "eduempowerDb"
     },
     "messagingSpec": {
-        "kind": "broker",
-        "name": "nats",
+        "kind":"broker",
+        "name":"nats",
         "connectionString": "nats://localhost:4222"
     },
     "models": [
@@ -79,31 +80,6 @@
             ]
         },
         {
-            "name": "address",
-            "fields": [
-                {
-                    "name": "addressline",
-                    "type": "string"
-                },
-                {
-                    "name": "street",
-                    "type": "string"
-                },
-                {
-                    "name": "state",
-                    "type": "string"
-                },
-                {
-                    "name": "country",
-                    "type": "string"
-                },
-                {
-                    "name": "zip",
-                    "type": "string"
-                }
-            ]
-        },
-        {
             "name": "individual",
             "fields": [
                 {
@@ -120,7 +96,23 @@
                 },
                 {
                     "name": "address",
-                    "type": "Address"
+                    "type": "string"
+                },
+                {
+                    "name": "city",
+                    "type": "string"
+                },
+                {
+                    "name": "state",
+                    "type": "string"
+                },
+                {
+                    "name": "country",
+                    "type": "string"
+                },
+                {
+                    "name": "pinCode",
+                    "type": "string"
                 },
                 {
                     "name": "socialMedia",
@@ -157,7 +149,23 @@
                 },
                 {
                     "name": "address",
-                    "type": "Address"
+                    "type": "string"
+                },
+                {
+                    "name": "city",
+                    "type": "string"
+                },
+                {
+                    "name": "state",
+                    "type": "string"
+                },
+                {
+                    "name": "country",
+                    "type": "string"
+                },
+                {
+                    "name": "pinCode",
+                    "type": "string"
                 },
                 {
                     "name": "sociallMedia",
@@ -173,37 +181,37 @@
                 }
             ]
         },
-        
         {
-            "name": "fund",
-            "fields": [
+            "name":"fund",
+            "fields":[
                 {
-                    "name": "donorEmail",
-                    "type": "string"
-                },
-                {
-                    "name": "amountProposed",
-                    "type": "float"
-                },
-                {
-                    "name": "AmountReceived",
-                    "type": "float"
-                },
-                {
-                    "name": "currency",
-                    "type": "string"
-                },
-                {
-                    "name": "modeOfPayment",
-                    "type": "string"
-                },
-                {
-                    "name": "referenceNo",
-                    "type": "string"
-                },
-                {
-                    "name": "moreInfo",
-                    "type": "string"
+                    "name":"donorEmail",
+                    "type":"string"
+
+                },{
+                    "name":"amountProposed",
+                    "type":"float"
+
+                },{
+                    "name":"AmountReceived",
+                    "type":"float"
+
+                },{
+                    "name":"currency",
+                    "type":"string"
+
+                },{
+                    "name":"modeOfPayment",
+                    "type":"string"
+
+                },{
+                    "name":"referenceNo",
+                    "type":"string"
+
+                },{
+                    "name":"moreInfo",
+                    "type":"string"
+
                 },
                 {
                     "name": "status",

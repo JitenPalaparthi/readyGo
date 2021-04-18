@@ -414,6 +414,13 @@ func (tg *Generate) WriteTmplToFile(filePath string, tmpl string, data interface
 			}
 			return ""
 		}}).Funcs(template.FuncMap{
+		"GrpcArrayModel": func(tpe string) string {
+			ss := strings.Split(tpe, "[]")
+			if len(ss) > 1 {
+				return ss[1]
+			}
+			return ""
+		}}).Funcs(template.FuncMap{
 		"GoRegExFormat": func(str string) string {
 			if str == "" {
 				return ""

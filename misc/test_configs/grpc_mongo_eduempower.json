@@ -1,10 +1,10 @@
 {
     "version": "0.1",
-    "kind": "http",
-    "project": "edughttp",
+    "kind": "grpc",
+    "project": "edugrpc",
     "apiSpec": {
-        "kind": "http",
-        "port": "50060",
+        "kind": "grpc",
+        "port": "50063",
         "version": "v1"
     },
     "databaseSpec": {
