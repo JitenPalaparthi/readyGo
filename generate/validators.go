@@ -43,18 +43,15 @@ func (tg *Generate) IsValidIdentifier(fielden string) bool {
 func (tg *Generate) ChangeIden() error {
 	for i, m := range tg.Models {
 		if !tg.Implementer.IsValidIdentifier(m.Name) {
-			fmt.Println(m.Name)
+
 			return errors.New(m.Name + " is invalid identifier")
 		}
-		tmpModel := m.Name
-		tg.Models[i].Name = strings.ToUpper(string(tmpModel[0])) + string(tmpModel[1:])
+		tg.Models[i].Name = strings.ToUpper(string(m.Name[0])) + string(m.Name[1:])
 		for j, f := range m.Fields {
 			if !tg.Implementer.IsValidIdentifier(f.Name) {
-				fmt.Println(f.Name)
 				return errors.New(f.Name + " is invalid identifier")
 			}
-			tmpField := f.Name
-			tg.Models[i].Fields[j].Name = strings.ToUpper(string(tmpField[0])) + string(tmpField[1:])
+			tg.Models[i].Fields[j].Name = strings.ToUpper(string(tg.Models[i].Fields[j].Name[0])) + string(tg.Models[i].Fields[j].Name[1:])
 		}
 	}
 	return nil
@@ -155,20 +152,6 @@ func (tg *Generate) SetFieldCategory() error {
 func (tg *Generate) IsModelType(iden string) bool {
 	for mi := 0; mi < len(tg.Models); mi++ {
 		if tg.Models[mi].Name == iden {
-			return true
-		}
-	}
-	return false
-}
-
-// IsModelArrayType is to check whether a filed is a model field
-func (tg *Generate) IsModelArrayType(iden string) bool {
-	models := make([]string, 0)
-	for mi := 0; mi < len(tg.Models); mi++ {
-		models = append(models, tg.Models[mi].Name)
-	}
-	for _, m := range models {
-		if m == iden {
 			return true
 		}
 	}
