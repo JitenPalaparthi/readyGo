@@ -43,15 +43,18 @@ func (tg *Generate) IsValidIdentifier(fielden string) bool {
 func (tg *Generate) ChangeIden() error {
 	for i, m := range tg.Models {
 		if !tg.Implementer.IsValidIdentifier(m.Name) {
-
 			return errors.New(m.Name + " is invalid identifier")
 		}
-		tg.Models[i].Name = strings.ToUpper(string(m.Name[0])) + string(m.Name[1:])
+		if string(m.Name[0]) == strings.ToLower(string(m.Name[0])) {
+			tg.Models[i].Name = strings.ToUpper(string(m.Name[0])) + string(m.Name[1:])
+		}
 		for j, f := range m.Fields {
 			if !tg.Implementer.IsValidIdentifier(f.Name) {
 				return errors.New(f.Name + " is invalid identifier")
 			}
-			tg.Models[i].Fields[j].Name = strings.ToUpper(string(tg.Models[i].Fields[j].Name[0])) + string(tg.Models[i].Fields[j].Name[1:])
+			if string(tg.Models[i].Fields[j].Name[0]) == strings.ToLower(string(tg.Models[i].Fields[j].Name[0])) {
+				tg.Models[i].Fields[j].Name = strings.ToUpper(string(tg.Models[i].Fields[j].Name[0])) + string(tg.Models[i].Fields[j].Name[1:])
+			}
 		}
 	}
 	return nil
