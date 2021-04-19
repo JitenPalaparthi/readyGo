@@ -125,26 +125,26 @@ func (tg *Generate) Validate() (err error) {
 func (tg *Generate) SetFieldCategory() error {
 	for mi := 0; mi < len(tg.Models); mi++ {
 		for i, f := range tg.Models[mi].Fields {
-			ftype := f.Type
-			if strings.Contains(f.Type, "[]") {
-				ftype = strings.Split(ftype, "[]")[1]
-			}
-			if tg.Scalers.IsValidreadyGotype(ftype) {
+			if tg.Scalers.IsValidreadyGotype(f.Type) {
 				tg.Models[mi].Fields[i].Category = "scaler" // all readyGo types are scaler types
-			} else if strings.Contains(ftype, "global.") {
-				tg.Models[mi].Fields[i].Definition = ftype
-				tg.Models[mi].Fields[i].Type = tg.Implementer.GetFuncReturnType(ftype) // Todo fetch this from reading global. functions return type
-				tg.Models[mi].Fields[i].Category = "function"                          // any type that contains global. is a function category as all functionsa re global.xxxfuncname
-			} else if tg.IsModelType(ftype) {
-				fmt.Println(ftype, f.Type)
-				if strings.Contains(f.Type, "[]") {
+			} else if strings.Contains(f.Type, "global.") {
+				tg.Models[mi].Fields[i].Definition = f.Type
+				tg.Models[mi].Fields[i].Type = tg.Implementer.GetFuncReturnType(f.Type) // Todo fetch this from reading global. functions return type
+				tg.Models[mi].Fields[i].Category = "function"                           // any type that contains global. is a function category as all functionsa re global.xxxfuncname
+			} else if strings.Contains(f.Type, "[]") {
+				ftype := f.Type
+				ftype = strings.Split(ftype, "[]")[1]
+				if tg.IsModelType(ftype) {
 					tg.Models[mi].Fields[i].Category = "array model" // model category are types that are already one of the models
 				} else {
-					tg.Models[mi].Fields[i].Category = "model" // model category are types that are already one of the models
+					tg.Models[mi].Fields[i].Category = "undefined" // undefined category is a category that does not fall into any of above
+					return errors.New(f.Type + " type is undefined")
 				}
+			} else if tg.IsModelType(f.Type) {
+				tg.Models[mi].Fields[i].Category = "model" // model category are types that are already one of the models
 			} else {
 				tg.Models[mi].Fields[i].Category = "undefined" // undefined category is a category that does not fall into any of above
-				return errors.New(ftype + " type is undefined")
+				return errors.New(f.Type + " type is undefined")
 			}
 		}
 	}
@@ -153,12 +153,8 @@ func (tg *Generate) SetFieldCategory() error {
 
 // IsModelType is to check whether a filed is a model field
 func (tg *Generate) IsModelType(iden string) bool {
-	models := make([]string, 0)
 	for mi := 0; mi < len(tg.Models); mi++ {
-		models = append(models, tg.Models[mi].Name)
-	}
-	for _, m := range models {
-		if m == iden {
+		if tg.Models[mi].Name == iden {
 			return true
 		}
 	}
