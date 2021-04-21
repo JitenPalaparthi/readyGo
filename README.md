@@ -1,4 +1,4 @@
-[![readyGo ](https://github.com/JitenPalaparthi/readyGo/workflows/Go/badge.svg)](https://github.com/JitenPalaparthi/readyGo/actions)
+[![readyGo ](https://github.com/JitenPalaparthi/readyGo/workflows/readyGo_build/badge.svg)](https://github.com/JitenPalaparthi/readyGo/actions)
 
 <img src="https://github.com/JitenPalaparthi/readyGo/blob/master/assets/readyGoBlue.png" width=400>
  
