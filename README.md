@@ -1,4 +1,4 @@
-[![readyGo ](https://github.com/JitenPalaparthi/readyGo/workflows/Go/badge.svg)](https://github.com/JitenPalaparthi/readyGo/actions)
+[![readyGo ](https://github.com/JitenPalaparthi/readyGo/workflows/Go/badge.svg)](https://github.com/JitenPalaparthi/readyGo/actions) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 <img src="https://github.com/JitenPalaparthi/readyGo/blob/master/assets/readyGoBlue.png" width=400>
  
