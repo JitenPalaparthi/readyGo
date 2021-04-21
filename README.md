@@ -1,3 +1,5 @@
+[![YourActionName Actions Status](https://github.com/JitenPalaparthi/readyGo/workflows/go/badge.svg)](https://github.com/JitenPalaparthi/readyGo/actions)
+
 <img src="https://github.com/JitenPalaparthi/readyGo/blob/master/assets/readyGoBlue.png" width=400>
  
 *The phylosophy behind readyGo is "A Simple configuration should give a working project.".*
