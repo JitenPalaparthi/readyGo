@@ -22,3 +22,8 @@
  *readGo cooks for you.As your business logic varies , you have to add the required spices according your taste but one thing . **readyGo** is not a template engine, it gives you a working project.*
 
  ### [know more about readyGo --> Wiki](https://github.com/JitenPalaparthi/readyGo/wiki)
+ 
+ #### Note: 
+ - The souce code is yet to be optimized and refactored.
+ - There are no unit tests so far.
+ - I prefer benchmarks rather than unit tests at this point of time and working on them.
