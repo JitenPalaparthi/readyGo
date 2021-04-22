@@ -2,10 +2,6 @@
 
 cd {{$.config.Project}}
 
-go mod init {{$.config.Project}}
-
-go mod tidy
-
 git --version 2>&1 >/dev/null
 GIT_IS_AVAILABLE=$?
 if [ $GIT_IS_AVAILABLE -eq 0 ]; then 
@@ -13,3 +9,17 @@ git init
 else
 echo "git is not install;Cannot init the git directory"
 fi
+
+## generate protos for all models
+{{- if eq $.config.APISpec.Kind "grpc" }}
+cd ..
+ {{- range $.config.Models }}
+     protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative {{$.config.Project}}/protos/{{.Name | ToLower}}.proto
+ {{- end}}
+
+cd {{$.config.Project}}
+{{- end}}
+
+ go mod init {{$.config.Project}}
+
+ go mod tidy
