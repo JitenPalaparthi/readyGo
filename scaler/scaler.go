@@ -33,7 +33,7 @@ func New(reader Reader, file string) (Map, error) {
 	if err != nil {
 		return nil, err
 	}
-	scalerType := make(map[string]*Scaler, 0)
+	scalerType := make(map[string]*Scaler)
 	err = json.Unmarshal([]byte(content), &scalerType)
 	if err != nil {
 		return nil, err
@@ -53,8 +53,5 @@ func (m Map) GetScaler(configType string) *Scaler {
 // IsValidreadyGotype is to check whether type is valid type or not
 func (m Map) IsValidreadyGotype(configType string) bool {
 	_, ok := m[configType]
-	if ok {
-		return true
-	}
-	return false
+	return ok
 }

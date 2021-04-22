@@ -17,7 +17,7 @@ import (
 	"golang.org/x/lint"
 )
 
-var genFile, projectType string
+var genFile string
 var lintFiles bool
 
 func init() {
@@ -57,12 +57,18 @@ var genCmd = &cobra.Command{
 
 		err = tg.CreateAll()
 		if err != nil {
-			tg.RmDir()
+			err1 := tg.RmDir()
+			if err1 != nil {
+				log.Println(Fata(err1))
+			}
 			log.Fatal(Fata(err))
 		}
 		err = tg.Execute()
 		if err != nil {
-			tg.RmDir()
+			err1 := tg.RmDir()
+			if err1 != nil {
+				log.Println(Fata(err1))
+			}
 			log.Fatal(Fata(err))
 		}
 

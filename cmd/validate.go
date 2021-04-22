@@ -10,7 +10,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var applyFileValidate, projectTypeValidate string
+var applyFileValidate string
 
 func init() {
 	validateCmd.Flags().StringVarP(&applyFileValidate, "filename", "f", "", "user has to privide the file.There is no default file.")
