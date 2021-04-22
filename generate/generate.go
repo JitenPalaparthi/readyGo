@@ -313,7 +313,10 @@ func (tg *Generate) CreateAll() (err error) {
 				}
 				tg.Output <- "The following shell file has been generated :" + dst
 
-				os.Chmod(dst, 0700)
+				err = os.Chmod(dst, 0700)
+				if err != nil {
+					return err
+				}
 				tg.Output <- "giving read|writeexecute permissions to the file :" + dst
 
 			}
