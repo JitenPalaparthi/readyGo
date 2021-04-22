@@ -1,4 +1,5 @@
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/JItenPalaparthi/readyGo/Go?label=readyGo%20Build) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) 
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/JitenPalaparthi/readyGo/Go?label=readyGo%20Build) 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) 
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/JitenPalaparthi/readyGo?label=release&logo=release)
 
 <img src="https://github.com/JitenPalaparthi/readyGo/blob/master/assets/readyGoBlue.png" width=400>
