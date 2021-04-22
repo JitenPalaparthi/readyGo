@@ -151,6 +151,7 @@ func (tg *Generate) CreateAll() (err error) {
 				}
 				return err
 			}
+			tg.Output <- "creating directory :" + path
 		case "static-files":
 			dst := filepath.Join(tg.Project, opsData.Dst)
 			content, err := tg.Mapping.Reader.Read(opsData.Src)
@@ -190,6 +191,7 @@ func (tg *Generate) CreateAll() (err error) {
 					}
 					return err
 				}
+				tg.Output <- "writing contents to the file :" + dst
 			}
 		case "multiple-file-templates":
 			mhandler := make(map[string]interface{})
@@ -234,6 +236,7 @@ func (tg *Generate) CreateAll() (err error) {
 						}
 						return err
 					}
+					tg.Output <- "writing template based contents to the file :" + dst
 				}
 			}
 
@@ -269,6 +272,7 @@ func (tg *Generate) CreateAll() (err error) {
 					}
 					return err
 				}
+				tg.Output <- "writing template based contents to the file :" + dst
 			}
 		case "exec":
 			// Todo for opsData.Ext if there is an extension
@@ -302,7 +306,11 @@ func (tg *Generate) CreateAll() (err error) {
 					}
 					return err
 				}
+				tg.Output <- "writing shall based executable files :" + dst
+
 				os.Chmod(dst, 0700)
+				tg.Output <- "giving read|writeexecute permissions to the file :" + dst
+
 			}
 		default:
 			return errors.New(opsData.OpType + ":this type has no implementation")
@@ -318,6 +326,7 @@ func (tg *Generate) RmDir() (err error) {
 	if err != nil {
 		return err
 	}
+	tg.Output <- "removing all directories  of the project :" + tg.Project
 	return nil
 }
 
@@ -419,6 +428,7 @@ func (tg *Generate) Execute() (err error) {
 			if err != nil {
 				return err
 			}
+			tg.Output <- "executing the file:" + opsData.Dst
 			tg.Output <- output // Sending output to the channel
 		default:
 		}

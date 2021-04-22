@@ -86,10 +86,6 @@ var genCmd = &cobra.Command{
 
 		}
 		DisplayInfo(tg.Kind + ":" + tg.DatabaseSpec.Name + ":" + tg.DatabaseSpec.Kind + ":" + tg.MessagingSpec.Name)
-		//tg.Done <- true
-		//close(tg.Output)
-		//close(tg.Done)
-
 	},
 }
 
