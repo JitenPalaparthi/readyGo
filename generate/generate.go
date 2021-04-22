@@ -143,6 +143,7 @@ func (tg *Generate) CreateAll() (err error) {
 		switch opsData.OpType {
 		case "directories":
 			path := filepath.Join(tg.Project, opsData.Src)
+			tg.Output <- "generating the following directory :" + path
 			err = os.MkdirAll(path, os.ModePerm)
 			if err != nil {
 				errRm := tg.RmDir()
@@ -151,9 +152,10 @@ func (tg *Generate) CreateAll() (err error) {
 				}
 				return err
 			}
-			tg.Output <- "creating directory :" + path
+			tg.Output <- "the following directory has been generated :" + path
 		case "static-files":
 			dst := filepath.Join(tg.Project, opsData.Dst)
+			tg.Output <- "generating the following static file :" + dst
 			content, err := tg.Mapping.Reader.Read(opsData.Src)
 			if err != nil {
 				errRm := tg.RmDir()
@@ -191,7 +193,7 @@ func (tg *Generate) CreateAll() (err error) {
 					}
 					return err
 				}
-				tg.Output <- "writing contents to the file :" + dst
+				tg.Output <- "The following static file has been generated :" + dst
 			}
 		case "multiple-file-templates":
 			mhandler := make(map[string]interface{})
@@ -200,6 +202,7 @@ func (tg *Generate) CreateAll() (err error) {
 			for _, v := range tg.Models {
 				mhandler["Model"] = v
 				dst := filepath.Join(tg.Project, opsData.Dst)
+				tg.Output <- "generating template based file :" + dst
 				err = os.MkdirAll(dst, 0755)
 				if err != nil {
 					errRm := tg.RmDir()
@@ -236,7 +239,7 @@ func (tg *Generate) CreateAll() (err error) {
 						}
 						return err
 					}
-					tg.Output <- "writing template based contents to the file :" + dst
+					tg.Output <- "the following templated based file has been generated :" + dst
 				}
 			}
 
@@ -245,6 +248,7 @@ func (tg *Generate) CreateAll() (err error) {
 			mhandler := make(map[string]interface{})
 			mhandler["config"] = tg
 			dst := path.Join(tg.Project, opsData.Dst)
+			tg.Output <- "generating template based contents to the file :" + dst
 			li := strings.LastIndex(dst, "/")
 			dirs := dst[0:li]
 			err = os.MkdirAll(dirs, 0755)
@@ -272,13 +276,14 @@ func (tg *Generate) CreateAll() (err error) {
 					}
 					return err
 				}
-				tg.Output <- "writing template based contents to the file :" + dst
+				tg.Output <- "The following templated based file has been generated :" + dst
 			}
 		case "exec":
 			// Todo for opsData.Ext if there is an extension
 			mhandler := make(map[string]interface{})
 			mhandler["config"] = tg
 			dst := path.Join(tg.Project, opsData.Dst)
+			tg.Output <- "generating shall based executable files :" + dst
 			li := strings.LastIndex(dst, "/")
 			dirs := dst[0:li]
 			err = os.MkdirAll(dirs, 0755)
@@ -306,7 +311,7 @@ func (tg *Generate) CreateAll() (err error) {
 					}
 					return err
 				}
-				tg.Output <- "writing shall based executable files :" + dst
+				tg.Output <- "The following shell file has been generated :" + dst
 
 				os.Chmod(dst, 0700)
 				tg.Output <- "giving read|writeexecute permissions to the file :" + dst
@@ -322,11 +327,12 @@ func (tg *Generate) CreateAll() (err error) {
 
 // RmDir is to remove dirs
 func (tg *Generate) RmDir() (err error) {
+	tg.Output <- "removing all directories of the project :" + tg.Project
 	err = os.RemoveAll(tg.Project)
 	if err != nil {
 		return err
 	}
-	tg.Output <- "removing all directories  of the project :" + tg.Project
+	tg.Output <- "all directories in the following project has been removed :" + tg.Project
 	return nil
 }
 
@@ -421,6 +427,7 @@ func (tg *Generate) Execute() (err error) {
 		switch opsData.OpType {
 		case "exec":
 			// Todo for opsData.Ext if there is an extension
+			tg.Output <- "executing the following file:" + opsData.Dst
 			mhandler := make(map[string]interface{})
 			mhandler["config"] = tg
 			dst := path.Join(tg.Project, opsData.Dst)
@@ -428,7 +435,7 @@ func (tg *Generate) Execute() (err error) {
 			if err != nil {
 				return err
 			}
-			tg.Output <- "executing the file:" + opsData.Dst
+			tg.Output <- "the following file has been executed:" + opsData.Dst
 			tg.Output <- output // Sending output to the channel
 		default:
 		}
