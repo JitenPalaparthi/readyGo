@@ -1,99 +1,110 @@
-{ 
-    "data":[{
-         "opType": "directories",
-         "src": "models",
-         "dst": ""
-     },
-     {
-         "opType": "directories",
-         "src": "interfaces",
-         "dst": ""
-     },
-     {
-         "opType": "directories", 
-         "src": "database",
-         "dst": ""
-     },
-     {
-         "opType": "directories",
-         "src": "handlers",
-         "dst": ""
-     },
-     {
-         "opType": "directories",
-         "src": "protos",
-         "dst": ""
-     },
-     {
-        "opType": "directories",
-        "src": "messaging",
-        "dst": ""
-    },
-     {
-         "opType": "static-files",
-         "src": "lang/go/static/common/databases/mongo/database.static",
-         "dst": "database/database.go"
-     },
-     {
-         "opType": "static-files",
-         "src": "lang/go/static/http/helper/helper.static",
-         "dst": "helper/helper.go"
-     },
-     {
-        "opType": "static-files",
-        "src": "lang/go/static/messaging/nats/connection.static",
-        "dst": "messaging/connection.go"
-    },
-    {
-        "opType": "static-files",
-        "src": "lang/go/static/messaging/nats/messaging.static",
-        "dst": "messaging/messaging.go"
-    },
-    {
-        "opType": "static-files",
-        "src": "lang/go/static/models/models.static",
-        "dst": "models/models.go"
-    },
-     {
-         "opType": "multiple-file-templates",
-         "src": "lang/go/templates/common/models",
-         "dst": "models"
-     },
-     {
-         "opType": "multiple-file-templates",
-         "src": "lang/go/templates/common/interfaces",
-         "dst": "interfaces"
-     },
-     {
-         "opType": "multiple-file-templates",
-         "src": "lang/go/templates/common/database/mongo/db",
-         "dst": "database"
-     },
-     {
-         "opType": "multiple-file-templates",
-         "src": "lang/go/templates/grpc/handlers",
-         "dst": "handlers"
-     },
-      {
-         "opType": "multiple-file-templates",
-         "src": "lang/go/templates/grpc/protofile",
-         "dst": "protos",
-         "ext":"proto"
-     },
-     {
-         "opType": "single-file-templates",
-         "src": "lang/go/templates/grpc/main",
-         "dst": "main.go"
-     },
-     {
-         "opType": "single-file-templates",
-         "src": "lang/go/templates/common/docker-compose",
-         "dst": "docker-compose.yaml"
-     },
-     {
-         "opType": "single-file-templates",
-         "src": "lang/go/templates/common/Dockerfile",
-         "dst": "Dockerfile"
-     }
- ]
- }
+{
+    "data": [
+        {
+            "opType": "directories",
+            "src": "models",
+            "dst": ""
+        },
+        {
+            "opType": "directories",
+            "src": "interfaces",
+            "dst": ""
+        },
+        {
+            "opType": "directories",
+            "src": "database",
+            "dst": ""
+        },
+        {
+            "opType": "directories",
+            "src": "handlers",
+            "dst": ""
+        },
+        {
+            "opType": "directories",
+            "src": "protos",
+            "dst": ""
+        },
+        {
+            "opType": "directories",
+            "src": "messaging",
+            "dst": ""
+        },
+        {
+            "opType": "directories",
+            "src": "scripts",
+            "dst": ""
+        },
+        {
+            "opType": "static-files",
+            "src": "lang/go/static/common/databases/mongo/database.static",
+            "dst": "database/database.go"
+        },
+        {
+            "opType": "static-files",
+            "src": "lang/go/static/http/helper/helper.static",
+            "dst": "helper/helper.go"
+        },
+        {
+            "opType": "static-files",
+            "src": "lang/go/static/messaging/nats/connection.static",
+            "dst": "messaging/connection.go"
+        },
+        {
+            "opType": "static-files",
+            "src": "lang/go/static/messaging/nats/messaging.static",
+            "dst": "messaging/messaging.go"
+        },
+        {
+            "opType": "static-files",
+            "src": "lang/go/static/models/models.static",
+            "dst": "models/models.go"
+        },
+        {
+            "opType": "multiple-file-templates",
+            "src": "lang/go/templates/common/models",
+            "dst": "models"
+        },
+        {
+            "opType": "multiple-file-templates",
+            "src": "lang/go/templates/common/interfaces",
+            "dst": "interfaces"
+        },
+        {
+            "opType": "multiple-file-templates",
+            "src": "lang/go/templates/common/database/mongo/db",
+            "dst": "database"
+        },
+        {
+            "opType": "multiple-file-templates",
+            "src": "lang/go/templates/grpc/handlers",
+            "dst": "handlers"
+        },
+        {
+            "opType": "multiple-file-templates",
+            "src": "lang/go/templates/grpc/protofile",
+            "dst": "protos",
+            "ext": "proto"
+        },
+        {
+            "opType": "single-file-templates",
+            "src": "lang/go/templates/grpc/main",
+            "dst": "main.go"
+        },
+        {
+            "opType": "single-file-templates",
+            "src": "lang/go/templates/common/docker-compose",
+            "dst": "docker-compose.yaml"
+        },
+        {
+            "opType": "single-file-templates",
+            "src": "lang/go/templates/common/Dockerfile",
+            "dst": "Dockerfile"
+        },
+        {
+            "opType": "exec",
+            "src": "lang/go/templates/common/init.exec",
+            "dst": "scripts/init.sh"
+        }
+    ]
+}

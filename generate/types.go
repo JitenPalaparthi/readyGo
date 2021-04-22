@@ -27,6 +27,8 @@ type Generate struct {
 	Scalers       scaler.Map
 	Implementer   Implementer // interface to use lang specific implementation logic
 	Plugins       Plugin      `json:"plugins" yaml:"Plugins"`
+	Output        chan string //Output is a channel that is used to write all output. The caller can utilize to print it
+	Done          chan bool   // Done is to signal done
 }
 
 // Model is to hold model data from configuration file

@@ -11,6 +11,7 @@ import (
 	"readyGo/lang/implement"
 	"readyGo/scaler"
 	"strings"
+	"text/tabwriter"
 
 	"github.com/spf13/cobra"
 	"golang.org/x/lint"
@@ -32,7 +33,7 @@ var genCmd = &cobra.Command{
 	Short: "gen generates a project",
 	Long:  `gen generates a project  provided by the  configuration file .User must supply a configuration file`,
 	Run: func(cmd *cobra.Command, args []string) {
-
+		//done := make(chan bool)
 		ops := boxops.New("../box")
 
 		scaler, err := scaler.New(ops, "configs/scalers.json")
@@ -51,12 +52,21 @@ var genCmd = &cobra.Command{
 		if err != nil {
 			log.Fatal(Fata(err))
 		}
+
+		go tg.WriteOutput(os.Stdout)
+
 		err = tg.CreateAll()
 		if err != nil {
 			tg.RmDir()
 			log.Fatal(Fata(err))
 		}
-		tg.ShowModelDetails()
+		err = tg.Execute()
+		if err != nil {
+			tg.RmDir()
+			log.Fatal(Fata(err))
+		}
+
+		ShowModelDetails(tg)
 		if lintFiles {
 			err := filepath.Walk("./"+tg.Project,
 				func(path string, info os.FileInfo, err error) error {
@@ -76,6 +86,10 @@ var genCmd = &cobra.Command{
 
 		}
 		DisplayInfo(tg.Kind + ":" + tg.DatabaseSpec.Name + ":" + tg.DatabaseSpec.Kind + ":" + tg.MessagingSpec.Name)
+		//tg.Done <- true
+		//close(tg.Output)
+		//close(tg.Done)
+
 	},
 }
 
@@ -127,4 +141,19 @@ func DisplayInfo(projectType string) {
 		fmt.Println(Details("Make sure your sql database is started , up and running"))
 	}
 	fmt.Println()
+}
+
+func ShowModelDetails(tg *generate.Generate) {
+	tw := new(tabwriter.Writer)
+	tw.Init(os.Stdout, 0, 8, 0, '\t', 0)
+	fmt.Println("As per the given input, the below model fields were generated in various files")
+	fmt.Fprintln(tw, "------------------------------------------------------------------------")
+	fmt.Fprintln(tw, "Model Name\t\tField Name\t\tField Type\t\tCategory")
+	for _, m := range tg.Models {
+		for _, f := range m.Fields {
+			fmt.Fprintf(tw, "%v\t\t%v\t\t%v\t\t%v\n", m.Name, f.Name, f.Type, f.Category)
+		}
+	}
+	fmt.Fprintln(tw, "------------------------------------------------------------------------")
+	tw.Flush()
 }
