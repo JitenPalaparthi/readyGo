@@ -20,7 +20,11 @@
             "src": "handlers",
             "dst": ""
         },
-       
+        {
+            "opType": "directories",
+            "src": "scripts",
+            "dst": ""
+        },
         {
             "opType": "static-files",
             "src": "lang/go/static/common/databases/sql/mysql/database.static",
@@ -70,6 +74,11 @@
             "opType": "single-file-templates",
             "src": "lang/go/templates/common/Dockerfile",
             "dst": "Dockerfile"
+        },
+        {
+            "opType": "exec",
+            "src": "lang/go/templates/common/init.exec",
+            "dst": "scripts/init.sh"
         }
     ]
 }

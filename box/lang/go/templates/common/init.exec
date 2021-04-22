@@ -1,0 +1,15 @@
+#!/bin/sh
+
+cd {{$.config.Project}}
+
+go mod init {{$.config.Project}}
+
+go mod tidy
+
+git --version 2>&1 >/dev/null
+GIT_IS_AVAILABLE=$?
+if [ $GIT_IS_AVAILABLE -eq 0 ]; then 
+git init
+else
+echo "git is not install;Cannot init the git directory"
+fi

@@ -3,10 +3,11 @@ package generate
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 	"os"
+	"os/exec"
 	"path"
 	"path/filepath"
 	"readyGo/boxops"
@@ -16,8 +17,9 @@ import (
 	"runtime"
 	"strconv"
 	"strings"
-	"text/tabwriter"
 	"text/template"
+
+	"readyGo/helper"
 
 	"gopkg.in/yaml.v2"
 )
@@ -118,22 +120,12 @@ func New(file *string, scaler scaler.Map, implementer Implementer) (tg *Generate
 		return nil, err
 	}
 
-	return tg, nil
-}
-
-func (tg *Generate) ShowModelDetails() {
-	tw := new(tabwriter.Writer)
-	tw.Init(os.Stdout, 0, 8, 0, '\t', 0)
-	fmt.Println("As per the given input, the below are the files that were generated")
-	fmt.Fprintln(tw, "------------------------------------------------------------------------")
-	fmt.Fprintln(tw, "Model Name\t\tField Name\t\tField Type\t\tCategory")
-	for _, m := range tg.Models {
-		for _, f := range m.Fields {
-			fmt.Fprintf(tw, "%v\t\t%v\t\t%v\t\t%v\n", m.Name, f.Name, f.Type, f.Category)
-		}
+	// This channel can be used in such a way that all generated output can be sent to this so that I can be prined properly
+	if tg.Output == nil {
+		tg.Output = make(chan string)
 	}
-	fmt.Fprintln(tw, "------------------------------------------------------------------------")
-	tw.Flush()
+
+	return tg, nil
 }
 
 // CreateAll creates all kinds of files based on the provided mappings
@@ -278,6 +270,40 @@ func (tg *Generate) CreateAll() (err error) {
 					return err
 				}
 			}
+		case "exec":
+			// Todo for opsData.Ext if there is an extension
+			mhandler := make(map[string]interface{})
+			mhandler["config"] = tg
+			dst := path.Join(tg.Project, opsData.Dst)
+			li := strings.LastIndex(dst, "/")
+			dirs := dst[0:li]
+			err = os.MkdirAll(dirs, 0755)
+			if err != nil {
+				errRm := tg.RmDir()
+				if errRm != nil {
+					return errors.New("1." + err.Error() + ".2." + errRm.Error())
+				}
+				return err
+			}
+			content, err := tg.Mapping.Reader.Read(opsData.Src)
+			if err != nil {
+				errRm := tg.RmDir()
+				if errRm != nil {
+					return errors.New("1." + err.Error() + ".2." + errRm.Error())
+				}
+				return err
+			}
+			if content != "" {
+				err := tg.WriteTmplToFile(dst, content, mhandler)
+				if err != nil {
+					errRm := tg.RmDir()
+					if errRm != nil {
+						return errors.New("1." + err.Error() + ".2." + errRm.Error())
+					}
+					return err
+				}
+				os.Chmod(dst, 0700)
+			}
 		default:
 			return errors.New(opsData.OpType + ":this type has no implementation")
 		}
@@ -301,7 +327,6 @@ func (tg *Generate) WriteTmplToFile(filePath string, tmpl string, data interface
 	if err != nil {
 		return err
 	}
-
 	t := template.Must(template.New("toFile").Funcs(template.FuncMap{
 		"ToLower": func(str string) string {
 			return strings.ToLower(str)
@@ -357,10 +382,57 @@ func (tg *Generate) WriteTmplToFile(filePath string, tmpl string, data interface
 			return string(str)
 		}}).Parse(tmpl))
 	err = t.Execute(file, data)
-
 	if err != nil {
 		return err
 	}
-
 	return nil
+}
+
+func ExecuteCommand(filename string) (string, error) {
+	cmd, err := exec.Command("/bin/sh", filename).Output()
+	if err != nil {
+		return "", err
+	}
+	output := string(cmd)
+	return output, nil
+}
+
+// Execute executes given shell files
+func (tg *Generate) Execute() (err error) {
+	if helper.IsWindows() {
+		return errors.New("exec feature works only for unix based OS")
+	}
+	if tg == nil {
+		return ErrInvalidTemlateGenerator
+	}
+	if tg.Project == "" {
+		return ErrInvalidRoot
+	}
+	for _, opsData := range tg.Mapping.OpsData {
+		switch opsData.OpType {
+		case "exec":
+			// Todo for opsData.Ext if there is an extension
+			mhandler := make(map[string]interface{})
+			mhandler["config"] = tg
+			dst := path.Join(tg.Project, opsData.Dst)
+			output, err := ExecuteCommand(dst)
+			if err != nil {
+				return err
+			}
+			tg.Output <- output // Sending output to the channel
+		default:
+		}
+	}
+	return nil
+}
+
+// WriteOutput this should be a go routine
+func (tg *Generate) WriteOutput(w io.Writer) {
+	for output := range tg.Output {
+		output = "\n" + output // Add a new line to the output
+		_, err := w.Write([]byte(output))
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
 }
