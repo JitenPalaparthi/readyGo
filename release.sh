@@ -14,7 +14,7 @@ echo "Github.Com personal token: $1"
 
 export GITHUB_TOKEN=$1
 
-RES= $(git show-ref --tags)
+RES=$(git show-ref --tags)
 if [ -z "$RES" ]; then
     NEW_TAG="v0.0.1"
 else
