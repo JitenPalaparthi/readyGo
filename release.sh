@@ -1,16 +1,9 @@
-# !/bin/sh
-#  # git tag -a v0.0.3 -m "new release v0.0.3"
-# export GITHUB_TOKEN="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"
-# export TAG=$(git tag --no-merged)
-# ~/go/bin/ghr -t $GITHUB_TOKEN -u JitenPalaparthi -r readyGo --replace --draft  $TAG dist/
-
-# // git describe --abbrev=0 --tags
-
-
 #!/bin/bash
 echo "Github.Com personal token: $1"
+# Write a logic to validate the token. If the token is expired or not validated message and stop the further process.
 
-#export GITHUB_TOKEN="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"
+# If there are any changes. Tagging will fail so. Test in the local repo that no changes are pending for commit. If there are any 
+# Stop to procedd further
 
 export GITHUB_TOKEN=$1
 
@@ -41,12 +34,15 @@ else
     fi
 
     NEW_TAG="v${one}.${two}.${three}"
+
+    echo $NEW_TAG
+
+    # Write tag validation before running goreleaser.
+
+    git tag -a $NEW_TAG -m "new release $NEW_TAG"
+
+    rm -rf dist/
+
+    goreleaser
 fi
 
-echo $NEW_TAG
-
-git tag -a $NEW_TAG -m "new release $NEW_TAG"
-
-#export GITHUB_TOKEN="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"
-
-goreleaser
