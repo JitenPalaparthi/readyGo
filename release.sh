@@ -8,9 +8,11 @@ echo "Github.Com personal token: $1"
 export GITHUB_TOKEN=$1
 
 RES=$(git show-ref --tags)
+UNCOMITTED=$(git status --porcelain)
 if [ -z "$RES" ]; then
     NEW_TAG="v0.0.1"
 else
+if [ -z "$UNCOMITTED" ]; then
     LATEST_TAG=$(git describe --tags --abbrev=0)
     IFS='.' read -r -a array <<< ${LATEST_TAG:1}
     one=${array[0]}
@@ -44,5 +46,9 @@ else
     rm -rf dist/
 
     goreleaser
+    else 
+echo "One or more changes are uncomitted;commit or stash them and try again"
 fi
+fi
+
 
