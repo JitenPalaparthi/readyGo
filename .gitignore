@@ -24,3 +24,5 @@ readyGo
 version-readme.md
 upLOAD.SH
 todo.mdcheck.sh
+upload.sh
+check.sh
