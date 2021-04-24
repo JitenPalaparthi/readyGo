@@ -16,6 +16,7 @@
   "models": [
     {
       "name": "person",
+      "type":"main",
       "fields": [
         {
           "name": "name",
@@ -52,6 +53,7 @@
     },
     {
       "name": "Address",
+      "type":"sub",
       "fields": [
         {
           "name": "addressline",

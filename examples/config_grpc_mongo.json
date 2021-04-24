@@ -16,6 +16,7 @@
   "models": [
     {
       "name": "person",
+      "type":"main",
       "fields": [
         {
           "name": "name",
@@ -23,30 +24,56 @@
           "isKey": true
         },
         {
-          "name": "govtNo",
+          "name": "email",
+          "type": "string",
+          "isKey": true,
+          "validateExp": "^[a-zA-Z0-9.!#$%&'*+\\\\/=?^_\\\\`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$"
+        },
+        {
+          "name": "gender",
+          "type": "string"
+        },
+        {
+          "name": "contact",
           "type": "long"
         },
         {
-          "name": "isIndian",
-          "type": "bool"
-        },
-        {
-          "name": "email",
-          "type": "string",
-          "validateExp": "[a-zA-Z0-9]",
-          "isKey": true
-        },
-        {
-          "name": "mobile",
-          "type": "string"
-        },
-        {
           "name": "status",
-          "type": "string"
+          "type": "global.GetDefaultStr(`active`)"
         },
         {
           "name": "lastModified",
           "type": "global.GetCurrentDateTimeInStr()"
+        },
+        {
+          "name": "Address",
+          "type": "Address"
+        }
+      ]
+    },
+    {
+      "name": "Address",
+      "type":"sub",
+      "fields": [
+        {
+          "name": "addressline",
+          "type": "string"
+        },
+        {
+          "name": "street",
+          "type": "string"
+        },
+        {
+          "name": "state",
+          "type": "string"
+        },
+        {
+          "name": "country",
+          "type": "string"
+        },
+        {
+          "name": "zip",
+          "type": "string"
         }
       ]
     }

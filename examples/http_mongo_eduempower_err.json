@@ -21,6 +21,7 @@
     "models": [
         {
             "name": "user",
+            "type":"main",
             "messagingModelSpec": {
                 "messageRespondType": "publish",
                 "topic": "users_topic"
@@ -69,6 +70,7 @@
         },
         {
             "name": "userDetails",
+            "type":"sub",
             "fields": [
                 {
                     "name": "email",
@@ -80,6 +82,7 @@
         },
         {
             "name": "individual",
+            "type":"main",
             "fields": [
                 {
                     "name": "user",
@@ -129,6 +132,7 @@
         },
         {
             "name": "organization",
+            "type":"main",
             "fields": [
                 {
                     "name": "user",
@@ -182,6 +186,7 @@
         },
         {
             "name":"fund",
+            "type":"main",
             "fields":[
                 {
                     "name":"donorEmail",
