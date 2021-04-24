@@ -62,6 +62,7 @@ session, err := database.GetConnection(DBConnection, DBName)
 	server := grpc.NewServer()
 
 	 {{- range $.config.Models }}
+	 {{- if eq .Type "main" }}
      {{.Name | ToLower}} := new(handlers.{{.Name}})
 	 {{.Name | ToLower}}.I{{.Name}} = &database.{{.Name}}DB{DB: session}
 	 {{- if .MessagingModelSpec.MessageRespondType}}
@@ -71,6 +72,7 @@ session, err := database.GetConnection(DBConnection, DBName)
 	 pb.Register{{.Name}}Server(server, {{.Name | ToLower}})	
      {{- end}}
 	 // Register reflection service on gRPC server.
+	 {{- end}}
 	reflection.Register(server)
 	if err := server.Serve(lis); err != nil {
 		glog.Fatalf("failed to serve: %v", err)

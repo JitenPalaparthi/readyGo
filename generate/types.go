@@ -34,7 +34,7 @@ type Generate struct {
 // Model is to hold model data from configuration file
 type Model struct {
 	Name               string             `json:"name" yaml:"name"`
-	Type               string             `json:"type" yaml:"type"` // model type can be main or sub. If main methods and all other things are created
+	Type               string             `json:"type" yaml:"type"` // model type can be main or sub or both.
 	MessagingModelSpec MessagingModelSpec `json:"messagingModelSpec" yaml:"messagingModelSpec"`
 	Fields             []Field            `json:"fields" yaml:"fields"`
 }
