@@ -86,6 +86,10 @@ func (tg *Generate) Validate() (err error) {
 		if ok {
 			return errors.New(" Duplicate model names:" + m.Name)
 		}
+		// Accept only Model types as main | sub | both
+		if m.Type != "main" && m.Type != "sub" && m.Type != "both" {
+			return errors.New("Model type should be main | sub |both")
+		}
 		modelMap[strings.ToLower(m.Name)] = "noted"
 		fieldMap := make(map[string]string)
 		for _, f := range m.Fields {
@@ -96,7 +100,7 @@ func (tg *Generate) Validate() (err error) {
 			fieldMap[strings.ToLower(f.Name)] = "noted"
 
 		}
-		if tg.DatabaseSpec.Name == "mongo" {
+		if tg.DatabaseSpec.Name == "mongo" && m.Type == "main" {
 			_, ok := fieldMap["id"]
 			if !ok {
 				id := Field{Name: "ID", Type: "string", Category: "scaler"}
@@ -106,7 +110,7 @@ func (tg *Generate) Validate() (err error) {
 			//  todo if the type of the field for id is not string .. it has to be string
 			//	}
 		}
-		if tg.DatabaseSpec.Kind == "sql" {
+		if tg.DatabaseSpec.Kind == "sql" && m.Type == "main" {
 			_, ok := fieldMap["id"]
 			if !ok {
 				id := Field{Name: "ID", Type: "int", Category: "scaler"}

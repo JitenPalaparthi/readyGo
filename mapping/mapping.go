@@ -26,10 +26,11 @@ type Mapping struct {
 
 // OpsData contains what is the source and destination
 type OpsData struct {
-	OpType string `json:"opType"`
-	Src    string `json:"src"`
-	Dst    string `json:"dst"`
-	Ext    string `json:"ext"`
+	OpType     string `json:"opType"`
+	Src        string `json:"src"`
+	Dst        string `json:"dst"`
+	Ext        string `json:"ext"`
+	GenForType string `json:"genForType"`
 }
 
 // New creates a new Mapping

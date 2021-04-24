@@ -19,7 +19,7 @@ option go_package = "{{.Project}}/protos";
     {{- $Count = $Count | Counter}}
 	{{- end}}
 	}
-
+ {{- if eq .Model.Type "main" }}
 message {{.Model.Name}}Response{
 		int32 code=1;
 		string error=2;
@@ -51,3 +51,5 @@ service {{ .Model.Name}} {
 	rpc Get{{.Model.Name}}ByID ({{.Model.Name}}IDRequest) returns({{.Model.Name}}Type);
 	rpc GetAll{{.Model.Name}}sBy ({{.Model.Name}}GetAllByRequest) returns({{.Model.Name}}sResponse);
 }
+
+{{- end}}
