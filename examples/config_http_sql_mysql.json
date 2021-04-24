@@ -16,6 +16,7 @@
     "models": [
       {
         "name": "person",
+        "type":"main",
         "fields": [
           {
             "name": "name",
