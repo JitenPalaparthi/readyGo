@@ -16,6 +16,7 @@
   "models": [
     {
       "name": "product",
+      "type":"main",
       "fields": [
         {
           "name": "name",
@@ -51,6 +52,7 @@
     },
     {
       "name": "Address",
+      "type":"sub",
       "fields": [
         {
           "name": "name",

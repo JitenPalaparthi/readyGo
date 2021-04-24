@@ -57,7 +57,7 @@ func New(file *string, scaler scaler.Map, implementer Implementer) (tg *Generate
 
 	ext := filepath.Ext(*file)
 	if ext != ".json" && ext != ".yaml" && ext != ".yml" {
-		return nil, errors.New("Only json | yaml | yml files are allowed ")
+		return nil, errors.New("only json | yaml | yml files are allowed ")
 	}
 	cFile, err := ioutil.ReadFile(*file)
 	if err != nil {
@@ -199,39 +199,12 @@ func (tg *Generate) CreateAll() (err error) {
 			mhandler := make(map[string]interface{})
 			mhandler["Project"] = tg.Project
 			mhandler["config"] = tg
-			for _, v := range tg.Models {
-				mhandler["Model"] = v
-				dst := filepath.Join(tg.Project, opsData.Dst)
-				tg.Output <- "generating template based file :" + dst
-				err = os.MkdirAll(dst, 0755)
-				if err != nil {
-					errRm := tg.RmDir()
-					if errRm != nil {
-						return errors.New("1." + err.Error() + ".2." + errRm.Error())
-					}
-					return err
-				}
-				// If there is any extension in the opsData that means file to be created with the given extension. Otherwise create a default one with .go
-				if opsData.Ext == "" {
-					dst = path.Join(tg.Project, opsData.Dst, strings.ToLower(v.Name)+".go")
-				} else {
-					// If any extension starts with . add the extension as it is.Otherwise add . as a prefix to the opsData.Ext
-					if string(strings.Trim(opsData.Ext, " ")[0]) == "." {
-						dst = path.Join(tg.Project, opsData.Dst, strings.ToLower(v.Name)+opsData.Ext)
-					} else {
-						dst = path.Join(tg.Project, opsData.Dst, strings.ToLower(v.Name)+"."+opsData.Ext)
-					}
-				}
-				content, err := tg.Mapping.Reader.Read(opsData.Src)
-				if err != nil {
-					errRm := tg.RmDir()
-					if errRm != nil {
-						return errors.New("1." + err.Error() + ".2." + errRm.Error())
-					}
-					return err
-				}
-				if content != "" {
-					err := tg.WriteTmplToFile(dst, content, mhandler)
+			if opsData.GenForType == "both" {
+				for _, v := range tg.Models {
+					mhandler["Model"] = v
+					dst := filepath.Join(tg.Project, opsData.Dst)
+					tg.Output <- "generating template based file :" + dst
+					err = os.MkdirAll(dst, 0755)
 					if err != nil {
 						errRm := tg.RmDir()
 						if errRm != nil {
@@ -239,7 +212,128 @@ func (tg *Generate) CreateAll() (err error) {
 						}
 						return err
 					}
-					tg.Output <- "the following templated based file has been generated :" + dst
+					// If there is any extension in the opsData that means file to be created with the given extension. Otherwise create a default one with .go
+					if opsData.Ext == "" {
+						dst = path.Join(tg.Project, opsData.Dst, strings.ToLower(v.Name)+".go")
+					} else {
+						// If any extension starts with . add the extension as it is.Otherwise add . as a prefix to the opsData.Ext
+						if string(strings.Trim(opsData.Ext, " ")[0]) == "." {
+							dst = path.Join(tg.Project, opsData.Dst, strings.ToLower(v.Name)+opsData.Ext)
+						} else {
+							dst = path.Join(tg.Project, opsData.Dst, strings.ToLower(v.Name)+"."+opsData.Ext)
+						}
+					}
+					content, err := tg.Mapping.Reader.Read(opsData.Src)
+					if err != nil {
+						errRm := tg.RmDir()
+						if errRm != nil {
+							return errors.New("1." + err.Error() + ".2." + errRm.Error())
+						}
+						return err
+					}
+					if content != "" {
+						err := tg.WriteTmplToFile(dst, content, mhandler)
+						if err != nil {
+							errRm := tg.RmDir()
+							if errRm != nil {
+								return errors.New("1." + err.Error() + ".2." + errRm.Error())
+							}
+							return err
+						}
+						tg.Output <- "the following templated based file has been generated :" + dst
+					}
+				}
+			} else if opsData.GenForType == "main" {
+				for _, v := range tg.Models {
+					if v.Type == "main" {
+						mhandler["Model"] = v
+						dst := filepath.Join(tg.Project, opsData.Dst)
+						tg.Output <- "generating template based file :" + dst
+						err = os.MkdirAll(dst, 0755)
+						if err != nil {
+							errRm := tg.RmDir()
+							if errRm != nil {
+								return errors.New("1." + err.Error() + ".2." + errRm.Error())
+							}
+							return err
+						}
+						// If there is any extension in the opsData that means file to be created with the given extension. Otherwise create a default one with .go
+						if opsData.Ext == "" {
+							dst = path.Join(tg.Project, opsData.Dst, strings.ToLower(v.Name)+".go")
+						} else {
+							// If any extension starts with . add the extension as it is.Otherwise add . as a prefix to the opsData.Ext
+							if string(strings.Trim(opsData.Ext, " ")[0]) == "." {
+								dst = path.Join(tg.Project, opsData.Dst, strings.ToLower(v.Name)+opsData.Ext)
+							} else {
+								dst = path.Join(tg.Project, opsData.Dst, strings.ToLower(v.Name)+"."+opsData.Ext)
+							}
+						}
+						content, err := tg.Mapping.Reader.Read(opsData.Src)
+						if err != nil {
+							errRm := tg.RmDir()
+							if errRm != nil {
+								return errors.New("1." + err.Error() + ".2." + errRm.Error())
+							}
+							return err
+						}
+						if content != "" {
+							err := tg.WriteTmplToFile(dst, content, mhandler)
+							if err != nil {
+								errRm := tg.RmDir()
+								if errRm != nil {
+									return errors.New("1." + err.Error() + ".2." + errRm.Error())
+								}
+								return err
+							}
+							tg.Output <- "the following templated based file has been generated :" + dst
+						}
+					}
+				}
+			} else if opsData.GenForType == "sub" {
+				for _, v := range tg.Models {
+					if v.Type == "sub" {
+						mhandler["Model"] = v
+						dst := filepath.Join(tg.Project, opsData.Dst)
+						tg.Output <- "generating template based file :" + dst
+						err = os.MkdirAll(dst, 0755)
+						if err != nil {
+							errRm := tg.RmDir()
+							if errRm != nil {
+								return errors.New("1." + err.Error() + ".2." + errRm.Error())
+							}
+							return err
+						}
+						// If there is any extension in the opsData that means file to be created with the given extension. Otherwise create a default one with .go
+						if opsData.Ext == "" {
+							dst = path.Join(tg.Project, opsData.Dst, strings.ToLower(v.Name)+".go")
+						} else {
+							// If any extension starts with . add the extension as it is.Otherwise add . as a prefix to the opsData.Ext
+							if string(strings.Trim(opsData.Ext, " ")[0]) == "." {
+								dst = path.Join(tg.Project, opsData.Dst, strings.ToLower(v.Name)+opsData.Ext)
+							} else {
+								dst = path.Join(tg.Project, opsData.Dst, strings.ToLower(v.Name)+"."+opsData.Ext)
+							}
+						}
+						content, err := tg.Mapping.Reader.Read(opsData.Src)
+						if err != nil {
+							errRm := tg.RmDir()
+							if errRm != nil {
+								return errors.New("1." + err.Error() + ".2." + errRm.Error())
+							}
+							return err
+						}
+						if content != "" {
+							err := tg.WriteTmplToFile(dst, content, mhandler)
+							if err != nil {
+								errRm := tg.RmDir()
+								if errRm != nil {
+									return errors.New("1." + err.Error() + ".2." + errRm.Error())
+								}
+								return err
+							}
+							tg.Output <- "the following templated based file has been generated :" + dst
+						}
+					}
 				}
 			}
 

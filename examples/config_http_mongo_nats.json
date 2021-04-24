@@ -21,6 +21,7 @@
   "models": [
     {
       "name": "person",
+      "type":"main",
       "messagingModelSpec": {
         "messageRespondType": "publish",
         "topic": "person_topic"
@@ -65,6 +66,7 @@
     },
     {
       "name": "Address",
+      "type":"sub",
       "fields": [
         {
           "name": "addressline",

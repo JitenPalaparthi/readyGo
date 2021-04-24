@@ -62,6 +62,7 @@ glog.Info("Application {{$.config.Project}} has started")
 	})
 
      {{ range $.config.Models }}
+	 {{- if eq .Type "main" }}
      {{.Name | ToLower}} := new(handlers.{{.Name}})
 	 {{.Name | ToLower}}.I{{.Name}} = &database.{{.Name}}DB{DB: session}
 	 {{- if .MessagingModelSpec.MessageRespondType}}
@@ -77,6 +78,7 @@ glog.Info("Application {{$.config.Project}} has started")
 	 {{.Name | ToLower}}Group.GET("/getAll/:skip/:limit", {{.Name | ToLower}}.GetAll{{.Name}}s())
 	 {{.Name | ToLower}}Group.GET("/getAllBy/:skip/:limit", {{.Name | ToLower}}.GetAll{{.Name}}sBy())
     }
+	{{- end}}
      {{end}}
     router.Run(":{{$.config.APISpec.Port}}")
 

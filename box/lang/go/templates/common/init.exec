@@ -29,3 +29,5 @@ cd {{$.config.Project}}
  go mod init {{$.config.Project}}
 
  go mod tidy
+
+ go build ./...
