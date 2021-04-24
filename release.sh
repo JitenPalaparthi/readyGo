@@ -51,4 +51,5 @@ echo "One or more changes are uncomitted;commit or stash them and try again"
 fi
 fi
 
+ # git ls-remote --tags --refs --sort="v:refname" git://github.com/jitenpalaparthi/readygo.git | tail -n1 | sed 's/.*\///'
 
