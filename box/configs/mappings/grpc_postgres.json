@@ -2,88 +2,105 @@
     "data":[{
          "opType": "directories",
          "src": "models",
-         "dst": ""
+         "dst": "",
+         "genForType":""
      },
      {
          "opType": "directories",
          "src": "interfaces",
-         "dst": ""
+         "dst": "",
+         "genForType":""
      },
      {
          "opType": "directories", 
          "src": "database",
-         "dst": ""
+         "dst": "",
+         "genForType":""
      },
      {
          "opType": "directories",
          "src": "handlers",
-         "dst": ""
+         "dst": "",
+         "genForType":""
      },
      {
          "opType": "directories",
          "src": "protos",
-         "dst": ""
+         "dst": "",
+         "genForType":""
      },
      {
         "opType": "directories",
         "src": "scripts",
-        "dst": ""
+        "dst": "",
+        "genForType":""
     },
      {
         "opType": "static-files",
         "src": "lang/go/static/common/databases/sql/postgres/database.static",
-        "dst": "database/database.go"
+        "dst": "database/database.go",
+        "genForType":""
     },
      {
          "opType": "static-files",
          "src": "lang/go/static/http/helper/helper.static",
-         "dst": "helper/helper.go"
+         "dst": "helper/helper.go",
+         "genForType":""
      },
      {
          "opType": "multiple-file-templates",
          "src": "lang/go/templates/common/models",
-         "dst": "models"
+         "dst": "models",
+         "genForType":"both"
      },
      {
          "opType": "multiple-file-templates",
          "src": "lang/go/templates/common/interfaces",
-         "dst": "interfaces"
+         "dst": "interfaces",
+         "genForType":"main"
      },
      {
          "opType": "multiple-file-templates",
          "src": "lang/go/templates/common/database/sql/db",
-         "dst": "database"
+         "dst": "database",
+         "genForType":"main"
      },
      {
          "opType": "multiple-file-templates",
          "src": "lang/go/templates/grpc/handlers",
-         "dst": "handlers"
+         "dst": "handlers",
+         "genForType":"main"
      },
       {
          "opType": "multiple-file-templates",
          "src": "lang/go/templates/grpc/protofile",
          "dst": "protos",
-         "ext":"proto"
+         "ext":"proto",
+         "genForType":"both"
      },
      {
          "opType": "single-file-templates",
          "src": "lang/go/templates/grpc/main",
-         "dst": "main.go"
+         "dst": "main.go",
+         "genForType":""
      },
      {
          "opType": "single-file-templates",
          "src": "lang/go/templates/common/docker-compose",
-         "dst": "docker-compose.yaml"
+         "dst": "docker-compose.yaml",
+         "genForType":""
      },
      {
          "opType": "single-file-templates",
          "src": "lang/go/templates/common/Dockerfile",
-         "dst": "Dockerfile"
+         "dst": "Dockerfile",
+         "genForType":""
      },
      {
          "opType": "exec",
          "src": "lang/go/templates/common/init.exec",
-         "dst": "scripts/init.sh"
+         "dst": "scripts/init.sh",
+         "genForType":""
      }
  ]
  }
