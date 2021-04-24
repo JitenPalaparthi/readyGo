@@ -57,6 +57,9 @@ glog.Info("Application {{$.config.Project}} has started")
 	gin.ForceConsoleColor()
 
 	router := gin.Default()
+		router.GET("/ping", func(c *gin.Context) {
+		c.String(200, "pong")
+	})
 
      {{ range $.config.Models }}
      {{.Name | ToLower}} := new(handlers.{{.Name}})
