@@ -12,8 +12,8 @@ func init() {
 
 var versionCmd = &cobra.Command{
 	Use:   "version",
-	Short: "readyGo v0.1.3",
-	Long: `readyGo v0.1.3.Currently in Active Development\n grpc Supported versions:
+	Short: "readyGo v0.1.4",
+	Long: `readyGo v0.1.4.Currently in Active Development\n grpc Supported versions:
 	 	\nprotoc-gen-go v1.25.0
 	 	\nprotoc        v3.14.0`,
 	Run: func(cmd *cobra.Command, args []string) {
