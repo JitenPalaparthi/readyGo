@@ -511,30 +511,29 @@ func ExecuteCommand(filename string) (string, error) {
 
 // Execute executes given shell files
 func (tg *Generate) Execute() (err error) {
-	if helper.IsWindows() {
-		return errors.New("exec feature works only for unix based OS")
-	}
-	if tg == nil {
-		return ErrInvalidTemlateGenerator
-	}
-	if tg.Project == "" {
-		return ErrInvalidRoot
-	}
-	for _, opsData := range tg.Mapping.OpsData {
-		switch opsData.OpType {
-		case "exec":
-			// Todo for opsData.Ext if there is an extension
-			tg.Output <- "executing the following file:" + opsData.Dst
-			mhandler := make(map[string]interface{})
-			mhandler["config"] = tg
-			dst := path.Join(tg.Project, opsData.Dst)
-			output, err := ExecuteCommand(dst)
-			if err != nil {
-				return err
+	if !helper.IsWindows() {
+		if tg == nil {
+			return ErrInvalidTemlateGenerator
+		}
+		if tg.Project == "" {
+			return ErrInvalidRoot
+		}
+		for _, opsData := range tg.Mapping.OpsData {
+			switch opsData.OpType {
+			case "exec":
+				// Todo for opsData.Ext if there is an extension
+				tg.Output <- "executing the following file:" + opsData.Dst
+				mhandler := make(map[string]interface{})
+				mhandler["config"] = tg
+				dst := path.Join(tg.Project, opsData.Dst)
+				output, err := ExecuteCommand(dst)
+				if err != nil {
+					return err
+				}
+				tg.Output <- "the following file has been executed:" + opsData.Dst
+				tg.Output <- output // Sending output to the channel
+			default:
 			}
-			tg.Output <- "the following file has been executed:" + opsData.Dst
-			tg.Output <- output // Sending output to the channel
-		default:
 		}
 	}
 	return nil
