@@ -1,4 +1,4 @@
-package scaler
+package scalar
 
 import (
 	"encoding/json"
@@ -15,25 +15,25 @@ type Reader interface {
 	Read(string) (string, error)
 }
 
-// Scaler is to define types in the system
-type Scaler struct {
+// Scalar is to define types in the system
+type Scalar struct {
 	GoType   string
 	GrpcType string
 }
 
-// Map is to hold key and value as &Scaler types
-type Map map[string]*Scaler
+// Map is to hold key and value as &Scalar types
+type Map map[string]*Scalar
 
 // New creates a new ScalerType
 func New(reader Reader, file string) (Map, error) {
 	if reader == nil {
 		return nil, ErrReaderNotProvided
 	}
-	content, err := reader.Read(file) // Read the scaler config file
+	content, err := reader.Read(file) // Read the scalar config file
 	if err != nil {
 		return nil, err
 	}
-	scalerType := make(map[string]*Scaler)
+	scalerType := make(map[string]*Scalar)
 	err = json.Unmarshal([]byte(content), &scalerType)
 	if err != nil {
 		return nil, err
@@ -41,8 +41,8 @@ func New(reader Reader, file string) (Map, error) {
 	return Map(scalerType), err
 }
 
-// GetScaler is to fetch Scaler type from the map
-func (m Map) GetScaler(configType string) *Scaler {
+// GetScalar is to fetch Scalar type from the map
+func (m Map) GetScalar(configType string) *Scalar {
 	value, ok := m[configType]
 	if ok {
 		return value

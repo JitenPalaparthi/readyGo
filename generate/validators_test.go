@@ -3,7 +3,7 @@ package generate
 import (
 	"readyGo/boxops"
 	"readyGo/lang/implement"
-	"readyGo/scaler"
+	"readyGo/scalar"
 	"testing"
 )
 
@@ -29,8 +29,8 @@ func LoadGen() *Generate {
 		},
 	}
 	ops := boxops.New("../box")
-	scaler, _ := scaler.New(ops, "configs/scalers.json")
-	gen.Scalers = scaler
+	scalar, _ := scalar.New(ops, "configs/scalars.json")
+	gen.Scalars = scalar
 	imlementer := implement.New()
 	gen.Implementer = imlementer
 	return gen

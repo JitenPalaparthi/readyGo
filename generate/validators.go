@@ -103,7 +103,7 @@ func (tg *Generate) Validate() (err error) {
 		if tg.DatabaseSpec.Name == "mongo" && m.Type == "main" {
 			_, ok := fieldMap["id"]
 			if !ok {
-				id := Field{Name: "ID", Type: "string", Category: "scaler"}
+				id := Field{Name: "ID", Type: "string", Category: "scalar"}
 				tg.Models[i].Fields = append(tg.Models[i].Fields, id)
 			}
 			//	if ok{
@@ -113,7 +113,7 @@ func (tg *Generate) Validate() (err error) {
 		if tg.DatabaseSpec.Kind == "sql" && m.Type == "main" {
 			_, ok := fieldMap["id"]
 			if !ok {
-				id := Field{Name: "ID", Type: "int", Category: "scaler"}
+				id := Field{Name: "ID", Type: "int", Category: "scalar"}
 				tg.Models[i].Fields = append(tg.Models[i].Fields, id)
 			}
 			//	if ok{
@@ -125,12 +125,12 @@ func (tg *Generate) Validate() (err error) {
 	return err
 }
 
-// SetFieldCategory each field is set into certain category. They are scaler, model , function,default value etc..
+// SetFieldCategory each field is set into certain category. They are scalar, model , function,default value etc..
 func (tg *Generate) SetFieldCategory() error {
 	for mi := 0; mi < len(tg.Models); mi++ {
 		for i, f := range tg.Models[mi].Fields {
-			if tg.Scalers.IsValidreadyGotype(f.Type) {
-				tg.Models[mi].Fields[i].Category = "scaler" // all readyGo types are scaler types
+			if tg.Scalars.IsValidreadyGotype(f.Type) {
+				tg.Models[mi].Fields[i].Category = "scalar" // all readyGo types are scalar types
 			} else if strings.Contains(f.Type, "global.") {
 				tg.Models[mi].Fields[i].Definition = f.Type
 				tg.Models[mi].Fields[i].Type = tg.Implementer.GetFuncReturnType(f.Type) // Todo fetch this from reading global. functions return type
@@ -177,7 +177,7 @@ func (tg *Generate) ValidateTypes() error {
 
 			// Remove function IsValidreadyGotype() overhead. It's not needed for a simple map lookup.
 			// Function names should have correct capitalisation. I would have renamed to IsReadyGoType() but the function isn't needed.
-			if _, ok := tg.Scalers[tg.Models[m].Fields[f].Type]; ok {
+			if _, ok := tg.Scalars[tg.Models[m].Fields[f].Type]; ok {
 				continue
 			}
 

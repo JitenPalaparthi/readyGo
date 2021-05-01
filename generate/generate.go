@@ -12,7 +12,7 @@ import (
 	"path/filepath"
 	"readyGo/boxops"
 	"readyGo/mapping"
-	"readyGo/scaler"
+	"readyGo/scalar"
 	"regexp"
 	"runtime"
 	"strconv"
@@ -45,7 +45,7 @@ var (
 )
 
 // New is to generate a new generater.
-func New(file *string, scaler scaler.Map, implementer Implementer) (tg *Generate, err error) {
+func New(file *string, scalar scalar.Map, implementer Implementer) (tg *Generate, err error) {
 
 	if file == nil || *file == "" {
 		return nil, ErrNoFile
@@ -92,7 +92,7 @@ func New(file *string, scaler scaler.Map, implementer Implementer) (tg *Generate
 
 	tg.Mapping = mapping
 
-	tg.Scalers = scaler
+	tg.Scalars = scalar
 
 	tg.Implementer = implementer
 
@@ -460,13 +460,13 @@ func (tg *Generate) WriteTmplToFile(filePath string, tmpl string, data interface
 			return "0"
 		}}).Funcs(template.FuncMap{
 		"GoType": func(tpe string) string {
-			if scler := tg.Scalers.GetScaler(tpe); scler != nil {
+			if scler := tg.Scalars.GetScalar(tpe); scler != nil {
 				return scler.GoType
 			}
 			return ""
 		}}).Funcs(template.FuncMap{
 		"GrpcType": func(tpe string) string {
-			if scler := tg.Scalers.GetScaler(tpe); scler != nil {
+			if scler := tg.Scalars.GetScalar(tpe); scler != nil {
 				return scler.GrpcType
 			}
 			return ""

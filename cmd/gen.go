@@ -9,7 +9,7 @@ import (
 	"readyGo/boxops"
 	"readyGo/generate"
 	"readyGo/lang/implement"
-	"readyGo/scaler"
+	"readyGo/scalar"
 	"strings"
 	"text/tabwriter"
 
@@ -36,7 +36,7 @@ var genCmd = &cobra.Command{
 		//done := make(chan bool)
 		ops := boxops.New("../box")
 
-		scaler, err := scaler.New(ops, "configs/scalers.json")
+		scalar, err := scalar.New(ops, "configs/scalars.json")
 
 		if err != nil {
 			log.Fatal(Fata(err))
@@ -48,7 +48,7 @@ var genCmd = &cobra.Command{
 
 		imlementer := implement.New()
 
-		tg, err := generate.New(&genFile, scaler, imlementer)
+		tg, err := generate.New(&genFile, scalar, imlementer)
 		if err != nil {
 			log.Fatal(Fata(err))
 		}

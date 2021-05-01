@@ -13,7 +13,7 @@ option go_package = "{{.Project}}/protos";
 {{ $Count:="0"}}
 	message {{.Model.Name}}Type  {
 	{{- range .Model.Fields }}
-	{{ if eq .Category "scaler"}}{{ .Type | GrpcType}} {{ .Name }} = {{$Count | Counter}};{{- end}}
+	{{ if eq .Category "scalar"}}{{ .Type | GrpcType}} {{ .Name }} = {{$Count | Counter}};{{- end}}
 	{{ if eq .Category "model"}}{{ .Type}}Type {{ .Name }} = {{$Count | Counter}};{{- end}}
 	{{ if eq .Category "array model"}}repeated {{ .Type | GrpcArrayModel}}Type {{ .Name }} = {{$Count | Counter}};{{- end}}
     {{- $Count = $Count | Counter}}
