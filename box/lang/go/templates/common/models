@@ -19,7 +19,7 @@ import (
 // {{ .Model.Name }} type contains all releated fields
 	type {{ .Model.Name }} struct {
 	{{- range .Model.Fields }}
-	{{ .Name }} {{ if eq .Category "scaler"}}{{ .Type | GoType}}{{else}}{{.Type}}{{- end}} `json:"{{.Name | ToLower}}"  {{ if eq $.config.DatabaseSpec.Name "mongo" }}{{ if eq .Name "ID"}}bson:"_id,omitempty"{{else}}bson:"{{.Name | ToLower}}"{{- end}}{{- end}}`
+	{{ .Name }} {{ if eq .Category "scalar"}}{{ .Type | GoType}}{{else}}{{.Type}}{{- end}} `json:"{{.Name | ToLower}}"  {{ if eq $.config.DatabaseSpec.Name "mongo" }}{{ if eq .Name "ID"}}bson:"_id,omitempty"{{else}}bson:"{{.Name | ToLower}}"{{- end}}{{- end}}`
 	{{- end}}
 	}
 {{ $ModelName := .Model.Name }}

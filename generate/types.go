@@ -2,7 +2,7 @@ package generate
 
 import (
 	"readyGo/mapping"
-	"readyGo/scaler"
+	"readyGo/scalar"
 )
 
 // Implementer is an interface used to implement validation and lang specific logic
@@ -24,7 +24,7 @@ type Generate struct {
 	MessagingSpec MessagingSpec `json:"messagingSpec" yaml:"messagingSpec"` // Messaging related information. kind is nsq | nats | kafka
 	Models        []Model       `json:"models" yaml:"models"`
 	Mapping       *mapping.Mapping
-	Scalers       scaler.Map
+	Scalars       scalar.Map
 	Implementer   Implementer // interface to use lang specific implementation logic
 	Plugins       Plugin      `json:"plugins" yaml:"Plugins"`
 	Output        chan string //Output is a channel that is used to write all output. The caller can utilize to print it
@@ -48,7 +48,7 @@ type MessagingModelSpec struct {
 // Field is to hold fields in a model that comes from configuration file
 type Field struct {
 	Name        string `json:"name" yaml:"name"`               // Name of the field. Should be valid Go identifier
-	Type        string `json:"type" yaml:"type"`               // type should be either readyGo specified scaler type or a defined model
+	Type        string `json:"type" yaml:"type"`               // type should be either readyGo specified scalar type or a defined model
 	Definition  string `json:"definition" yaml:"definition"`   // definition is to define function.Dont want to give more fields to user to set so type should be auto matially taken when type is given as function
 	IsKey       bool   `json:"isKey" yaml:"isKey"`             // If it is a key field . Key fields generates different methods to check the data in the database is unique or not
 	ValidateExp string `json:"validateExp" yaml:"validateExp"` // Regular expression that would be used for field level validations in models

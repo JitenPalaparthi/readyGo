@@ -5,7 +5,7 @@ import (
 	"readyGo/boxops"
 	"readyGo/generate"
 	"readyGo/lang/implement"
-	"readyGo/scaler"
+	"readyGo/scalar"
 
 	"github.com/spf13/cobra"
 )
@@ -25,7 +25,7 @@ var validateCmd = &cobra.Command{
 
 		ops := boxops.New("../box")
 
-		scaler, err := scaler.New(ops, "configs/scalers.json")
+		scalar, err := scalar.New(ops, "configs/scalars.json")
 
 		if err != nil {
 			log.Fatal(Fata(err))
@@ -37,7 +37,7 @@ var validateCmd = &cobra.Command{
 
 		imlementer := implement.New()
 
-		_, err = generate.New(&applyFileValidate, scaler, imlementer)
+		_, err = generate.New(&applyFileValidate, scalar, imlementer)
 		if err != nil {
 			log.Println(Warn("There are errors.Validation failed"))
 			log.Println(Fata(err))
