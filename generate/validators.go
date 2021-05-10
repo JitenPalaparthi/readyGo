@@ -103,7 +103,7 @@ func (tg *Generate) Validate() (err error) {
 		if tg.DatabaseSpec.Name == "mongo" && m.Type == "main" {
 			_, ok := fieldMap["id"]
 			if !ok {
-				id := Field{Name: "ID", Type: "string", Category: "scalar"}
+				id := Field{Name: "ID", Type: "primitive.ObjectID", Category: "scalar"}
 				tg.Models[i].Fields = append(tg.Models[i].Fields, id)
 			}
 			//	if ok{
