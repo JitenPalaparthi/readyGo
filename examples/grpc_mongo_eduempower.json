@@ -79,33 +79,7 @@
                     "validateExp": "^[a-zA-Z0-9.!#$%&'*+\\\\/=?^_\\\\`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$"
                 }
             ]
-        },
-        {
-            "name": "address",
-            "type":"sub",
-            "fields": [
-                {
-                    "name": "addressline",
-                    "type": "string"
-                },
-                {
-                    "name": "street",
-                    "type": "string"
-                },
-                {
-                    "name": "state",
-                    "type": "string"
-                },
-                {
-                    "name": "country",
-                    "type": "string"
-                },
-                {
-                    "name": "zip",
-                    "type": "string"
-                }
-            ]
-        },
+        },   
         {
             "name": "individual",
             "type":"main",
@@ -132,11 +106,11 @@
                 },
                 {
                     "name": "status",
-                    "type": "string"
+                    "type": "global.GetDefaultStr(`active`)"
                 },
                 {
-                    "name": "lastUpdated",
-                    "type": "string"
+                    "name": "lastModified",
+                    "type": "global.GetCurrentDateTimeInStr()"
                 }
             ]
         },
@@ -146,7 +120,7 @@
             "fields": [
                 {
                     "name": "user",
-                    "type": "[]UserDetails"
+                    "type": "UserDetails"
                 },
                 {
                     "name": "name",
@@ -162,7 +136,23 @@
                 },
                 {
                     "name": "address",
-                    "type": "Address"
+                    "type": "string"
+                },
+                {
+                    "name": "city",
+                    "type": "string"
+                },
+                {
+                    "name": "state",
+                    "type": "string"
+                },
+                {
+                    "name": "country",
+                    "type": "string"
+                },
+                {
+                    "name": "pincode",
+                    "type": "string"
                 },
                 {
                     "name": "sociallMedia",
@@ -170,21 +160,21 @@
                 },
                 {
                     "name": "status",
-                    "type": "string"
+                    "type": "global.GetDefaultStr(`active`)"
                 },
                 {
-                    "name": "lastUpdated",
-                    "type": "string"
+                    "name": "lastModified",
+                    "type": "global.GetCurrentDateTimeInStr()"
                 }
             ]
         },
         
         {
-            "name": "fund",
+            "name": "fundRequest",
             "type":"main",
             "fields": [
                 {
-                    "name": "donorEmail",
+                    "name": "beneficiarieID",
                     "type": "string"
                 },
                 {

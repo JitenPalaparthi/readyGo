@@ -13,13 +13,18 @@ import (
 	"errors"
 	"regexp"
 	{{- end}}
+	{{- if eq $.config.DatabaseSpec.Name "mongo" }}
+	{{- if eq .Model.Type "main"}}
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	{{- end}}
+	{{- end}}
 	"bytes"
 	"encoding/gob"
 )
 // {{ .Model.Name }} type contains all releated fields
 	type {{ .Model.Name }} struct {
 	{{- range .Model.Fields }}
-	{{ .Name }} {{ if eq .Category "scalar"}}{{ .Type | GoType}}{{else}}{{.Type}}{{- end}} `json:"{{.Name | ToLower}}"  {{ if eq $.config.DatabaseSpec.Name "mongo" }}{{ if eq .Name "ID"}}bson:"_id,omitempty"{{else}}bson:"{{.Name | ToLower}}"{{- end}}{{- end}}`
+	{{ .Name }} {{ if eq .Category "scalar"}}{{ .Type | GoType}}{{else}}{{.Type}}{{- end}} `json:"{{.Name | ToLower}}"  {{ if eq $.config.DatabaseSpec.Name "mongo" }}{{ if eq .Name "ID"}}bson:"_id,omitempty" mapstructure:"_id"{{else}}bson:"{{.Name | ToLower}}"{{- end}}{{- end}}`
 	{{- end}}
 	}
 {{ $ModelName := .Model.Name }}

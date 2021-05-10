@@ -31,6 +31,10 @@
         "goType": "string",
         "grpcType": "string"
     },
+    "primitive.ObjectID":{
+        "goType": "primitive.ObjectID",
+        "grpcType": "string"
+    },
     "[]int": {
         "goType": "[]int",
         "grpcType": "repeated int32"
