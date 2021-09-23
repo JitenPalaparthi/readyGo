@@ -1,4 +1,4 @@
-FROM golang:latest
+FROM golang:1.17.0-bullseye
 
 LABEL maintainer="readyGo team. JitenP@Outlook.Com"
 
