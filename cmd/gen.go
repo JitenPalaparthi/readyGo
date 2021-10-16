@@ -6,7 +6,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	"readyGo/boxops"
+	"readyGo/box"
 	"readyGo/generate"
 	"readyGo/lang/implement"
 	"readyGo/scalar"
@@ -34,8 +34,7 @@ var genCmd = &cobra.Command{
 	Long:  `gen generates a project  provided by the  configuration file .User must supply a configuration file`,
 	Run: func(cmd *cobra.Command, args []string) {
 		//done := make(chan bool)
-		ops := boxops.New("../box")
-
+		ops := &box.Box{}
 		scalar, err := scalar.New(ops, "configs/scalars.json")
 
 		if err != nil {

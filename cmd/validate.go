@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"log"
-	"readyGo/boxops"
+	"readyGo/box"
 	"readyGo/generate"
 	"readyGo/lang/implement"
 	"readyGo/scalar"
@@ -23,8 +23,8 @@ var validateCmd = &cobra.Command{
 	Long:  `validate validates a configuration file for the project generation.User must supply a configuration file`,
 	Run: func(cmd *cobra.Command, args []string) {
 
-		ops := boxops.New("../box")
-
+		//ops := boxops.New("../box")
+		ops := &box.Box{}
 		scalar, err := scalar.New(ops, "configs/scalars.json")
 
 		if err != nil {

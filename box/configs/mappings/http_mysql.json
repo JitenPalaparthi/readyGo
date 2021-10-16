@@ -80,7 +80,7 @@
         },
         {
             "opType": "single-file-templates",
-            "src": "lang/go/emplates/common/docker-compose",
+            "src": "lang/go/templates/common/docker-compose",
             "dst": "docker-compose.yaml",
             "genForType":""
         },
