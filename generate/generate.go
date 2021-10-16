@@ -10,7 +10,7 @@ import (
 	"os/exec"
 	"path"
 	"path/filepath"
-	"readyGo/boxops"
+	"readyGo/box"
 	"readyGo/mapping"
 	"readyGo/scalar"
 	"regexp"
@@ -84,7 +84,8 @@ func New(file *string, scalar scalar.Map, implementer Implementer) (tg *Generate
 		projectType = projectType + "_" + tg.MessagingSpec.Name
 	}
 
-	ops := boxops.New("../box")
+	//ops := boxops.New("../box")
+	ops := &box.Box{}
 	mapping, err := mapping.New(ops, "configs/mappings/"+projectType+".json", projectType)
 	if err != nil {
 		log.Fatal(err)

@@ -1,7 +1,7 @@
 package generate
 
 import (
-	"readyGo/boxops"
+	"readyGo/box"
 	"readyGo/lang/implement"
 	"readyGo/scalar"
 	"testing"
@@ -28,7 +28,7 @@ func LoadGen() *Generate {
 			{Name: "Person", Fields: []Field{{Type: "Contact", Name: "ContactInfo"}}},
 		},
 	}
-	ops := boxops.New("../box")
+	ops := &box.Box{}
 	scalar, _ := scalar.New(ops, "configs/scalars.json")
 	gen.Scalars = scalar
 	imlementer := implement.New()

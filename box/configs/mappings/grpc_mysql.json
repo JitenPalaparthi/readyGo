@@ -94,12 +94,12 @@
          "src": "lang/go/templates/common/Dockerfile",
          "dst": "Dockerfile",
          "genForType":""
-     },
+     } , 
      {
          "opType": "exec",
          "src": "lang/go/templates/common/init.exec",
          "dst": "scripts/init.sh",
          "genForType":""
-     }
+     }  
  ]
  }

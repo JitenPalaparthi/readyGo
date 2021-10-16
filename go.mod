@@ -1,17 +1,21 @@
 module readyGo
 
-go 1.15
+go 1.17
 
 require (
-	github.com/gin-gonic/gin v1.6.3
 	github.com/gobuffalo/packr v1.30.1
-	github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b
-	github.com/inancgumus/screen v0.0.0-20190314163918-06e984b86ed3
-	github.com/segmentio/kafka-go v0.4.8 // indirect
 	github.com/spf13/cobra v1.1.1
 	golang.org/x/lint v0.0.0-20200302205851-738671d3881b
-	google.golang.org/grpc v1.27.0
-	google.golang.org/grpc/cmd/protoc-gen-go-grpc v1.0.1 // indirect
-	google.golang.org/protobuf v1.25.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0
+)
+
+require (
+	github.com/gobuffalo/envy v1.7.0 // indirect
+	github.com/gobuffalo/packd v0.3.0 // indirect
+	github.com/inconshreveable/mousetrap v1.0.0 // indirect
+	github.com/joho/godotenv v1.3.0 // indirect
+	github.com/rogpeppe/go-internal v1.3.0 // indirect
+	github.com/spf13/pflag v1.0.5 // indirect
+	github.com/stretchr/testify v1.4.0 // indirect
+	golang.org/x/tools v0.0.0-20200130002326-2f3ba24bd6e7 // indirect
 )
