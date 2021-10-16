@@ -2,7 +2,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) 
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/JitenPalaparthi/readyGo?label=release&logo=release)
 
-<img src="https://github.com/JitenPalaparthi/readyGo/blob/master/assets/readyGoBlue.png" width=400>
+<img src="https://github.com/JitenPalaparthi/readyGo/blob/main/assets/readyGoBlue.png" width=400>
  
 *The phylosophy behind readyGo is "A Simple configuration should give a working project.".*
 
