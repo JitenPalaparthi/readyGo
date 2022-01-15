@@ -2,12 +2,12 @@ package cmd
 
 import (
 	"log"
+
+	"github.com/spf13/cobra"
 	"readyGo/box"
 	"readyGo/generate"
 	"readyGo/lang/implement"
 	"readyGo/scalar"
-
-	"github.com/spf13/cobra"
 )
 
 var applyFileValidate string

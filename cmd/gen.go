@@ -6,15 +6,15 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	"readyGo/box"
-	"readyGo/generate"
-	"readyGo/lang/implement"
-	"readyGo/scalar"
 	"strings"
 	"text/tabwriter"
 
 	"github.com/spf13/cobra"
 	"golang.org/x/lint"
+	"readyGo/box"
+	"readyGo/generate"
+	"readyGo/lang/implement"
+	"readyGo/scalar"
 )
 
 var genFile string
