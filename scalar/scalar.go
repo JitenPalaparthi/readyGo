@@ -29,16 +29,19 @@ func New(reader Reader, file string) (Map, error) {
 	if reader == nil {
 		return nil, ErrReaderNotProvided
 	}
+
 	content, err := reader.Read(file) // Read the scalar config file
 	if err != nil {
 		return nil, err
 	}
-	scalerType := make(map[string]*Scalar)
+
+	scalerType := make(Map)
 	err = json.Unmarshal([]byte(content), &scalerType)
 	if err != nil {
 		return nil, err
 	}
-	return Map(scalerType), err
+
+	return scalerType, err
 }
 
 // GetScalar is to fetch Scalar type from the map
@@ -50,8 +53,8 @@ func (m Map) GetScalar(configType string) *Scalar {
 	return nil
 }
 
-// IsValidreadyGotype is to check whether type is valid type or not
-func (m Map) IsValidreadyGotype(configType string) bool {
+// IsValidReadyGoType is to check whether type is valid type or not
+func (m Map) IsValidReadyGoType(configType string) bool {
 	_, ok := m[configType]
 	return ok
 }

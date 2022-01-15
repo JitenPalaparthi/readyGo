@@ -1,13 +1,12 @@
 package generate
 
 import (
+	"testing"
+
 	"readyGo/box"
 	"readyGo/lang/implement"
 	"readyGo/scalar"
-	"testing"
 )
-
-var ()
 
 // BenchmarkValidateTypes just to check as of now
 /*func BenchmarkValidateTypes(b *testing.B) {

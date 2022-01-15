@@ -24,9 +24,7 @@ var (
 
 // Color methods takes an argument and prints in given color
 func Color(colorString string) func(...interface{}) string {
-	sprint := func(args ...interface{}) string {
-		return fmt.Sprintf(colorString,
-			fmt.Sprint(args...))
+	return func(args ...interface{}) string {
+		return fmt.Sprintf(colorString, fmt.Sprint(args...))
 	}
-	return sprint
 }

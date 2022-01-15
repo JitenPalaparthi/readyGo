@@ -33,10 +33,7 @@ func (tg *Generate) IsValidIdentifier(fielden string) bool {
 
 	// This tests whether a pattern matches a string.
 	match, err := regexp.MatchString(`^[^\d\W]\w*$`, fielden)
-	if err != nil {
-		return false
-	}
-	return match
+	return match && err == nil
 }
 
 // ChangeIden is to change all identifiers based on
@@ -46,14 +43,14 @@ func (tg *Generate) ChangeIden() error {
 			return errors.New(m.Name + " is invalid identifier")
 		}
 		if string(m.Name[0]) == strings.ToLower(string(m.Name[0])) {
-			tg.Models[i].Name = strings.ToUpper(string(m.Name[0])) + string(m.Name[1:])
+			tg.Models[i].Name = strings.ToUpper(string(m.Name[0])) + m.Name[1:]
 		}
 		for j, f := range m.Fields {
 			if !tg.Implementer.IsValidIdentifier(f.Name) {
 				return errors.New(f.Name + " is invalid identifier")
 			}
 			if string(tg.Models[i].Fields[j].Name[0]) == strings.ToLower(string(tg.Models[i].Fields[j].Name[0])) {
-				tg.Models[i].Fields[j].Name = strings.ToUpper(string(tg.Models[i].Fields[j].Name[0])) + string(tg.Models[i].Fields[j].Name[1:])
+				tg.Models[i].Fields[j].Name = strings.ToUpper(string(tg.Models[i].Fields[j].Name[0])) + tg.Models[i].Fields[j].Name[1:]
 			}
 		}
 	}
@@ -93,7 +90,7 @@ func (tg *Generate) Validate() (err error) {
 		modelMap[strings.ToLower(m.Name)] = "noted"
 		fieldMap := make(map[string]string)
 		for _, f := range m.Fields {
-			_, ok := fieldMap[strings.ToLower(f.Name)]
+			_, ok = fieldMap[strings.ToLower(f.Name)]
 			if ok {
 				return errors.New(" Duplicate field names:" + f.Name)
 			}
@@ -101,7 +98,7 @@ func (tg *Generate) Validate() (err error) {
 
 		}
 		if tg.DatabaseSpec.Name == "mongo" && m.Type == "main" {
-			_, ok := fieldMap["id"]
+			_, ok = fieldMap["id"]
 			if !ok {
 				id := Field{Name: "ID", Type: "primitive.ObjectID", Category: "scalar"}
 				tg.Models[i].Fields = append(tg.Models[i].Fields, id)
@@ -111,7 +108,7 @@ func (tg *Generate) Validate() (err error) {
 			//	}
 		}
 		if tg.DatabaseSpec.Kind == "sql" && m.Type == "main" {
-			_, ok := fieldMap["id"]
+			_, ok = fieldMap["id"]
 			if !ok {
 				id := Field{Name: "ID", Type: "int", Category: "scalar"}
 				tg.Models[i].Fields = append(tg.Models[i].Fields, id)
@@ -129,7 +126,7 @@ func (tg *Generate) Validate() (err error) {
 func (tg *Generate) SetFieldCategory() error {
 	for mi := 0; mi < len(tg.Models); mi++ {
 		for i, f := range tg.Models[mi].Fields {
-			if tg.Scalars.IsValidreadyGotype(f.Type) {
+			if tg.Scalars.IsValidReadyGoType(f.Type) {
 				tg.Models[mi].Fields[i].Category = "scalar" // all readyGo types are scalar types
 			} else if strings.Contains(f.Type, "global.") {
 				tg.Models[mi].Fields[i].Definition = f.Type
@@ -175,7 +172,7 @@ func (tg *Generate) ValidateTypes() error {
 				continue
 			}
 
-			// Remove function IsValidreadyGotype() overhead. It's not needed for a simple map lookup.
+			// Remove function IsValidReadyGoType() overhead. It's not needed for a simple map lookup.
 			// Function names should have correct capitalisation. I would have renamed to IsReadyGoType() but the function isn't needed.
 			if _, ok := tg.Scalars[tg.Models[m].Fields[f].Type]; ok {
 				continue
