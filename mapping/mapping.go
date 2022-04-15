@@ -26,6 +26,7 @@ type Mapping struct {
 
 // OpsData contains what is the source and destination
 type OpsData struct {
+	Key        string `json:"key"`
 	OpType     string `json:"opType"`
 	Src        string `json:"src"`
 	Dst        string `json:"dst"`
