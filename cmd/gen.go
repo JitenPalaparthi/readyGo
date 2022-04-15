@@ -19,12 +19,12 @@ import (
 
 var genFile string
 var lintFiles bool
-var key string
+var fileType string
 
 func init() {
 
 	genCmd.Flags().StringVarP(&genFile, "filename", "f", "", "user has to privide the file.There is no default file.")
-	genCmd.Flags().StringVarP(&key, "key", "k", "", "user has to privide the key.There is no default key.")
+	genCmd.Flags().StringVarP(&fileType, "filetype", "t", "", "user has to privide the filetype.There is no default filetype.")
 	genCmd.Flags().BoolVarP(&lintFiles, "lint", "l", false, "lints all generated files and gives warnings and errors")
 
 	rootCmd.AddCommand(genCmd)
@@ -56,8 +56,8 @@ var genCmd = &cobra.Command{
 
 		go tg.WriteOutput(os.Stdout)
 
-		if key != "" {
-			err = tg.CreateBy(key)
+		if fileType != "" {
+			err = tg.CreateBy(fileType)
 			if err != nil {
 				log.Fatal(Fata(err))
 			}
