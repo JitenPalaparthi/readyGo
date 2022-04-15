@@ -19,10 +19,12 @@ import (
 
 var genFile string
 var lintFiles bool
+var fileType string
 
 func init() {
 
 	genCmd.Flags().StringVarP(&genFile, "filename", "f", "", "user has to privide the file.There is no default file.")
+	genCmd.Flags().StringVarP(&fileType, "filetype", "t", "", "user has to privide the filetype.There is no default filetype.")
 	genCmd.Flags().BoolVarP(&lintFiles, "lint", "l", false, "lints all generated files and gives warnings and errors")
 
 	rootCmd.AddCommand(genCmd)
@@ -54,24 +56,34 @@ var genCmd = &cobra.Command{
 
 		go tg.WriteOutput(os.Stdout)
 
-		err = tg.CreateAll()
-		if err != nil {
-			err1 := tg.RmDir()
-			if err1 != nil {
-				log.Println(Fata(err1))
+		if fileType != "" {
+			err = tg.CreateBy(fileType)
+			if err != nil {
+				log.Fatal(Fata(err))
 			}
-			log.Fatal(Fata(err))
-		}
-		err = tg.Execute()
-		if err != nil {
-			err1 := tg.RmDir()
-			if err1 != nil {
-				log.Println(Fata(err1))
+			ShowModelDetails(tg)
+		} else {
+			err = tg.CreateAll()
+			if err != nil {
+				err1 := tg.RmDir()
+				if err1 != nil {
+					log.Println(Fata(err1))
+				}
+				log.Fatal(Fata(err))
 			}
-			log.Fatal(Fata(err))
+			err = tg.Execute()
+			if err != nil {
+				err1 := tg.RmDir()
+				if err1 != nil {
+					log.Println(Fata(err1))
+				}
+				log.Fatal(Fata(err))
+			}
+			ShowModelDetails(tg)
+			DisplayInfo(tg.Kind + ":" + tg.DatabaseSpec.Name + ":" + tg.DatabaseSpec.Kind + ":" + tg.MessagingSpec.Name)
+
 		}
 
-		ShowModelDetails(tg)
 		if lintFiles {
 			err := filepath.Walk("./"+tg.Project,
 				func(path string, info os.FileInfo, err error) error {
@@ -90,7 +102,6 @@ var genCmd = &cobra.Command{
 			}
 
 		}
-		DisplayInfo(tg.Kind + ":" + tg.DatabaseSpec.Name + ":" + tg.DatabaseSpec.Kind + ":" + tg.MessagingSpec.Name)
 	},
 }
 
@@ -116,6 +127,9 @@ func lintFile(filename string, minConfidence float64) {
 
 // DisplayInfo is to display information regarding project
 func DisplayInfo(projectType string) {
+	if projectType == "key" {
+		return
+	}
 	fmt.Println(Info("Attention please"))
 	fmt.Println()
 	if strings.Contains(projectType, "http") || strings.Contains(projectType, "grpc") {

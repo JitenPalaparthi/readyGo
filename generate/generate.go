@@ -42,6 +42,8 @@ var (
 
 	// ErrInvalidRoot is to define error as invalid root directory
 	ErrInvalidRoot = errors.New("invalid root directory")
+
+	ErrInvalidKey = errors.New("invalid key or key not found")
 )
 
 // New is to generate a new generater.
@@ -86,7 +88,7 @@ func New(file *string, scalar scalar.Map, implementer Implementer) (tg *Generate
 
 	//ops := boxops.New("../box")
 	ops := &box.Box{}
-	mapping, err := mapping.New(ops, "configs/mappings/"+projectType+".json", projectType)
+	mapping, err := mapping.New(ops, "configs/mappings/go/"+projectType+".json", projectType)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -420,6 +422,153 @@ func (tg *Generate) CreateAll() (err error) {
 		}
 	}
 
+	return nil
+}
+
+// CreateBy key creates files based on the key
+func (tg *Generate) CreateBy(key string) (err error) {
+	found := false
+	if tg == nil {
+		return ErrInvalidTemlateGenerator
+	}
+	if tg.Project == "" {
+		return ErrInvalidRoot
+	}
+	dst := ""
+	curDir, err := os.Getwd()
+	if err != nil {
+		return errors.New(err.Error())
+	}
+	// Todo write more conditions here
+
+	for _, opsData := range tg.Mapping.OpsData {
+
+		if !strings.EqualFold(opsData.Key, key) {
+			continue
+		}
+		found = true
+		switch opsData.OpType {
+
+		case "multiple-file-templates":
+			mhandler := make(map[string]interface{})
+			mhandler["Project"] = tg.Project
+			mhandler["config"] = tg
+			if opsData.GenForType == "both" {
+				for _, v := range tg.Models {
+					mhandler["Model"] = v
+					// If there is any extension in the opsData that means file to be created with the given extension. Otherwise create a default one with .go
+					if opsData.Ext == "" {
+						dst = path.Join(curDir, strings.ToLower(v.Name)+".go")
+					} else {
+						// If any extension starts with . add the extension as it is.Otherwise add . as a prefix to the opsData.Ext
+						if string(strings.Trim(opsData.Ext, " ")[0]) == "." {
+							dst = path.Join(curDir, strings.ToLower(v.Name)+opsData.Ext)
+						} else {
+							dst = path.Join(curDir, strings.ToLower(v.Name)+"."+opsData.Ext)
+						}
+					}
+					content, err := tg.Mapping.Reader.Read(opsData.Src)
+					if err != nil {
+						return err
+					}
+					if content != "" {
+						err := tg.WriteTmplToFile(dst, content, mhandler)
+						if err != nil {
+							return err
+						}
+						tg.Output <- "the following templated based file has been generated :" + dst
+					}
+				}
+			} else if opsData.GenForType == "main" {
+				for _, v := range tg.Models {
+					if v.Type == "main" {
+						mhandler["Model"] = v
+
+						// If there is any extension in the opsData that means file to be created with the given extension. Otherwise create a default one with .go
+						if opsData.Ext == "" {
+							dst = path.Join(curDir, strings.ToLower(v.Name)+".go")
+						} else {
+							// If any extension starts with . add the extension as it is.Otherwise add . as a prefix to the opsData.Ext
+							if string(strings.Trim(opsData.Ext, " ")[0]) == "." {
+								dst = path.Join(curDir, strings.ToLower(v.Name)+opsData.Ext)
+							} else {
+								dst = path.Join(curDir, strings.ToLower(v.Name)+"."+opsData.Ext)
+							}
+						}
+						content, err := tg.Mapping.Reader.Read(opsData.Src)
+						if err != nil {
+							return err
+						}
+						if content != "" {
+							err := tg.WriteTmplToFile(dst, content, mhandler)
+							if err != nil {
+								return err
+							}
+							tg.Output <- "the following templated based file has been generated :" + dst
+						}
+					}
+				}
+			} else if opsData.GenForType == "sub" {
+				for _, v := range tg.Models {
+					if v.Type == "sub" {
+						mhandler["Model"] = v
+
+						// If there is any extension in the opsData that means file to be created with the given extension. Otherwise create a default one with .go
+						if opsData.Ext == "" {
+							dst = path.Join(curDir, strings.ToLower(v.Name)+".go")
+						} else {
+							// If any extension starts with . add the extension as it is.Otherwise add . as a prefix to the opsData.Ext
+							if string(strings.Trim(opsData.Ext, " ")[0]) == "." {
+								dst = path.Join(curDir, strings.ToLower(v.Name)+opsData.Ext)
+							} else {
+								dst = path.Join(curDir, strings.ToLower(v.Name)+"."+opsData.Ext)
+							}
+						}
+						content, err := tg.Mapping.Reader.Read(opsData.Src)
+						if err != nil {
+							return err
+						}
+						if content != "" {
+							err := tg.WriteTmplToFile(dst, content, mhandler)
+							if err != nil {
+								return err
+							}
+							tg.Output <- "the following templated based file has been generated :" + dst
+						}
+					}
+				}
+			}
+
+		case "single-file-templates":
+			// Todo for opsData.Ext if there is an extension
+			mhandler := make(map[string]interface{})
+			mhandler["config"] = tg
+			//dst := path.Join(tg.Project, opsData.Dst)
+			tg.Output <- "generating template based contents to the file :" + dst
+			li := strings.LastIndex(curDir, "/")
+			dirs := curDir[0:li]
+			err = os.MkdirAll(dirs, 0755)
+			if err != nil {
+				return err
+			}
+			content, err := tg.Mapping.Reader.Read(opsData.Src)
+			if err != nil {
+				return err
+			}
+			if content != "" {
+				err := tg.WriteTmplToFile(curDir, content, mhandler)
+				if err != nil {
+					return err
+				}
+				tg.Output <- "The following templated based file has been generated :" + dst
+			}
+		default:
+			return errors.New(opsData.OpType + ":this type has no implementation")
+		}
+	}
+	if !found {
+		return ErrInvalidKey
+	}
 	return nil
 }
 

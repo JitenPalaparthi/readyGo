@@ -1,106 +1,127 @@
 {
     "data": [
         {
+            "key":"directory",
             "opType": "directories",
             "src": "models",
             "dst": "",
-            "genForType":""
+            "genForType":"main"
         },
         {
+            "key":"directory",
             "opType": "directories",
             "src": "interfaces",
             "dst": "",
-            "genForType":""
+            "genForType":"main"
         },
         {
+            "key":"directory",
             "opType": "directories", 
             "src": "database",
             "dst": "",
-            "genForType":""
+            "genForType":"main"
         },
         {
+            "key":"directory",
             "opType": "directories",
             "src": "handlers",
             "dst": "",
-            "genForType":""
+            "genForType":"main"
         },
         {
+            "key":"directory",
             "opType": "directories",
             "src": "global",
-            "dst": "",
-            "genForType":""
+            "dst": ""
         },
         {
+            "key":"directory",
             "opType": "directories",
             "src": "scripts",
             "dst": "",
-            "genForType":""
+            "genForType":"main"
         },
         {
+            "key":"database",
             "opType": "static-files",
-            "src": "lang/go/static/common/databases/sql/postgres/database.static",
+            "src": "lang/go/static/common/databases/mongo/database.static",
             "dst": "database/database.go",
-            "genForType":""
+            "genForType":"main"
         },
         {
+            "key":"function",
+            "opType": "static-files",
+            "src": "lang/go/static/common/global/functions.go",
+            "dst": "global/functions.go",
+            "genForType":"main"
+        },
+        {
+            "key":"helper",
             "opType": "static-files",
             "src": "lang/go/static/http/helper/helper.static",
-            "dst": "helper/helper.go",
-            "genForType":""
+            "dst": "helper/helper.go"
         },
         {
+            "key":"model",
             "opType": "multiple-file-templates",
             "src": "lang/go/templates/common/models",
             "dst": "models",
             "genForType":"both"
         },
         {
+            "key":"interface",
             "opType": "multiple-file-templates",
             "src": "lang/go/templates/common/interfaces",
             "dst": "interfaces",
             "genForType":"main"
         },
         {
+            "key":"dbfile",
             "opType": "multiple-file-templates",
-            "src": "lang/go/templates/common/database/sql/db",
+            "src": "lang/go/templates/common/database/mongo/db",
             "dst": "database",
             "genForType":"main"
         },
         {
+            "key":"handler",
             "opType": "multiple-file-templates",
             "src": "lang/go/templates/http/handlers",
             "dst": "handlers",
             "genForType":"main"
         },
-        {
+        {   
+            "key":"appconfig",
             "opType": "single-file-templates",
             "src": "lang/go/templates/common/config",
             "dst": "application.json",
-            "genForType":""
+            "genForType":"main"
         },
         {
+            "key":"main",
             "opType": "single-file-templates",
             "src": "lang/go/templates/http/main",
             "dst": "main.go",
-            "genForType":""
+            "genForType":"main"
         },
         {
             "opType": "single-file-templates",
             "src": "lang/go/templates/common/docker-compose",
             "dst": "docker-compose.yaml",
-            "genForType":""
+            "genForType":"main"
         },
         {
+            "key":"dockerfile",
             "opType": "single-file-templates",
             "src": "lang/go/templates/common/Dockerfile",
             "dst": "Dockerfile",
-            "genForType":""
+            "genForType":"main"
         },
         {
+            "key":"init",
             "opType": "exec",
             "src": "lang/go/templates/common/init.exec",
             "dst": "scripts/init.sh",
-            "genForType":""
+            "genForType":"main"
         }
     ]
 }

@@ -1,110 +1,151 @@
 {
     "data": [
-        {
+        {           
+            "key":"directory",
             "opType": "directories",
             "src": "models",
             "dst": "",
-            "genForType":"main"
+            "genForType":""
         },
         {
+            "key":"directory",
             "opType": "directories",
             "src": "interfaces",
             "dst": "",
-            "genForType":"main"
+            "genForType":""
         },
         {
-            "opType": "directories", 
+            "key":"directory",
+            "opType": "directories",
             "src": "database",
             "dst": "",
-            "genForType":"main"
+            "genForType":""
         },
         {
+            "key":"directory",
             "opType": "directories",
             "src": "handlers",
             "dst": "",
-            "genForType":"main"
+            "genForType":""
         },
         {
+            "key":"directory",
             "opType": "directories",
-            "src": "global",
+            "src": "protos",
             "dst": ""
         },
         {
+            "key":"directory",
+            "opType": "directories",
+            "src": "messaging",
+            "dst": "",
+            "genForType":""
+        },
+        {
+            "key":"directory",
             "opType": "directories",
             "src": "scripts",
             "dst": "",
-            "genForType":"main"
+            "genForType":""
         },
         {
+            "key":"database",
             "opType": "static-files",
             "src": "lang/go/static/common/databases/mongo/database.static",
             "dst": "database/database.go",
-            "genForType":"main"
+            "genForType":""
         },
         {
-            "opType": "static-files",
-            "src": "lang/go/static/common/global/functions.go",
-            "dst": "global/functions.go",
-            "genForType":"main"
-        },
-        {
+            "key":"helper",
             "opType": "static-files",
             "src": "lang/go/static/http/helper/helper.static",
-            "dst": "helper/helper.go"
+            "dst": "helper/helper.go",
+            "genForType":""
         },
         {
+            "key":"connection",
+            "opType": "static-files",
+            "src": "lang/go/static/messaging/nats/connection.static",
+            "dst": "messaging/connection.go",
+            "genForType":""
+        },
+        {
+            "key":"messaging",
+            "opType": "static-files",
+            "src": "lang/go/static/messaging/nats/messaging.static",
+            "dst": "messaging/messaging.go",
+            "genForType":""
+        },
+        {
+            "key":"models",
+            "opType": "static-files",
+            "src": "lang/go/static/models/models.static",
+            "dst": "models/models.go",
+            "genForType":""
+        },
+        {
+            "key":"model",
             "opType": "multiple-file-templates",
             "src": "lang/go/templates/common/models",
             "dst": "models",
             "genForType":"both"
         },
         {
+            "key":"interface",
             "opType": "multiple-file-templates",
             "src": "lang/go/templates/common/interfaces",
             "dst": "interfaces",
             "genForType":"main"
         },
         {
+            "key":"dbfile",
             "opType": "multiple-file-templates",
             "src": "lang/go/templates/common/database/mongo/db",
             "dst": "database",
             "genForType":"main"
         },
         {
+            "key":"handler",
             "opType": "multiple-file-templates",
-            "src": "lang/go/templates/http/handlers",
+            "src": "lang/go/templates/grpc/handlers",
             "dst": "handlers",
             "genForType":"main"
         },
         {
-            "opType": "single-file-templates",
-            "src": "lang/go/templates/common/config",
-            "dst": "application.json",
-            "genForType":"main"
+            "key":"proto",
+            "opType": "multiple-file-templates",
+            "src": "lang/go/templates/grpc/protofile",
+            "dst": "protos",
+            "ext": "proto",
+            "genForType":"both"
         },
         {
+            "key":"main",
             "opType": "single-file-templates",
-            "src": "lang/go/templates/http/main",
+            "src": "lang/go/templates/grpc/main",
             "dst": "main.go",
-            "genForType":"main"
+            "genForType":""
         },
         {
+            "key":"docker-compose",
             "opType": "single-file-templates",
             "src": "lang/go/templates/common/docker-compose",
             "dst": "docker-compose.yaml",
-            "genForType":"main"
+            "genForType":""
         },
-        {
+        {           
+            "key":"dockerfile",
             "opType": "single-file-templates",
             "src": "lang/go/templates/common/Dockerfile",
             "dst": "Dockerfile",
-            "genForType":"main"
+            "genForType":""
         },
         {
+            "key":"init",
             "opType": "exec",
             "src": "lang/go/templates/common/init.exec",
             "dst": "scripts/init.sh",
-            "genForType":"main"
+            "genForType":""
         }
     ]
 }
