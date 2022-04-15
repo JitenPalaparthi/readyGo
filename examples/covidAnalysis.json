@@ -1,0 +1,45 @@
+{
+    "version": "0.1",
+    "kind": "http",
+    "project": "covidAnalysis",
+    "apiSpec": {
+        "kind": "http",
+        "port": "50061",
+        "version": "v1"
+    },
+    "databaseSpec": {
+        "kind": "nosql",
+        "name": "mongo",
+        "connectionString": "mongodb://localhost:27017",
+        "dbName": "covidAnalysis"
+    },
+    "messagingSpec": {
+        "kind": "broker",
+        "name": "nats",
+        "connectionString": "nats://localhost:4222"
+    },
+    "models": [
+        {
+            "name": "covidData",
+            "type": "main",
+            "messagingModelSpec": {
+                "messageRespondType": "publish",
+                "topic": "covidData_topic"
+            },
+            "fields": [
+                {
+                    "name": "data",
+                    "type": "map[string]interface{}"
+                },
+                {
+                    "name": "status",
+                    "type": "global.GetDefaultStr(`active`)"
+                },
+                {
+                    "name": "lastModified",
+                    "type": "global.GetUnixTimeInStr()"
+                }
+            ]
+        }
+    ]
+}
