@@ -72,6 +72,7 @@ var genCmd = &cobra.Command{
 				log.Fatal(Fata(err))
 			}
 			err = tg.Execute()
+
 			if err != nil {
 				err1 := tg.RmDir()
 				if err1 != nil {
