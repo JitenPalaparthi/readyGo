@@ -69,6 +69,33 @@
             ]
         },
         {
+            "name":"Address",
+            "type":"sub",
+            "fields":[
+                {
+                    "name":"Line1",
+                    "type":"string"
+                },
+                {
+                    "name":"Street",
+                    "type":"string"
+                }, {
+                    "name":"City",
+                    "type":"string"
+                }, {
+                    "name":"State",
+                    "type":"string"
+                }, {
+                    "name":"Country",
+                    "type":"string"
+                }
+                , {
+                    "name":"PinCode",
+                    "type":"string"
+                }
+            ]
+        },
+        {
             "name": "userDetails",
             "type":"sub",
             "fields": [

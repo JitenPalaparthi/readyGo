@@ -5,19 +5,19 @@ syntax = "proto3";
 package {{.Project}};
 import "google/protobuf/struct.proto";
 {{- range .Model.Fields }}
-{{ if eq .Category "model"}}import "{{$.config.Project}}/protos/{{.Name | ToLower}}.proto";{{ end}}
-{{ if eq .Category "array model"}}import "{{$.config.Project}}/protos/{{.Type | GrpcArrayModel | ToLower}}.proto";{{ end}}
+{{- if eq .Category "model" -}}import "{{$.config.Project}}/protos/{{.Type | ToLower}}.proto";{{- end}}
+{{- if eq .Category "array model" -}}import "{{$.config.Project}}/protos/{{.Type | GrpcArrayModel | ToLower}}.proto";{{- end}}
 {{- end}}
 option go_package = "{{.Project}}/protos";
 
-{{ $Count:="0"}}
+{{- $Count:="0"}}
 	message {{.Model.Name}}Type  {
 	{{- range .Model.Fields }}
-	{{ if eq .Category "scalar"}}{{ .Type | GrpcType}} {{ .Name }} = {{$Count | Counter}};{{- end}}
-	{{ if eq .Category "model"}}{{ .Type}}Type {{ .Name }} = {{$Count | Counter}};{{- end}}
-	{{ if eq .Category "array model"}}repeated {{ .Type | GrpcArrayModel}}Type {{ .Name }} = {{$Count | Counter}};{{- end}}
-    {{- $Count = $Count | Counter}}
-	{{- end}}
+	{{ if eq .Category "scalar" -}}{{ .Type | GrpcType}} {{ .Name }} = {{$Count | Counter}};{{ end -}}
+	{{ if eq .Category "model" -}}{{ .Type}}Type {{ .Name }} = {{$Count | Counter}};{{ end -}}
+	{{ if eq .Category "array model" -}}repeated {{ .Type | GrpcArrayModel}}Type {{ .Name }} = {{$Count | Counter}};{{ end -}}
+    {{ $Count = $Count | Counter}}
+	{{- end }}
 	}
  {{- if eq .Model.Type "main" }}
 message {{.Model.Name}}Response{
