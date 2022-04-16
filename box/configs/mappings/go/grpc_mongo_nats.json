@@ -77,42 +77,42 @@
             "genForType":""
         },
         {
-            "key":"models",
+            "key":"model",
             "opType": "static-files",
             "src": "lang/go/static/models/models.static",
             "dst": "models/models.go",
             "genForType":""
         },
         {
-            "key":"model",
+            "key":"models",
             "opType": "multiple-file-templates",
             "src": "lang/go/templates/common/models",
             "dst": "models",
             "genForType":"both"
         },
         {
-            "key":"interface",
+            "key":"interfaces",
             "opType": "multiple-file-templates",
             "src": "lang/go/templates/common/interfaces",
             "dst": "interfaces",
             "genForType":"main"
         },
         {
-            "key":"dbfile",
+            "key":"dbfiles",
             "opType": "multiple-file-templates",
             "src": "lang/go/templates/common/database/mongo/db",
             "dst": "database",
             "genForType":"main"
         },
         {
-            "key":"handler",
+            "key":"handlers",
             "opType": "multiple-file-templates",
             "src": "lang/go/templates/grpc/handlers",
             "dst": "handlers",
             "genForType":"main"
         },
         {
-            "key":"proto",
+            "key":"protos",
             "opType": "multiple-file-templates",
             "src": "lang/go/templates/grpc/protofile",
             "dst": "protos",
