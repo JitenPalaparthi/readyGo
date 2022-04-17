@@ -1,0 +1,232 @@
+{
+    "version": "0.1",
+    "kind": "http",
+    "project": "eduEmPowerService",
+    "apiSpec": {
+        "kind": "http",
+        "port": "50061",
+        "version": "v1"
+    },
+    
+    "databaseSpec": {
+        "kind": "sql",
+        "name":"sqlserver",
+        "connectionString": "sqlserver://SA:admin123@localhost:1433?database=master",
+        "dbName": "eduempowerDb"
+    },
+    "messagingSpec": {
+        "kind":"broker",
+        "name":"nats",
+        "connectionString": "nats://localhost:4222"
+    },
+    "models": [
+        {
+            "name": "user",
+            "type":"main",
+            "messagingModelSpec": {
+                "messageRespondType": "publish",
+                "topic": "users_topic"
+            },
+            "fields": [
+                {
+                    "name": "name",
+                    "type": "string",
+                    "isKey": true
+                },
+                {
+                    "name": "email",
+                    "type": "string",
+                    "isKey": true,
+                    "validateExp": "^[a-zA-Z0-9.!#$%&'*+\\\\/=?^_\\\\`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$"
+                },
+                {
+                    "name": "mobile",
+                    "type": "string"
+                },
+                {
+                    "name": "UserCategory",
+                    "type": "string"
+                },
+                {
+                    "name": "UserType",
+                    "type": "string"
+                },
+                {
+                    "name": "Role",
+                    "type": "string"
+                },
+                {
+                    "name": "Password",
+                    "type": "string"
+                },
+                {
+                    "name": "status",
+                    "type": "global.GetDefaultStr(`active`)"
+                },
+                {
+                    "name": "lastModified",
+                    "type": "global.GetCurrentDateTimeInStr()"
+                }
+            ]
+        },
+        {
+            "name": "userDetails",
+            "type":"sub",
+            "fields": [
+                {
+                    "name": "email",
+                    "type": "string",
+                    "isKey": true,
+                    "validateExp": "^[a-zA-Z0-9.!#$%&'*+\\\\/=?^_\\\\`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$"
+                }
+            ]
+        },
+        {
+            "name": "individual",
+            "type":"main",
+            "fields": [
+                {
+                    "name": "user",
+                    "type": "[]UserDetails"
+                },
+                {
+                    "name": "occupation",
+                    "type": "string"
+                },
+                {
+                    "name": "moreInfo",
+                    "type": "string"
+                },
+                {
+                    "name": "address",
+                    "type": "string"
+                },
+                {
+                    "name": "city",
+                    "type": "string"
+                },
+                {
+                    "name": "state",
+                    "type": "string"
+                },
+                {
+                    "name": "country",
+                    "type": "string"
+                },
+                {
+                    "name": "pinCode",
+                    "type": "string"
+                },
+                {
+                    "name": "socialMedia",
+                    "type": "[]string"
+                },
+                {
+                    "name": "status",
+                    "type": "string"
+                },
+                {
+                    "name": "lastUpdated",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "organization",
+            "type":"main",
+            "fields": [
+                {
+                    "name": "user",
+                    "type": "[]UserDetails"
+                },
+                {
+                    "name": "name",
+                    "type": "string"
+                },
+                {
+                    "name": "webSite",
+                    "type": "string"
+                },
+                {
+                    "name": "moreInfo",
+                    "type": "string"
+                },
+                {
+                    "name": "address",
+                    "type": "string"
+                },
+                {
+                    "name": "city",
+                    "type": "string"
+                },
+                {
+                    "name": "state",
+                    "type": "string"
+                },
+                {
+                    "name": "country",
+                    "type": "string"
+                },
+                {
+                    "name": "pinCode",
+                    "type": "string"
+                },
+                {
+                    "name": "sociallMedia",
+                    "type": "[]string"
+                },
+                {
+                    "name": "status",
+                    "type": "string"
+                },
+                {
+                    "name": "lastUpdated",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name":"fund",
+            "type":"main",
+            "fields":[
+                {
+                    "name":"donorEmail",
+                    "type":"string"
+
+                },{
+                    "name":"amountProposed",
+                    "type":"float"
+
+                },{
+                    "name":"AmountReceived",
+                    "type":"float"
+
+                },{
+                    "name":"currency",
+                    "type":"string"
+
+                },{
+                    "name":"modeOfPayment",
+                    "type":"string"
+
+                },{
+                    "name":"referenceNo",
+                    "type":"string"
+
+                },{
+                    "name":"moreInfo",
+                    "type":"string"
+
+                },
+                {
+                    "name": "status",
+                    "type": "string"
+                },
+                {
+                    "name": "lastUpdated",
+                    "type": "string"
+                }
+            ]
+        }
+    ]
+}
