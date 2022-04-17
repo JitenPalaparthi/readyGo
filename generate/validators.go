@@ -14,7 +14,7 @@ var (
 	ErrInvalidProjectType = errors.New("invalid project type;project type must be http | grpc | cloudEvent | cli")
 	// ErrInvalidDatabase is to define error that invalid database
 	ErrInvalidDatabase          = errors.New("invalid database;database type (DB) must be mongo | sql ")
-	ErrInvalidDatabaseName      = errors.New("sql kind supports only mysql or postgress")
+	ErrInvalidDatabaseName      = errors.New("sql kind supports only mysql or postgress or sqlserver")
 	ErrInvalidDatabasenosqlName = errors.New("nosql kind supports only mongo or cassendra")
 	ErrInvalidDatabaseKind      = errors.New("database kind supports only sql or nosql")
 )
@@ -70,7 +70,7 @@ func (tg *Generate) Validate() (err error) {
 	if tg.Kind == "" || (tg.Kind != "http" && tg.Kind != "grpc" && tg.Kind != "cloudEvent" && tg.Kind != "cli") {
 		return ErrInvalidProjectType
 	}
-	if tg.DatabaseSpec.Kind == "sql" && (tg.DatabaseSpec.Name != "mysql" && tg.DatabaseSpec.Name != "postgres") {
+	if tg.DatabaseSpec.Kind == "sql" && (tg.DatabaseSpec.Name != "mysql" && tg.DatabaseSpec.Name != "postgres" && tg.DatabaseSpec.Name != "sqlserver") {
 		return ErrInvalidDatabaseName
 	}
 	if tg.DatabaseSpec.Kind == "nosql" && (tg.DatabaseSpec.Name != "mongo" && tg.DatabaseSpec.Name != "cassendra") {
